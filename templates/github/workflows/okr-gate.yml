@@ -1,0 +1,330 @@
+# okr-gate — the PR alignment nudge (okrdev Level 2)
+#
+# Installs to: .github/workflows/okr-gate.yml
+#
+# What it does: reads the PR description for a KR: line — a key result id like
+# `KR: 1.2`, or one of the classifications `side-quest` / `maintenance` /
+# `emergency` — and validates numeric ids against the active cycle file in
+# okrdev/okrs/. It maintains exactly one comment on the PR (upserted, never
+# spammed) and a `needs-kr` label. It never edits the PR itself.
+#
+# Warn by default: missing or unresolvable KR lines get a comment and the
+# `needs-kr` label, but the check stays green. Nudge by default, gate by choice.
+#
+# Strict mode: set the repository variable OKRDEV_STRICT_GATE to `true`
+# (Settings → Secrets and variables → Actions → Variables). Then a missing or
+# invalid KR line fails this check. Escape hatch: a human applies the
+# `okr-override` label and the gate passes — and the comment instructs the coach
+# to log the override in this week's check-in. Nothing here is human-unoverridable.
+# Note: strict mode only actually blocks merges if "okr-gate" is added to the
+# required status checks in branch protection. Also note the trigger list below
+# does not include `labeled` — after applying `okr-override`, re-run the check
+# from the PR's Checks tab (any edit or push re-runs it too).
+#
+# Auto-classified as maintenance, no questions asked: PRs authored by
+# dependabot[bot] or renovate[bot], and PRs whose title starts with "Revert ".
+# Bots don't answer comments, and reverts undo work rather than add it.
+#
+# ── SAFETY ────────────────────────────────────────────────────────────────────
+# This workflow uses `pull_request_target`, which runs with write access to the
+# base repository — including for PRs from forks. That is safe here for exactly
+# one reason: the job reads PR *metadata* only (title, body, author, labels) and
+# fetches okrdev files from the BASE repo's default branch via the GitHub API.
+# It NEVER checks out, builds, or executes anything from the PR head. Do not add
+# an actions/checkout step or any other use of the PR's code to this workflow.
+# ──────────────────────────────────────────────────────────────────────────────
+
+name: okr-gate
+
+on:
+  pull_request_target:
+    types: [opened, edited, reopened, synchronize]
+
+permissions:
+  contents: read # fetch okrdev/okrs/* from the base repo via the API
+  issues: write # create/update the gate comment, manage labels
+  pull-requests: write
+
+concurrency:
+  group: okr-gate-${{ github.event.pull_request.number }}
+  cancel-in-progress: true # rapid edits: only the latest state matters
+
+jobs:
+  okr-gate:
+    name: okr-gate
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Check the PR's KR line (metadata only — no checkout)
+        uses: actions/github-script@v7
+        env:
+          OKRDEV_STRICT_GATE: ${{ vars.OKRDEV_STRICT_GATE }}
+        with:
+          script: |
+            // ── Inputs & constants ─────────────────────────────────────────
+            const pr = context.payload.pull_request;
+            const { owner, repo } = context.repo;
+            const defaultBranch = context.payload.repository.default_branch;
+            const strict = (process.env.OKRDEV_STRICT_GATE || '').toLowerCase() === 'true';
+
+            const MARKER = '<!-- okrdev:okr-gate -->';
+            const NEEDS_KR_LABEL = 'needs-kr'; // "needs a KR line", not "unaligned" — it's a prompt, not a verdict
+            const OVERRIDE_LABEL = 'okr-override';
+            const BOT_ALLOWLIST = ['dependabot[bot]', 'renovate[bot]'];
+
+            // The canonical KR-line grammar (docs/method.md). Case-insensitive;
+            // the FIRST matching line anywhere in the description wins.
+            const KR_LINE = /^KR:\s*(([0-9]{4}-[QC][0-9]+\/)?(KR)?[0-9]+\.[0-9]+|side-quest|maintenance|emergency)\s*$/im;
+
+            // ── Base-repo file access (API only — never PR code) ───────────
+            async function fetchBaseFile(path) {
+              try {
+                const res = await github.rest.repos.getContent({ owner, repo, path, ref: defaultBranch });
+                if (Array.isArray(res.data) || !res.data.content) return null;
+                return Buffer.from(res.data.content, 'base64').toString('utf8');
+              } catch (e) {
+                if (e.status === 404) return null;
+                throw e;
+              }
+            }
+
+            async function findActiveCycle() {
+              let listing;
+              try {
+                listing = await github.rest.repos.getContent({ owner, repo, path: 'okrdev/okrs', ref: defaultBranch });
+              } catch (e) {
+                if (e.status === 404) return null; // okrdev not installed, or Level 0/1 with no cycles yet
+                throw e;
+              }
+              if (!Array.isArray(listing.data)) return null;
+              const names = listing.data
+                .filter((f) => f.type === 'file' && /^[0-9]{4}-[QC][0-9]+\.md$/i.test(f.name))
+                .map((f) => f.name)
+                .sort()
+                .reverse(); // newest cycle id first — the active one is almost always newest
+              for (const name of names) {
+                const text = await fetchBaseFile('okrdev/okrs/' + name);
+                if (!text) continue;
+                const fm = text.match(/^---\r?\n([\s\S]*?)\r?\n---/);
+                if (!fm) continue;
+                if (!/^status:\s*active\b/im.test(fm[1])) continue;
+                const cycleMatch = fm[1].match(/^cycle:\s*(\S+)/im);
+                return { cycle: cycleMatch ? cycleMatch[1] : name.replace(/\.md$/i, ''), text };
+              }
+              return null;
+            }
+
+            function lookupKr(cycleText, krId) {
+              // Headings look like "## KR1.2: <metric> from <baseline> to <target>".
+              // \b after the id so KR1.2 never matches KR1.23.
+              const headingRe = new RegExp('^##\\s*' + krId.replace(/\./g, '\\.') + '\\b\\s*:?\\s*(.*)$', 'im');
+              const m = headingRe.exec(cycleText);
+              if (!m) return null;
+              const after = cycleText.slice(m.index + m[0].length);
+              const nextHeading = after.search(/^#{1,2}\s/m);
+              const section = nextHeading === -1 ? after : after.slice(0, nextHeading);
+              // Dropped KRs keep their number (ids are frozen) but get "Status: dropped".
+              return { title: (m[1] || '').trim(), dropped: /^status:\s*dropped\b/im.test(section) };
+            }
+
+            // ── One comment, upserted — never a pile of stale bot comments ──
+            async function upsertComment(bodyText, createIfMissing) {
+              const body = MARKER + '\n' + bodyText;
+              const comments = await github.paginate(github.rest.issues.listComments, {
+                owner, repo, issue_number: pr.number, per_page: 100,
+              });
+              const mine = comments.find((c) => c.body && c.body.includes(MARKER));
+              if (mine) {
+                if (mine.body !== body) {
+                  await github.rest.issues.updateComment({ owner, repo, comment_id: mine.id, body });
+                }
+              } else if (createIfMissing) {
+                await github.rest.issues.createComment({ owner, repo, issue_number: pr.number, body });
+              }
+            }
+
+            async function addNeedsKr() {
+              try {
+                await github.rest.issues.getLabel({ owner, repo, name: NEEDS_KR_LABEL });
+              } catch (e) {
+                if (e.status !== 404) throw e;
+                await github.rest.issues.createLabel({
+                  owner, repo, name: NEEDS_KR_LABEL, color: 'bfd4f2',
+                  description: 'PR description needs a valid KR: line',
+                });
+              }
+              await github.rest.issues.addLabels({ owner, repo, issue_number: pr.number, labels: [NEEDS_KR_LABEL] });
+            }
+
+            async function removeNeedsKr() {
+              try {
+                await github.rest.issues.removeLabel({ owner, repo, issue_number: pr.number, name: NEEDS_KR_LABEL });
+              } catch (e) {
+                if (e.status !== 404) throw e; // 404 = label wasn't on the PR; fine
+              }
+            }
+
+            // ── Outcomes ────────────────────────────────────────────────────
+            const hasOverride = (pr.labels || []).some((l) => l.name.toLowerCase() === OVERRIDE_LABEL);
+
+            async function pass(commentText, createIfMissing) {
+              await removeNeedsKr();
+              await upsertComment(commentText, Boolean(createIfMissing));
+            }
+
+            async function warn(summary, commentLines) {
+              if (hasOverride) {
+                // A human decided. The gate passes — and asks the coach to write it down.
+                await removeNeedsKr();
+                await upsertComment(commentLines.concat([
+                  '',
+                  '**Overridden.** A human applied the `' + OVERRIDE_LABEL + '` label, so the gate passes.',
+                  'Coach: log this override in the **Judgment calls** section of this week\'s',
+                  'check-in file (`okrdev/checkins/<cycle>/<yyyy-Www>.md`).',
+                ]).join('\n'), true);
+                core.notice('okr-gate: ' + summary + ' — passed via ' + OVERRIDE_LABEL + ' label.');
+                return;
+              }
+              await addNeedsKr();
+              const tail = strict ? [
+                '',
+                '**Strict mode is on** (repo variable `OKRDEV_STRICT_GATE=true`), so this check',
+                'fails until the description carries a valid `KR:` line — or a maintainer applies',
+                'the `' + OVERRIDE_LABEL + '` label and re-runs the check from the Checks tab',
+                '(edits and pushes re-run it automatically).',
+              ] : [
+                '',
+                'This is a nudge, not a block — the check stays green either way. Fix the line',
+                'and this comment updates on the next edit or push.',
+              ];
+              await upsertComment(commentLines.concat(tail).join('\n'), true);
+              if (strict) {
+                core.setFailed('okr-gate (strict): ' + summary);
+              } else {
+                core.warning('okr-gate: ' + summary);
+              }
+            }
+
+            // ── 1. Trusted bots and reverts classify themselves ─────────────
+            const author = pr.user ? pr.user.login : '';
+            if (BOT_ALLOWLIST.includes(author)) {
+              await pass('**okr-gate:** auto-classified as `maintenance` — authored by `' + author + '`.', false);
+              core.info('Auto-maintenance: bot author ' + author);
+              return;
+            }
+            if (/^Revert /.test(pr.title || '')) {
+              await pass('**okr-gate:** auto-classified as `maintenance` — reverts undo work, they don\'t add it.', false);
+              core.info('Auto-maintenance: revert title');
+              return;
+            }
+
+            // ── 2. Find the KR line ─────────────────────────────────────────
+            const match = KR_LINE.exec(pr.body || '');
+            if (!match) {
+              await warn('no KR: line in the PR description', [
+                '### okr-gate: no `KR:` line',
+                '',
+                'Every substantive PR carries one line in its description saying what it serves.',
+                'Add one of these (the first matching line wins):',
+                '',
+                '```text',
+                'KR: 1.2          a key result in the active cycle',
+                'KR: side-quest   sanctioned and time-boxed — log it in okrdev/PARKING_LOT.md',
+                'KR: maintenance  bugfixes, config, docs, small refactors',
+                'KR: emergency    reviewed post-hoc at the next check-in',
+                '```',
+              ]);
+              return;
+            }
+
+            const raw = match[1];
+            const lower = raw.toLowerCase();
+
+            // ── 3. Classification words need no validation ──────────────────
+            if (lower === 'side-quest' || lower === 'maintenance' || lower === 'emergency') {
+              await pass('**okr-gate:** classified as `' + lower + '`.', false);
+              core.info('Classified: ' + lower);
+              return;
+            }
+
+            // ── 4. Numeric id → validate against the cycle file ─────────────
+            // Accepts "1.2", "KR1.2", or the cross-cycle form "2026-Q3/KR1.2".
+            const idMatch = raw.match(/^(([0-9]{4}-[QC][0-9]+)\/)?(?:KR)?([0-9]+\.[0-9]+)$/i);
+            const referencedCycle = idMatch[2] ? idMatch[2].toUpperCase() : null;
+            const krId = 'KR' + idMatch[3]; // canonical short form, e.g. KR1.2
+
+            const active = await findActiveCycle();
+
+            let cycleName;
+            let cycleText;
+            let isActiveCycle;
+            if (referencedCycle && (!active || referencedCycle !== active.cycle)) {
+              // Explicit cross-cycle reference — validate against that cycle's file.
+              cycleName = referencedCycle;
+              cycleText = await fetchBaseFile('okrdev/okrs/' + referencedCycle + '.md');
+              isActiveCycle = false;
+              if (!cycleText) {
+                await warn('cycle ' + referencedCycle + ' not found', [
+                  '### okr-gate: cycle `' + referencedCycle + '` not found',
+                  '',
+                  'The KR line references `' + referencedCycle + '`, but there is no',
+                  '`okrdev/okrs/' + referencedCycle + '.md` on `' + defaultBranch + '`. Check the cycle id.',
+                ]);
+                return;
+              }
+            } else if (active) {
+              cycleName = active.cycle;
+              cycleText = active.text;
+              isActiveCycle = true;
+            } else {
+              await warn('no active cycle to validate ' + krId + ' against', [
+                '### okr-gate: cannot validate `' + krId + '` — no active cycle',
+                '',
+                'No file in `okrdev/okrs/` has `status: active`, so there is nothing to check',
+                'this id against. Between cycles? Run `/okrdev:plan`. Not running cycles here',
+                'yet? Use `KR: maintenance` / `KR: side-quest` / `KR: emergency` instead, or',
+                'remove this workflow.',
+              ]);
+              return;
+            }
+
+            const kr = lookupKr(cycleText, krId);
+            if (!kr) {
+              await warn(krId + ' not found in ' + cycleName, [
+                '### okr-gate: `' + krId + '` not found in `' + cycleName + '`',
+                '',
+                '`okrdev/okrs/' + cycleName + '.md` has no heading for `' + krId + '`. KR ids are',
+                'frozen when a cycle goes active and never renumbered, so an unknown id is',
+                'usually a typo. Check the cycle file and fix the `KR:` line.',
+              ]);
+              return;
+            }
+
+            if (kr.dropped) {
+              await warn(cycleName + '/' + krId + ' is marked dropped', [
+                '### okr-gate: `' + cycleName + '/' + krId + '` is marked `Status: dropped`',
+                '',
+                'Tagging new work to a dropped KR is usually a mistake. If this work serves a',
+                'different KR now, update the line. If it genuinely revives this KR, that is a',
+                'cycle-file amendment (a PR with a `Revised:` block), not just a PR tag.',
+              ]);
+              return;
+            }
+
+            // ── 5. Valid — record the full resolution ───────────────────────
+            // Short ids like "1.2" are ambiguous across cycles; writing the
+            // canonical form onto the PR makes the alignment audit-proof.
+            const canonical = cycleName + '/' + krId;
+            const lines = [
+              '### okr-gate: aligned',
+              '',
+              '`KR: ' + raw + '` resolves to **`' + canonical + '`**' + (kr.title ? ' — ' + kr.title : '') + '.',
+              '',
+              'Recorded here so the short id stays unambiguous after this cycle is scored.',
+            ];
+            if (!isActiveCycle) {
+              lines.push('', 'Note: `' + cycleName + '` is not the active cycle. Cross-cycle references',
+                'are legal — this note just makes it visible.');
+            }
+            await pass(lines.join('\n'), true);
+            core.notice('okr-gate: validated ' + canonical + '.');

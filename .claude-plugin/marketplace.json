@@ -1,0 +1,11 @@
+{
+  "name": "okrdev",
+  "owner": { "name": "Alex Chisholm" },
+  "plugins": [
+    {
+      "name": "okrdev",
+      "source": "./",
+      "description": "OKR-obsessed operating framework: AI coach + optional AI-first stack. Focus is the scarce resource."
+    }
+  ]
+}

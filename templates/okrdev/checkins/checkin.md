@@ -1,0 +1,49 @@
+---
+cycle: 2026-Q3
+week: 2026-W29                # ISO week — the file lives at okrdev/checkins/<cycle>/<yyyy-Www>.md
+attendees: [<name>, <name>]   # omit or single-name for solo mode
+---
+
+## Wins
+
+<!-- One per attendee. The coach asks for these first — accountability without
+     celebration dies by week 4. -->
+
+## KR confidence
+
+| KR | DRI | Prev | Now | Δ | Evidence/note |
+|----|-----|------|-----|---|---------------|
+
+<!-- Triggers the coach enforces: <0.5 two weeks running forces a named decision
+     (re-scope / re-staff / kill / accept-the-miss); unchanged 3+ weeks needs one
+     line of evidence; ≥0.9 early raises the sandbag question. -->
+
+## What moved
+
+<!-- Pre-drafted from git log + merged PRs since last check-in; humans add non-code
+     work. This section is the canonical ledger for non-code KR work. -->
+
+## What's blocked
+
+## Health metrics
+
+| Metric | Red line | Now | OK? |
+|--------|----------|-----|-----|
+
+## Drift check
+
+<!-- Pre-computed: substantive PRs/commits since last check-in with no KR line and
+     no focus match. Questions, not accusations. -->
+
+## Judgment calls
+
+<!-- Append-only: - <date> — <who> — <reason> — <branch/PR>. Overrides, emergency
+     post-hoc reviews ("was it? what did it protect?"), and mid-cycle revisions land here. -->
+
+## Parking lot triage
+
+<!-- Every Captured item gets a decision: promote / archive / side-quest (with box). -->
+
+## Focus for next week
+
+<!-- Per DRI, 1–3 items, each mapped to a KR. -->

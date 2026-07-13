@@ -1,0 +1,126 @@
+# neon-cleanup — sweeps orphaned Neon preview branches on a schedule
+#
+# Installs to: .github/workflows/neon-cleanup.yml
+#
+# Part of the OPTIONAL stack module (see docs/stack.md). Skip it if you don't
+# use Neon.
+#
+# Why this exists: the Vercel-Neon integration creates a database branch per
+# preview deployment and is supposed to delete it when the PR closes — verify
+# that "delete branch on PR close" is enabled in the integration settings
+# (templates/stack/README.md walks through it). Branches orphan anyway: an
+# integration hiccup during a PR close, previews of since-deleted git branches,
+# manual experiments. Neon tiers cap the number of branches per project, and
+# hitting that cap mid-cycle fails confusingly for exactly the wrong audience —
+# a non-technical DRI whose preview silently stops getting a database. This
+# nightly sweep keeps headroom so that never happens.
+#
+# Requirements:
+#   secret   NEON_API_KEY     — a Neon API key (Neon console → Account settings → API keys)
+#   variable NEON_PROJECT_ID  — the Neon project id (Neon console → Project settings → General)
+#   (Settings → Secrets and variables → Actions, in this GitHub repo.)
+#
+# What it deletes — and, more importantly, what it never touches:
+#   - Only branches named "preview/<git-branch>", the integration's naming scheme
+#     (adjust PREVIEW_PREFIX below if yours differs).
+#   - Only when that git branch has no open PR.
+#   - Only when the Neon branch is older than MIN_AGE_HOURS, so it never races a
+#     preview that is still provisioning.
+#   - Never the project's default branch, never protected branches, never the
+#     seeded parent branch previews fork from (keep it outside the preview/
+#     prefix, which templates/stack/README.md does).
+#
+# Run it by hand with dry_run to see what it would do before trusting it.
+
+name: neon-cleanup
+
+on:
+  schedule:
+    - cron: '17 4 * * *' # daily, 04:17 UTC — an odd minute, off the top-of-hour rush
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: List the branches that would be deleted, without deleting them
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+  pull-requests: read # to list open PRs — the previews we must keep
+
+jobs:
+  cleanup:
+    name: cleanup
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      NEON_API_KEY: ${{ secrets.NEON_API_KEY }}
+      NEON_PROJECT_ID: ${{ vars.NEON_PROJECT_ID }}
+      PREVIEW_PREFIX: preview/
+      MIN_AGE_HOURS: 24
+      DRY_RUN: ${{ inputs.dry_run == true }}
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      # No checkout: this job needs the Neon API and the GitHub API, not the code.
+      - name: Delete orphaned preview branches
+        run: |
+          set -euo pipefail
+
+          if [ -z "${NEON_API_KEY}" ] || [ -z "${NEON_PROJECT_ID}" ]; then
+            echo "::error::Set the NEON_API_KEY secret and the NEON_PROJECT_ID repository variable (see the header comment in this workflow)."
+            exit 1
+          fi
+
+          api="https://console.neon.tech/api/v2/projects/${NEON_PROJECT_ID}"
+
+          # 1) Git branches with an open PR — their previews are live. Hands off.
+          gh pr list --repo "${GITHUB_REPOSITORY}" --state open --limit 500 \
+            --json headRefName --jq '.[].headRefName' | sort -u > open_pr_branches.txt
+          echo "Open PR branches: $(wc -l < open_pr_branches.txt | tr -d ' ')"
+
+          # 2) Every Neon branch in the project.
+          curl -sSf -H "Authorization: Bearer ${NEON_API_KEY}" "${api}/branches" > branches.json
+
+          # 3) Anything created after this cutoff is too young to judge.
+          cutoff=$(date -u -d "${MIN_AGE_HOURS} hours ago" +%Y-%m-%dT%H:%M:%SZ)
+
+          swept=0
+          kept=0
+          # Default and protected branches are filtered out in jq — the loop below
+          # never even sees them.
+          while IFS=$'\t' read -r id name created; do
+            # Only ever touch branches under the preview prefix.
+            case "$name" in
+              "${PREVIEW_PREFIX}"*) ;;
+              *) continue ;;
+            esac
+
+            git_branch="${name#"${PREVIEW_PREFIX}"}"
+
+            if grep -qxF "$git_branch" open_pr_branches.txt; then
+              kept=$((kept + 1))
+              continue
+            fi
+
+            # ISO-8601 UTC timestamps compare correctly as strings.
+            if [[ "$created" > "$cutoff" ]]; then
+              echo "Keeping ${name} — younger than ${MIN_AGE_HOURS}h, might still be provisioning"
+              kept=$((kept + 1))
+              continue
+            fi
+
+            if [ "$DRY_RUN" = "true" ]; then
+              echo "[dry run] would delete ${name} (${id}) — no open PR for '${git_branch}'"
+            else
+              echo "Deleting ${name} (${id}) — no open PR for '${git_branch}'"
+              curl -sSf -X DELETE -H "Authorization: Bearer ${NEON_API_KEY}" \
+                "${api}/branches/${id}" > /dev/null
+            fi
+            swept=$((swept + 1))
+          done < <(jq -r '.branches[]
+                          | select(((.default // false) | not) and ((.protected // false) | not))
+                          | [.id, .name, .created_at] | @tsv' branches.json)
+
+          suffix=""
+          if [ "$DRY_RUN" = "true" ]; then suffix=" (dry run — nothing deleted)"; fi
+          echo "Done: ${swept} orphaned preview branch(es) swept${suffix}, ${kept} kept."
