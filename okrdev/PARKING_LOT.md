@@ -5,7 +5,6 @@ Nothing in Captured gets worked on. Ever. Triage first.
 
 ## Captured
 
-- [2026-07-23] Headless install path — `/plugin` is interactive-only, blocks scripted/CI adoption — @alex — energy: high — effort: M
 - [2026-07-23] Template-validation CI for this repo (YAML/JSON/bash lint, dead-link check) — @alex — energy: high — effort: S
 - [2026-07-23] Native quick-capture app so parking works away from a repo session — @alex — energy: med — effort: L
 - [2026-07-23] `/okrdev:uninstall` skill (procedure exists in adoption.md but no skill runs it) — @alex — energy: low — effort: S
@@ -23,6 +22,8 @@ Nothing in Captured gets worked on. Ever. Triage first.
      - [2026-07-13] <idea> — @<who> — box: 4h — spent: 2h — status: open — notes: — -->
 
 ## Promoted
+
+- [2026-07-23] Headless install path → KR2.2 (drafted in 2026-Q3 plan)
 
 <!-- Ideas that survived triage and became KR work or planning input:
      - [2026-07-13] <idea> → KR2.1 (or: next-cycle candidate) -->
