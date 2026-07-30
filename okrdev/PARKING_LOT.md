@@ -24,6 +24,13 @@ Nothing in Captured gets worked on. Ever. Triage first.
 ## Promoted
 
 - [2026-07-23] Headless install path → KR2.2 (drafted in 2026-Q3 plan)
+- [2026-07-30] Repo-topology doctrine in adoption.md — "one team, one mission, one repo": monorepo default for multi-surface products, seam list (OSS-boundary, Expo-forced companion repo, team/mission) — @alex — energy: high — effort: M
+- [2026-07-30] Monorepo-aware Level 2 templates: workspace-glob CODEOWNERS, fan-in `ci` aggregate job, warning to never path-filter the required check — @alex — energy: med — effort: M
+- [2026-07-30] Per-surface "definition of shipped" + DRI verify variants (store release ritual, EAS/TestFlight links, MCP test transcript; long-lived-client expand/contract caveat) — @alex — energy: med — effort: M
+- [2026-07-30] `repos:` federation list in config.md — drift check / PR bridge / planning scan loop `gh -R` over satellite repos — @alex — energy: med — effort: M
+- [2026-07-30] Install-skill sibling-okrdev detection — link to an existing hub install instead of scaffolding a duplicate — @alex — energy: med — effort: S
+- [2026-07-30] Multi-surface repos: default okrdev state writes to auto-merged PRs (actor-scoped bypass blast radius spans all surfaces) — @alex — energy: low — effort: S
+- [2026-07-30] Exclude bot-authored PRs from maintenance/emergency tally denominators in checkin/coach/retro — @alex — energy: low — effort: S
 
 <!-- Ideas that survived triage and became KR work or planning input:
      - [2026-07-13] <idea> → KR2.1 (or: next-cycle candidate) -->
