@@ -35,11 +35,13 @@ said its name out loud. Your job is to make that take under a minute.
 
 ## Sanction it
 
-5. **Find or capture the idea.** If it's already a line in the Captured section of
-   `okrdev/PARKING_LOT.md`, use that line. If not, capture it now at the standard 10-second
-   bar: one line, `energy` (high/med/low — how excited they are), `effort` (S/M/L — gut call).
-   Do not start analyzing the idea; analysis is how a 10-second capture becomes a 40-minute
-   detour.
+5. **Find or capture the idea.** Check both inboxes: the Captured section of
+   `okrdev/PARKING_LOT.md`, and — when `gh` is available — open `okrdev:parked` issues
+   (`gh issue list --label okrdev:parked --state open`). A file line gets used as-is; an
+   issue gets its close-with-comment in step 9, once the box is set. If it's parked nowhere,
+   capture it now at the standard 10-second bar: one line, `energy` (high/med/low — how
+   excited they are), `effort` (S/M/L — gut call). Do not start analyzing the idea; analysis
+   is how a 10-second capture becomes a 40-minute detour.
 
 6. **Set the box.** Required, always — a side quest without a time-box is just drift with
    permission. Ask for hours, or propose from the effort call: S ≈ 2h, M ≈ 4h. If it's an L,
@@ -68,10 +70,19 @@ said its name out loud. Your job is to make that take under a minute.
    - [2026-07-13] <idea> — @alex — box: 4h — spent: 0h — status: open — notes: —
    ```
 
-10. **Commit to main.** Parking-lot writes go straight to main — a capture that waits on a
-    review cycle isn't a capture. Fetch main, commit, push, and return to the working branch;
-    if direct push is refused, fall back to a small state PR merged immediately. Narrate in
-    plain words if the human is non-technical ("logging this in the shared parking lot").
+   If the idea arrived as an `okrdev:parked` issue, close the issue with the decision as a
+   comment (`gh issue close <n> --comment "okrdev triage: side-quest, box: 4h"`). The
+   quest still gets its line in the file — the Side quests section stays the budget's
+   source of truth; issues are an inbox, not a second ledger.
+
+10. **Write the ledger.** On an unprotected default branch, commit directly — never switch
+    the human's working branch; use a temporary worktree from `origin/<default>`, commit
+    there, push `HEAD:<default>`, and remove the worktree. On a protected default branch,
+    open a small state PR — branch `okrdev/state-<date>-<slug>`, PR titled `okrdev: <what>`
+    with a `KR:` line — and merge it immediately (`gh pr merge --squash`, or auto-merge when
+    required checks must run first). That's ~30 seconds instead of ten; on-the-spot quests
+    are rare enough not to matter. Narrate in plain words if the human is non-technical
+    ("logging this in the shared parking lot").
 
 11. **Go.** Confirm in one line — "Boxed at 4h, logged. Go." — and offer to help build it. A
     sanctioned side quest is real work, and it's the one place in this framework where the work
@@ -87,8 +98,9 @@ said its name out loud. Your job is to make that take under a minute.
     - Not done but worth more? Extend the box — new `box:` value, extension noted in `notes:`,
       and the extra hours count against this week's budget like any other box.
     - Not done and not worth more? Stop, set `status: done` with `notes: box spent, parked the
-      rest`, and add the remainder as a fresh Captured line. Thursday's triage decides its
-      fate, same as any idea.
+      rest`, and park the remainder as a fresh capture (same path as `/okrdev:park` — an
+      `okrdev:parked` issue, or a Captured line as the fallback). Thursday's triage decides
+      its fate, same as any idea.
     Never block. The box has exactly the authority everything else here has: it's written
     down, and it comes up at the next check-in when triage reviews `spent:` against `box:`.
 

@@ -11,6 +11,12 @@
 # Vercel preview URL after it deploys, and Drizzle migrations run against the
 # preview's Neon branch in that same flow (see templates/stack/README.md).
 #
+# okrdev short-circuit: weekly okrdev state PRs (check-ins, triage ledgers)
+# touch only okrdev/**, and burning a full CI run on them would be pure tax.
+# The first step in the job detects an okrdev-only diff and lets every later
+# step skip while "ci" still reports green. Read that step's comment before
+# "simplifying" this with paths-ignore — you'd brick the required check.
+#
 # Expects these package.json scripts (templates/stack/README.md sets them up):
 #   lint, typecheck, test (as `vitest run`, not watch mode), build
 #
@@ -40,32 +46,65 @@ jobs:
     timeout-minutes: 15
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 2 # the okrdev-only step below diffs HEAD against its parent
+
+      - name: okrdev-only short-circuit
+        id: okrdev-only
+        # okrdev state PRs change only okrdev/** — no code, so lint/typecheck/
+        # tests/build have nothing to say. Detect that here and let the steps
+        # below skip; the job still finishes and "ci" still reports green.
+        #
+        # NEVER use workflow-level `paths-ignore` on a required check instead:
+        # a skipped workflow never reports its status check, GitHub waits on
+        # "Expected" forever, and the PR is unmergeable. The short-circuit must
+        # live INSIDE the required job — exactly like this step.
+        run: |
+          # On pull_request, HEAD is the PR merge commit, so HEAD^1 is the base
+          # tip and the diff is exactly what the PR changes. On push it's the
+          # pushed commit against its parent. Can't compute the diff (first
+          # commit, force push)? Fail open: run the full job.
+          if changed=$(git diff --name-only HEAD^1 HEAD 2>/dev/null) &&
+             [ -n "$changed" ] &&
+             ! grep -qv '^okrdev/' <<<"$changed"; then
+            echo "okrdev/** only — skipping lint, typecheck, tests, build."
+            echo "skip=true" >>"$GITHUB_OUTPUT"
+          else
+            echo "skip=false" >>"$GITHUB_OUTPUT"
+          fi
 
       - uses: pnpm/action-setup@v4
+        if: steps.okrdev-only.outputs.skip != 'true'
         # Reads the pnpm version from the "packageManager" field in package.json.
         # create-next-app sets it when you pick pnpm; if it's missing, add e.g.
         #   "packageManager": "pnpm@9.15.0"
 
       - uses: actions/setup-node@v4
+        if: steps.okrdev-only.outputs.skip != 'true'
         with:
           node-version: 22 # match your local Node major
           cache: pnpm
 
       - name: Install dependencies
+        if: steps.okrdev-only.outputs.skip != 'true'
         run: pnpm install --frozen-lockfile
         # --frozen-lockfile: CI installs exactly what the lockfile says or fails
         # loudly. A drifted lockfile should break here, not in production.
 
       - name: Lint
+        if: steps.okrdev-only.outputs.skip != 'true'
         run: pnpm lint
 
       - name: Typecheck
+        if: steps.okrdev-only.outputs.skip != 'true'
         run: pnpm typecheck
 
       - name: Unit tests (Vitest)
+        if: steps.okrdev-only.outputs.skip != 'true'
         run: pnpm test
 
       - name: Build
+        if: steps.okrdev-only.outputs.skip != 'true'
         run: pnpm build
         # The build should not need real secrets — previews and production get
         # theirs from Vercel. If Next.js insists on an env var at build time, give

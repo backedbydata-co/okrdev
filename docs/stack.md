@@ -170,12 +170,14 @@ squash merges only. Merging is the only way anything reaches production.
   accumulate snowflake state. When merge is the only deploy, git history *is* deployment
   history.
 
-One deliberate exception: okrdev state writes — parking lot captures, check-in files — go
-directly to `main`, because a ten-second capture can't wait on CI. The setup script
-([../templates/stack/branch-protection.sh](../templates/stack/branch-protection.sh)) configures
-the protection plus that bypass, and is honest about its mechanics: GitHub can't scope a bypass
-to file paths, so it's actor-scoped and the coach's contract confines it to `okrdev/**`. Teams
-that refuse direct pushes entirely get the fallback — auto-merged state PRs.
+okrdev's own state writes fit inside the gates rather than around them: captures are
+`okrdev:parked` issues (zero commits), and the remaining ledger writes — triage results,
+check-in files — are batched by ritual and land as small, immediately merged state PRs, about
+one a week. The setup script
+([../templates/stack/branch-protection.sh](../templates/stack/branch-protection.sh)) still
+ships a direct-push bypass for `okrdev/**` writes as an opt-in convenience, commented out by
+default — and is honest about its mechanics: GitHub can't scope a bypass to file paths, so
+it's actor-scoped, with the `okrdev/**`-only discipline enforced by the coach's contract.
 
 The Level 2 rails — PR template, okr-gate, CODEOWNERS — are part of the method, not the stack,
 and remain opt-in ([adoption.md](adoption.md)). The stack simply arrives with everything they

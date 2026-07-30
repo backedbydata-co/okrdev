@@ -333,10 +333,14 @@ the race stops being safe; the rule is not optional.
 
 The script ([branch-protection.sh](branch-protection.sh)) makes merges squash-only, then creates
 a branch ruleset on the default branch: PR required with one approval and Code Owners review, a
-green `ci` check required, no force pushes, no deletions — plus the bypass that lets okrdev
-state writes (parking lot captures, check-in files under `okrdev/**`) land directly on `main`,
-because a ten-second capture can't wait on CI. The script's comments are honest about the
-bypass mechanics and the fallback for teams that refuse direct pushes.
+green `ci` check required, no force pushes, no deletions. okrdev state writes (check-in files,
+triage ledgers under `okrdev/**`) go through small auto-merged state PRs — batched by ritual,
+about one a week — and captures are GitHub issues, so they never commit at all. The stack's
+`ci.yml` short-circuits okrdev-only PRs inside the required job, so a state PR doesn't burn a
+full CI run. Never "simplify" that pattern into a workflow-level `paths-ignore` on a required
+check: a skipped workflow never reports its status check, GitHub waits on "Expected" forever,
+and the PR becomes unmergeable. A direct-push bypass for `okrdev/**` writes remains in the
+script as an opt-in convenience; its comments are honest about the mechanics if you want it.
 
 If you renamed the job in `.github/workflows/ci.yml`, match it:
 

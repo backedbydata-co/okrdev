@@ -25,6 +25,7 @@
 /src/payments/         @your-payments-reviewer
 /src/billing/          @your-payments-reviewer
 
-# Deliberately NO owner for okrdev/**: parking-lot captures and check-ins
-# commit straight to main via a path-scoped bypass. A 10-second capture can't
-# wait on review.
+# Deliberately NO owner for okrdev/**: captures are okrdev:parked issues (no
+# commits at all), and the weekly okrdev state PRs (triage ledgers, check-in
+# files) merge immediately. A Code Owners match here would make them wait on
+# review for nothing.

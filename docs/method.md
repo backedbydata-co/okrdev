@@ -381,4 +381,9 @@ model, override mechanics, and drift-check procedure live in [ai-coach.md](ai-co
 
 The rituals that read and write these files — planning, check-in, triage, retro — are scripted
 in [rituals.md](rituals.md). Run them with `/okrdev:plan`, `/okrdev:checkin`,
-`/okrdev:triage`, and `/okrdev:retro`.
+`/okrdev:triage`, and `/okrdev:retro`. Their writes are batched: one ledger commit per triage
+or check-in, not one per item — and on a protected default branch, that batch lands as a
+small, immediately merged state PR. Capture itself doesn't commit at all where the repo lives
+on GitHub: `/okrdev:park` files an `okrdev:parked` issue, and triage sweeps the inbox into the
+file ledger, which stays the single canonical record. Mechanics in
+[adoption.md](adoption.md#protected-main-and-okrdev) and [parking-lot.md](parking-lot.md).

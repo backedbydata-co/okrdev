@@ -19,13 +19,17 @@ may and may not do — is `docs/ai-coach.md`.
    - `okrdev/config.md` — level, side-quest budget, backstop.
    - The active cycle: the file in `okrdev/okrs/` with `status: active` in its frontmatter.
    - `okrdev/PARKING_LOT.md`.
+   - Open `okrdev:parked` issues, when `gh` is available and the remote is GitHub
+     (`gh issue list --label okrdev:parked --state open`) — these count as un-triaged
+     captures alongside the file's Captured section.
    - The latest check-in: newest file in `okrdev/checkins/<cycle>/`.
    - `okrdev/MISSION.md`, if present — alignment questions trace back to it.
 
 3. **No active cycle? Behave for the level.**
    - **Level 0**: there is no cycle by design, so report parking-lot health instead: how many
-     Captured items and how old (items older than about two weeks mean triage isn't
-     happening — suggest `/okrdev:triage`), open side-quests against their boxes. Then answer
+     un-triaged captures — open `okrdev:parked` issues plus Captured lines — and how old
+     (items older than about two weeks mean triage isn't happening — suggest
+     `/okrdev:triage`), open side-quests against their boxes. Then answer
      whatever was actually asked. Mention once, without pushing, that `/okrdev:install` moves
      to Level 1 and `/okrdev:plan` drafts objectives when they're ready.
    - **Level 1+**: a cycle file with `status: draft` → it was never activated; offer to help
@@ -96,6 +100,9 @@ may and may not do — is `docs/ai-coach.md`.
         recurrence; the one unaudited escape hatch is where all gaming funnels. Also check
         each emergency got its post-hoc line in Judgment calls ("was it? what did it
         protect?") and queue any missing ones for the next check-in.
+      - **Un-triaged captures**: open `okrdev:parked` issues plus Captured lines in the
+        file. Items older than about two weeks mean triage isn't happening — suggest
+        `/okrdev:triage`. One line, not a lecture.
 
    f. **Report.** A few lines, in this order: needs action now → trends worth watching →
       budgets → all-clear. Offer to dig into any item. Don't pad a healthy status into a
@@ -120,10 +127,12 @@ may and may not do — is `docs/ai-coach.md`.
 
      `- <date> — <who> — <reason> — <branch/PR>`
 
-     Commit the write directly to the default branch — okrdev state writes bypass branch
-     protection for `okrdev/**` because a ten-second log can't wait on CI. If you're on a
-     working branch: fetch main, commit there, return. Where the team refuses direct pushes,
-     fall back to an auto-merged state PR.
+     On an unprotected default branch, commit the write directly — never switch the human's
+     working branch; use a temporary worktree from `origin/<default>`, commit there, and push
+     `HEAD:<default>`. On a protected default branch, it's a small state PR: branch
+     `okrdev/state-<date>-<slug>`, PR titled `okrdev: <what>` with a `KR:` line, merged
+     immediately (`gh pr merge --squash`, or auto-merge when required checks must run first).
+     Mid-week log lines are rare enough that the occasional extra PR doesn't matter.
 
 8. **New or non-technical humans.** If the person seems new to okrdev or to shipping — asks
    what a PR is, hesitates at git vocabulary — offer the walkthrough in

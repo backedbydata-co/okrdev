@@ -58,6 +58,13 @@ Two rules govern everything below:
    Level 1 if they already want objectives this week. Do not pitch Level 2 or the stack —
    answer if asked.
 
+   One piece of advice applies at every level: protect the default branch — PR required
+   before merge, squash-only, no force pushes. That's repo best practice, not a Level 2
+   commitment, and okrdev runs happily behind it: captures become issues (no commits at
+   all), and batched state writes become roughly one small state PR a week instead of a
+   direct commit. Be honest about the plan wall: on private repos, branch protection needs
+   a paid GitHub plan; public repos get it free.
+
 4. **Level 0 — parking lot.**
    - Create `okrdev/config.md` from `templates/okrdev/config.md`. Set `level: 0`. Ask one
      question: who is the backstop — the human to call when the DRI and the coach are both
@@ -66,6 +73,14 @@ Two rules govern everything below:
      in place. They're inert at Level 0, but keeping them means moving up later is a flip of
      `level:`, not a re-interview.
    - Create `okrdev/PARKING_LOT.md` from `templates/okrdev/PARKING_LOT.md`.
+   - When `gh` is authed and the repo's remote is GitHub, fold one opt-out into the backstop
+     question — "I'll also add the `okrdev:parked` label so ideas can be parked as issues,
+     unless you'd rather not" — then create it:
+     `gh label create okrdev:parked --color F9D71C --description "okrdev parking-lot inbox — triaged weekly, then closed"`.
+     That gives `/okrdev:park` its primary path: zero commits, and capture from a phone or by
+     a collaborator straight from the GitHub UI, no Claude session needed. No `gh`, no
+     remote, or the remote isn't GitHub? Skip silently — the Captured section works
+     everywhere. This applies at every level; don't make it a ceremony of its own.
    - Add the **minimal Level 0 coach block** to `CLAUDE.md`, following the collision rules in
      step 8. Use exactly this text:
 
@@ -78,11 +93,12 @@ Two rules govern everything below:
 
      Rules for every session:
 
-     1. **Park new ideas by default.** A mid-session idea gets one line in the Captured
-        section of `okrdev/PARKING_LOT.md` — date, idea, who, energy (high/med/low), effort
-        (S/M/L) — in ten seconds. Then back to what you were doing.
-     2. **Nothing in Captured gets worked on.** Ever. Triage first (`/okrdev:triage`):
-        promote, archive, or time-box it as a side-quest.
+     1. **Park new ideas by default.** A mid-session idea gets captured in ten seconds as an
+        `okrdev:parked` issue — or one line in the Captured section of
+        `okrdev/PARKING_LOT.md` (date, idea, who, energy high/med/low, effort S/M/L) when
+        offline or the remote isn't GitHub. Then back to what you were doing.
+     2. **Nothing parked — issue or Captured line — gets worked on.** Ever. Triage first
+        (`/okrdev:triage`): promote, archive, or time-box it as a side-quest.
      3. **Side-quests get a time-box before they start**, logged in the Side quests section
         of the parking lot.
      4. When the team is ready to set objectives, suggest `/okrdev:install` to move to
@@ -112,8 +128,9 @@ Two rules govern everything below:
    - `gh issue list --state open` when `gh` is available.
 
    Summarize in chat: what the product appears to do, where recent effort went, recurring
-   pain. Offer to park any concrete ideas the scan surfaced (one line each into the Captured
-   section of `okrdev/PARKING_LOT.md`). Then suggest running `/okrdev:plan` while the
+   pain. Offer to park any concrete ideas the scan surfaced (one `okrdev:parked` issue each,
+   or one line each into the Captured section of `okrdev/PARKING_LOT.md` when there's no
+   GitHub remote). Then suggest running `/okrdev:plan` while the
    findings are fresh. Planning goes faster as an argument with a draft than as a staring
    contest with an empty page.
 
@@ -136,10 +153,14 @@ Two rules govern everything below:
       actually has (migrations, auth config, payment code). If a CODEOWNERS exists, propose
       a merge and ask.
    d. **Branch protection** → offer to run `templates/stack/branch-protection.sh` (requires
-      an authed `gh`). Be honest about plan requirements: on private repos, branch
-      protection and CODEOWNERS enforcement need a paid GitHub plan; public repos get them
-      free. If the plan can't support it, install CODEOWNERS anyway — it still routes
-      review requests — and state exactly what's missing teeth.
+      an authed `gh`). If asked how okrdev's own writes survive a protected main: state PRs
+      are the standard path — the coach batches ledger writes by ritual and opens one small
+      PR per triage or check-in, merged immediately. The script keeps an actor-bypass as an
+      opt-in convenience, commented out by default; it is not the assumed setup. Be honest
+      about plan requirements: on private repos, branch protection and CODEOWNERS
+      enforcement need a paid GitHub plan; public repos get them free. If the plan can't
+      support it, install CODEOWNERS anyway — it still routes review requests — and state
+      exactly what's missing teeth.
 
    Set `level: 2` in `okrdev/config.md`. Ask about `strict_gate` but recommend leaving it
    `false` until the team has lived with warn mode for a full cycle. If they ever flip it to
@@ -163,9 +184,12 @@ Two rules govern everything below:
    setup; don't start it inside the install conversation unless the user wants to keep going.
 
 10. **Commit.**
-    - Levels 0–1: one commit straight to the default branch, e.g.
+    - Levels 0–1 on an unprotected default branch: one direct commit, e.g.
       `chore: install okrdev (level 1)`. The install is additive and the ten-minute promise
-      dies waiting on review.
+      dies waiting on review. On a protected default branch: a short-lived branch and a
+      small PR titled `okrdev: install (level <n>)`, merged immediately
+      (`gh pr merge --squash`) — about a minute, and the standard path for okrdev writes on
+      protected repos anyway.
     - Level 2 files under `.github/` change everyone's workflow: open a PR unless the user
       says commit direct. Narrate for non-technical users: "I'm opening a pull request —
       that's a proposal page with a link you can click."
@@ -184,14 +208,17 @@ Two rules govern everything below:
    plugin's version in `.claude-plugin/plugin.json`.
 2. Diff **only template-derived content**: the coach block between the CLAUDE.md markers,
    any `.github/` files okrdev installed, and `okrdev/config.md` frontmatter keys (new keys
-   get proposed with their defaults).
+   get proposed with their defaults). New capabilities get offered the same folded-in way —
+   e.g. the `okrdev:parked` capture label (step 4) when the repo is on GitHub and the label
+   doesn't exist yet.
 3. Never touch user data: `MISSION.md` content, cycle files in `okrdev/okrs/`, check-ins,
    `PARKING_LOT.md` entries, `LESSONS.md`. Those are the team's records, not okrdev's.
 4. Show the proposed diffs, apply what's approved, bump `okrdev_version`.
 
 ## Uninstall (if asked)
 
-Delete `okrdev/`, remove the CLAUDE.md block including its markers, and optionally delete
-`.github/pull_request_template.md`, `.github/workflows/okr-gate.yml`, and
+Delete `okrdev/`, remove the CLAUDE.md block including its markers, delete the
+`okrdev:parked` label (closing any still-open parked issues with a note), and optionally
+delete `.github/pull_request_template.md`, `.github/workflows/okr-gate.yml`, and
 `.github/CODEOWNERS` if okrdev installed them. That's the entire footprint — "removable" is
 a procedure here, not an adjective. Full procedure in `docs/adoption.md`.

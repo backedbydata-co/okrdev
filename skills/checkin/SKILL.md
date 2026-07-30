@@ -171,13 +171,17 @@ costs more than its minutes, it dies — protect the fifteen.
       surfacing. It's a prompt, not an alarm — the proxy is crude, and you should say so.
     - Overrides logged mid-week are already in this section; read them back so they were seen.
 
-15. **Parking lot triage.** Run the triage over `okrdev/PARKING_LOT.md` (same procedure as
-    `/okrdev:triage`): every item in Captured gets a decision — promote (to a KR or a
+15. **Parking lot triage.** Run the triage over both inboxes (same procedure as
+    `/okrdev:triage`): open `okrdev:parked` issues when `gh` is available
+    (`gh issue list --label okrdev:parked --state open`), plus every item in the Captured
+    section of `okrdev/PARKING_LOT.md`. Each gets a decision — promote (to a KR or a
     next-cycle candidate), archive with a one-line reason, or sanction as a side quest with a
-    time-box. Check open side quests' `spent:` against `box:`, and each person's box-hours
-    opened this ISO week against the budget in config. Every Captured item gets asked; a
-    refusal to decide is a deferral the coach counts (third survival gets named, per the
-    triage skill). The section exists so ideas get decided on a cadence instead of on impulse.
+    time-box. Issue items get closed with the decision as a comment; every decision also
+    lands in the file's ledger sections, which stay canonical. Check open side quests'
+    `spent:` against `box:`, and each person's box-hours opened this ISO week against the
+    budget in config. Every item gets asked; a refusal to decide is a deferral the coach
+    counts (third survival gets named, per the triage skill). The section exists so ideas get
+    decided on a cadence instead of on impulse — both inboxes to zero, every week.
 
 16. **Focus for next week.** Each DRI names 1–3 items, each mapped to a KR. This is what next
     week's drift check matches against, so vague focus lines make next week's drift check
@@ -185,17 +189,21 @@ costs more than its minutes, it dies — protect the fifteen.
 
 ## Write and commit
 
-17. Assemble the file at the deterministic path. Check-in writes go straight to main — a state
-    record that waits on CI review isn't a state record. Same mechanics as `/okrdev:park`: if
-    you're on a working branch, never stash or switch it (the human may have uncommitted work) —
-    use a temporary worktree (`git worktree add` from `origin/<default>`), commit the file
-    there, push `HEAD:<default>`, and remove the worktree. At Level 2 the install ships a
-    path-scoped bypass for `okrdev/**` so this works on a protected main. If direct push is
-    refused, fall back to a small state PR and merge it immediately. Narrate what you're doing
-    in plain words for non-technical attendees ("saving this to the shared record").
+17. Assemble the file at the deterministic path, and write it as one batched state write —
+    one commit or PR per check-in, never one per item. On an unprotected default branch,
+    commit directly: if you're on a working branch, never stash or switch it (the human may
+    have uncommitted work) — use a temporary worktree (`git worktree add` from
+    `origin/<default>`), commit the file there, push `HEAD:<default>`, and remove the
+    worktree. On a protected default branch, open a small state PR: branch
+    `okrdev/state-<date>-<slug>`, push, PR titled `okrdev: <what>` with a `KR:` line, then
+    merge it immediately (`gh pr merge --squash`) — or enable auto-merge when required checks
+    must run first. Because writes are batched by ritual, that costs about one PR a week.
+    (The actor bypass in the stack's branch-protection script is an optional convenience, not
+    the assumed path.) Narrate what you're doing in plain words for non-technical attendees
+    ("saving this to the shared record").
 
 18. Mirror each KR's final `Now` confidence into the cycle file's `Confidence:` field, in the
-    same commit or a follow-up state commit. This is a scribe duty, like writing `Score:` at
+    same commit or state PR, or a follow-up state write. This is a scribe duty, like writing `Score:` at
     retro — it keeps the cycle file current and is exempt from the revision protocol, which
     governs targets and baselines, not bookkeeping fields.
 

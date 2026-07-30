@@ -116,8 +116,10 @@ gate, and the humans always agree on where this week's record lives.
 
 **Who:** every DRI. Solo and async variants below.
 
-**Output:** the completed weekly file, committed directly to main (state writes bypass branch
-protection for `okrdev/**` — a 15-minute ritual can't wait on CI).
+**Output:** the completed weekly file, written as one batched state write — a direct commit on
+an unprotected default branch, or a small immediately merged state PR
+(`okrdev/state-<date>-<slug>`) on a protected one. The actor bypass in the stack's protection
+script is optional convenience, not the assumed path.
 
 The fifteen-minute claim is load-bearing. Check-ins die when they cost more than they return,
 and they cost too much when humans spend the meeting reconstructing what happened. So the rule
@@ -226,7 +228,7 @@ When the team can't meet, the coach runs the check-in as a series of interviews:
 1. The coach pre-drafts the file as usual.
 2. It interviews each DRI separately, whenever they're available that week: win, confidence
    updates with evidence, additions to What moved, blockers, their focus lines. Each DRI also
-   triages the Captured items they parked.
+   triages the items they parked — their open `okrdev:parked` issues and their Captured lines.
 3. It merges everything into the single weekly file. Per-DRI sections mean contributions never
    collide — the file format was designed for exactly this.
 4. It posts a one-paragraph digest to each DRI: what the others reported, any cross-DRI
@@ -244,12 +246,14 @@ Triage is step 8 of the check-in, but it's runnable standalone with `/okrdev:tri
 Level 0 it's the whole ceremony, run weekly on its own. The full capture-and-triage protocol is
 in [parking-lot.md](parking-lot.md); this is the in-ritual script.
 
-**The rule that makes the parking lot work: every item in Captured gets a decision, every
-week.** Capture is only safe as an alternative to acting on impulse if captured ideas reliably
-get their hearing. A parking lot that silently accumulates becomes a graveyard, and people stop
-parking things in graveyards — they go back to just building the idea.
+**The rule that makes the parking lot work: every parked item gets a decision, every week.**
+The inventory is two inboxes: open `okrdev:parked` issues
+(`gh issue list --label okrdev:parked --state open`) plus the file's Captured lines. Capture is
+only safe as an alternative to acting on impulse if captured ideas reliably get their hearing.
+A parking lot that silently accumulates becomes a graveyard, and people stop parking things in
+graveyards — they go back to just building the idea.
 
-For each Captured item, in order, one of three calls:
+For each inbox item, in order, one of three calls:
 
 1. **Promote.** It's worth real work. Either it maps to a current KR (move it to Promoted with
    the KR id: `→ KR2.1`) or it's marked `next-cycle candidate` and will be read at the next
@@ -263,6 +267,11 @@ For each Captured item, in order, one of three calls:
    per person per week, configurable in `okrdev/config.md`, summed from the `box:` fields. If
    the box would blow the budget, it waits or shrinks. The coach reports budget remaining as
    part of the call.
+
+Issue items get their decision recorded by closing the issue with the decision as a comment
+("okrdev triage: promoted → KR1.3" / "archived — <reason>" / "side-quest, box: 4h"), and the
+decision line also lands in the file's ledger sections — the file is the single canonical
+record; issues are an inbox. Both inboxes reach zero every triage.
 
 Thirty seconds per item is the pace. The `energy` and `effort` fields captured with each idea
 exist for this exact moment — a high-energy small item and a low-energy large one usually

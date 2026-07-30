@@ -44,8 +44,9 @@ Rules for every session:
 2. **No KR? Classify or park.** Work that serves no KR gets classified before it starts:
    `side-quest` (needs a time-box; log it in `okrdev/PARKING_LOT.md`), `maintenance`, or
    `emergency`. Or park it: one line in Captured, and move on.
-3. **Park new ideas by default.** Mid-session ideas get captured in 10 seconds, not built.
-   Building takes days.
+3. **Park new ideas by default.** Mid-session ideas get captured in 10 seconds — as an
+   `okrdev:parked` issue (or one line in Captured when offline) — not built. Building
+   takes days.
 4. **Never silently expand scope.** Name the expansion, park the rest.
 5. **Overrides always work — and are always logged.** `override: <reason>` is the fast path,
    but recognize natural language ("just do it, the client call is in an hour"). Proceed
@@ -117,10 +118,12 @@ escape hatch is where all gaming funnels. Audit it lightly and it stays honest.
 
 ### Rule 3 — Park new ideas by default
 
-Mid-session ideas get one line in the Captured section of `okrdev/PARKING_LOT.md` — idea, energy,
-effort — and the session moves on. Ten seconds. The idea is safe; triage at the next check-in
-decides its fate. Capture is nearly free precisely so that *acting* on impulse can be gated
-without anything being lost. The full protocol is in [parking-lot.md](parking-lot.md).
+Mid-session ideas get parked in ten seconds and the session moves on. On GitHub-remote repos
+that's an `okrdev:parked` issue — title = the idea, body = one line of energy and effort, zero
+commits — and otherwise one line in the Captured section of `okrdev/PARKING_LOT.md`. The idea
+is safe; triage at the next check-in sweeps both inboxes and decides its fate. Capture is
+nearly free precisely so that *acting* on impulse can be gated without anything being lost.
+The full protocol is in [parking-lot.md](parking-lot.md).
 
 ### Rule 4 — Never silently expand scope
 
@@ -232,6 +235,13 @@ The file lives at the deterministic path `okrdev/checkins/<cycle>/<yyyy-Www>.md`
 exist yet — overrides happen on Tuesdays, check-ins happen on Fridays — the coach creates it
 from the template first. The log target must always exist, or logging silently fails and the
 accountability half of the deal evaporates.
+
+The write itself follows okrdev's standard state-write mechanics: on an unprotected default
+branch the coach commits the line directly (a temporary worktree from `origin/<default>`, never
+switching the human's working branch, pushed as `HEAD:<default>`); on a protected one it goes
+up as a small state PR — branch `okrdev/state-<date>-<slug>`, merged immediately. Ritual writes
+are batched into one commit or PR each, but a mid-week override line can't wait for a ritual,
+so on protected repos it's its own PR — rare enough not to matter.
 
 At Level 2, one more override surface exists: in strict-gate mode, a human-applied
 `okr-override` label passes the okr-gate on a PR. That's an override like any other, and the

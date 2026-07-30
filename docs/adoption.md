@@ -103,19 +103,21 @@ and skip others:
   like any other diff; a checkbox catches what a path pattern can't).
 - **CODEOWNERS** — domain review for path-shaped risks: migrations, auth config, payments.
 - **Branch protection** — applied via `../templates/stack/branch-protection.sh` or by hand:
-  required checks, code-owner review, squash-only. Without this, CODEOWNERS is a suggestion;
-  see [plan requirements](#github-plan-requirements-stated-honestly) below.
+  required checks, code-owner review, squash-only. Protecting main is advised at every level,
+  not just here (see [Protected main and okrdev](#protected-main-and-okrdev)); Level 2 is
+  just where the install applies it for you. Without it, CODEOWNERS is a suggestion; see
+  [plan requirements](#github-plan-requirements-stated-honestly) below.
 
 **Why the rails matter:** they're how "domain experts review where stakes are high" becomes
 enforcement instead of a hope, and how the coach's drift check gets machine-readable ground
 truth. [roles.md](roles.md) covers who reviews what and why.
 
 **A note on state writes:** okrdev's own files move fast — a parked idea can't wait on CI.
-Where branch protection exists, the install sets up a path-scoped bypass so writes under
-`okrdev/**` commit directly to main (the branch-protection script includes the ruleset). If
-your team refuses direct pushes on principle, the fallback is an auto-merged state PR — but
-direct-to-main is the default, because a 10-second capture that takes 4 minutes stops
-happening.
+The capture path doesn't have to: `/okrdev:park` files captures as `okrdev:parked` issues
+(zero commits, zero CI), and the batched ledger writes that remain land as small, immediately
+merged state PRs where the branch is protected. Full mechanics — including the opt-in actor
+bypass the branch-protection script still ships — in
+[Protected main and okrdev](#protected-main-and-okrdev).
 
 ### The stack module
 
@@ -162,10 +164,13 @@ more, not less.
 - **Domain review mostly disappears.** There's no reviewer to pull in, so the
   review-without-reading-code routine in [roles.md](roles.md) becomes your own habit: read the
   coach's plain-language summary, click the preview, test the flow before merging.
-- **Level 2 is mostly not for you.** CODEOWNERS pointing at yourself is theater; branch
-  protection requiring your own approval just adds clicks. The useful slice: `KR:` trailers in
-  commit messages (the drift check reads them in direct-to-main repos) and CI checks if you
-  have tests. Stay at Level 1 and take just those.
+- **Level 2 is mostly not for you.** CODEOWNERS pointing at yourself is theater; a rule
+  requiring your own approval just adds clicks. Protect main anyway — PR required, zero
+  approvals, squash-only, no force pushes (see
+  [Protected main and okrdev](#protected-main-and-okrdev)) — it costs nothing day-to-day and
+  it's the advice at every level. The rest of the useful slice: `KR:` trailers in commit
+  messages (the drift check reads them in direct-to-main repos) and CI checks if you have
+  tests. Stay at Level 1 and take just those.
 - **The backstop still gets named.** `okrdev/config.md` wants one human to call when you and
   the coach are both stuck. Solo doesn't exempt you — it's exactly when you need a name written
   down. A technical friend, a former colleague, an advisor. Ask them first.
@@ -184,6 +189,56 @@ here is the honest guidance: the format has a seam for it — per-team check-in 
 this is undocumented territory and the coach has no multi-team logic. In practice, two or more
 teams usually means two or more repos, each running its own okrdev with its own mission,
 cycles, and check-ins. Shared context belongs in conversation, not in alignment machinery.
+
+## Protected main and okrdev
+
+Protect your default branch. That's the advice at every level, not just Level 2: require a PR
+before merge, squash-only, no force pushes — and add required approvals and required checks
+according to your team size and what your CI actually reports. (Solo? Zero required approvals
+is fine; the PR requirement alone stops force-pushes and gives every change a reviewable
+moment.) On private repos this needs a paid plan — see
+[plan requirements](#github-plan-requirements-stated-honestly) below.
+
+Earlier versions of okrdev treated protection as an obstacle to route around, because a
+10-second capture can't wait on CI. v0.2.0 removed the conflict by changing the shape of the
+writes instead:
+
+- **Captures are issues, not commits.** Where the remote is GitHub and `gh` is authed,
+  `/okrdev:park` files an `okrdev:parked` issue — zero commits, zero CI, one API call. Level 0
+  on a protected repo is first-class: capture costs nothing, from any device, by any
+  collaborator.
+- **Ledger writes are batched by ritual.** Triage results, check-in files, side-quest logs —
+  one write per triage or check-in, not one per item.
+- **Unprotected default branch:** the batched write commits directly, via a temporary
+  worktree — your working branch is never switched.
+- **Protected default branch:** the batched write becomes a small state PR — branch
+  `okrdev/state-<date>-<slug>`, PR titled `okrdev: <what>` with a `KR:` line, merged
+  immediately with `gh pr merge --squash` (or auto-merge, where required checks must run
+  first). Batching makes this about one PR a week, not one per capture. Mid-week unbatchable
+  writes — an override log line, an on-the-spot side-quest — take the same path, and are rare
+  enough not to matter.
+- **The bypass is optional convenience now, not the default.**
+  `../templates/stack/branch-protection.sh` still ships an actor-scoped bypass (admins may
+  push directly; the `okrdev/**`-only discipline is the coach's contract, not GitHub's —
+  GitHub can't scope a bypass to paths), but it's an opt-in flag; state PRs are the standard
+  path on protected repos.
+
+One honest number: without `gh` or a GitHub remote, capture falls back to the file append —
+and on a protected repo that fallback degrades from ten seconds to about thirty, because it
+rides a state PR. The issue path is what keeps the ten-second promise; the fallback keeps the
+method working everywhere else.
+
+### Strict CI and the weekly state PR
+
+If your required checks run a full build-and-test suite, a weekly PR touching only `okrdev/**`
+markdown burns a CI run for nothing. The fix is a short-circuit *inside* the required job: its
+first step computes the diff, and if the changes touch only `okrdev/**`, the job exits
+successfully. `../templates/github/workflows/ci.yml` implements the pattern (the
+`okrdev-only` early-exit step).
+
+**Never use workflow-level `paths-ignore` on a required check.** A workflow skipped by
+`paths-ignore` never reports its check; GitHub waits on "Expected" forever, and the PR is
+unmergeable. The short-circuit must live inside the job, so the check always reports.
 
 ## GitHub plan requirements, stated honestly
 
@@ -241,14 +296,17 @@ files, templates) is upgrade material. When you accept, the version marker is bu
    history if you ever want it back — one argument for having committed it all along.
 2. **Remove the marked block from `CLAUDE.md`** — everything from `<!-- okrdev:start -->`
    through `<!-- okrdev:end -->`, inclusive. The rest of your `CLAUDE.md` is untouched.
-3. **Optionally remove the Level 2 files**, if you installed them:
+3. **Delete the `okrdev:parked` label and close any stragglers** — if you used the issue
+   capture path: `gh label delete okrdev:parked`, and triage or close whatever parked issues
+   are still open, so the inbox doesn't outlive the method.
+4. **Optionally remove the Level 2 files**, if you installed them:
    `.github/workflows/okr-gate.yml`, the `KR:` section of your PR template, the okrdev entries
    in CODEOWNERS, and the branch-protection rules (via repo settings or `gh api`). These are
    listed rather than auto-deleted because by uninstall time they may be entangled with rules
    you added for your own reasons.
-4. **The stack module is not okrdev's to remove.** If you adopted it, Vercel, Neon, and your CI
+5. **The stack module is not okrdev's to remove.** If you adopted it, Vercel, Neon, and your CI
    are now your application's infrastructure. Uninstalling the method doesn't touch them —
    [stack.md](stack.md) documents the exit path for each piece if you're leaving those too.
 
-After steps 1 and 2, okrdev never existed. No accounts to close, no data to export, no SaaS to
+After steps 1 through 3, okrdev never existed. No accounts to close, no data to export, no SaaS to
 cancel. That was the point.

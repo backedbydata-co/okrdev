@@ -5,8 +5,9 @@ description: Capture an idea into the okrdev parking lot in ten seconds — one 
 
 # Park
 
-Capture an idea into `okrdev/PARKING_LOT.md` and return the human to what they were doing.
-Target: ten seconds of their attention. Capture is nearly free so that acting on impulse never
+Capture an idea into the okrdev parking lot — a GitHub issue labeled `okrdev:parked` when the
+repo lives on GitHub, a line in `okrdev/PARKING_LOT.md` otherwise — and return the human to
+what they were doing. Target: ten seconds of their attention. Capture is nearly free so that acting on impulse never
 has to be — that's the deal the whole parking lot rests on.
 
 The one rule that matters: **you are recording the idea, not evaluating it.** No feasibility
@@ -40,36 +41,66 @@ one line. Triage — at the weekly check-in — is where the idea gets its heari
    person (check-in `attendees`, KR `DRI:` lines, `backstop` in `okrdev/config.md`). Failing
    that, `git config user.name`, lowercased. Ask only if you genuinely can't tell.
 
-4. **Append to Captured.** In `okrdev/PARKING_LOT.md`, add one line at the end of the
-   `## Captured` section:
+4. **Capture it — issue first, file as fallback.** One entry per idea — if the human is
+   dumping several at once ("park three things from my phone notes"), capture each with its
+   own energy and effort call. Batch the questions; don't run the ritual three times.
 
-   ```markdown
-   - [2026-07-13] <one-line idea> — @alex — energy: high — effort: M
-   ```
+   - **Primary — GitHub issue** (when `gh` is authed and the repo's remote is GitHub):
 
-   Today's date, ISO format. One line per idea — if the human is dumping several at once
-   ("park three things from my phone notes"), write one line each, with its own energy and
-   effort call. Batch the questions; don't run the ritual three times.
+     ```bash
+     gh issue create --label okrdev:parked \
+       --title "<one-line idea, verbatim>" \
+       --body "@<who> — energy: <high|med|low> — effort: <S|M|L>"
+     ```
 
-5. **Commit directly to main.** Parking-lot writes go straight to the default branch — a
-   ten-second capture can't wait on CI or a review.
-   - Already on the default branch: stage only `okrdev/PARKING_LOT.md`, commit
-     (`okrdev: park <first few words of the idea>`), push.
-   - On a working branch: do not switch branches — the human may have uncommitted work. Use a
-     temporary worktree: `git fetch origin`, `git worktree add <tmpdir> origin/<default>
-     --detach`, make the same append there, commit, `git push origin HEAD:<default>`, remove
-     the worktree. The working branch never notices.
-   - Push rejected by branch protection: fall back to a small state PR (branch, push, open,
-     and merge it immediately if permissions allow). Then mention once — not urgently — that a
-     path-scoped bypass for `okrdev/**` removes this friction; `templates/stack/
-     branch-protection.sh` sets it up.
+     Zero commits, zero CI, one API call — the ten-second promise, kept on any repo,
+     protected or not. If the label doesn't exist yet, create it first:
+
+     ```bash
+     gh label create okrdev:parked --color F9D71C \
+       --description "okrdev parking-lot inbox — triaged weekly, then closed"
+     ```
+
+     Parked issues are inert by convention: never assign, milestone, or work one. Open means
+     captured; triage closes it with the decision as a comment. The idea lives in the issue
+     until then — don't also write a Captured line. A side benefit worth knowing about: the
+     human can park from the GitHub mobile app, and collaborators can park from the GitHub
+     UI, no Claude session required.
+
+   - **Fallback — file append** (no `gh`, no remote, or the remote isn't GitHub): add one
+     line at the end of the `## Captured` section in `okrdev/PARKING_LOT.md`:
+
+     ```markdown
+     - [2026-07-13] <one-line idea> — @alex — energy: high — effort: M
+     ```
+
+     Today's date, ISO format.
+
+5. **Commit the fallback append.** (The issue path writes nothing to git — skip this step.)
+   - **Unprotected default branch** → commit directly.
+     - Already on the default branch: stage only `okrdev/PARKING_LOT.md`, commit
+       (`okrdev: park <first few words of the idea>`), push.
+     - On a working branch: do not switch branches — the human may have uncommitted work.
+       Use a temporary worktree: `git fetch origin`, `git worktree add <tmpdir>
+       origin/<default> --detach`, make the same append there, commit, `git push origin
+       HEAD:<default>`, remove the worktree. The working branch never notices.
+   - **Protected default branch** → a small state PR: branch `okrdev/state-<date>-park`,
+     push, then open and merge the PR via the forge's own mechanism — by construction `gh`
+     is unavailable on this path (a gh-authed GitHub repo would have taken the issue path),
+     so use the forge's CLI (`glab`, etc.) or hand the human the compare URL the push
+     printed, with a one-line "open this, then merge" instruction. Title
+     `okrdev: park <first few words>` with a `KR:` line. Be honest that this capture cost
+     ~30 seconds, not ten — on GitHub repos, the issue path is what keeps the ten-second
+     promise.
    - No remote: commit locally and move on.
 
-6. **Confirm in one line and get out.** "Parked: <idea>. It gets triaged at the next
-   check-in." On a Level 0 install, where there are no check-ins yet: "Triage it weekly with
-   `/okrdev:triage`." Then return to whatever was in progress before the idea arrived. Do not
-   summarize the idea back, do not rate it, do not suggest next steps. The confirmation exists
-   so the human trusts the idea is safe — trust is what lets them let go of it.
+6. **Confirm in one line and get out.** Issue captures name the number: "Parked as #12:
+   <idea>. It gets triaged at the next check-in." File captures: "Parked: <idea>. It gets
+   triaged at the next check-in." On a Level 0 install, where there are no check-ins yet:
+   "Triage it weekly with `/okrdev:triage`." Then return to whatever was in progress before
+   the idea arrived. Do not summarize the idea back, do not rate it, do not suggest next
+   steps. The confirmation exists so the human trusts the idea is safe — trust is what lets
+   them let go of it.
 
 ## If the human wants to work on it now
 
@@ -82,7 +113,8 @@ escape hatch is a real door, not a hole in the fence.
 ## Format reference
 
 The full file, as `/okrdev:install` creates it. Repair to this shape if sections are missing;
-`park` only ever appends to `## Captured`.
+`park`'s file fallback only ever appends to `## Captured` — issue captures don't touch the
+file until triage writes their decisions into the ledger sections.
 
 ```markdown
 # Parking Lot
