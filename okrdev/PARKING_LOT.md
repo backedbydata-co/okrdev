@@ -9,6 +9,8 @@ Nothing in Captured gets worked on. Ever. Triage first.
 - [2026-07-23] Native quick-capture app so parking works away from a repo session — @alex — energy: med — effort: L
 - [2026-07-23] `/okrdev:uninstall` skill (procedure exists in adoption.md but no skill runs it) — @alex — energy: low — effort: S
 - [2026-07-23] Web dashboard that renders okrdev/ files (v0 non-goal — parking so it stops recurring) — @alex — energy: low — effort: L
+- [2026-07-30] Issues-as-capture-inbox: park via `okrdev:parked` GitHub issue (phone/web/collaborator capture, zero CI); triage sweeps + closes into the file ledger — @alex — energy: high — effort: M
+- [2026-07-30] Protected-main guidance for L0/L1: batch state writes into the weekly triage commit + optional `okrdev/**` path-ignore for CI (the outside project chafe: every park = a typecheck run) — @alex — energy: med — effort: S
 
 <!-- One line per idea, exactly this shape:
      - [2026-07-13] <one-line idea> — @<who> — energy: high — effort: M
