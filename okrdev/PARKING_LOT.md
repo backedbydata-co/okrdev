@@ -10,6 +10,8 @@ Nothing in Captured gets worked on. Ever. Triage first.
      energy (high/med/low) = how excited the capturer is; effort (S/M/L) = gut-call
      size. Both are 5-second calls, not analysis. -->
 
+- [2026-07-30] Live-call coaching as a repeatable okrdev capability (Zoom RTMS-based, replacing the one-off local rig in docs/live-coached-sessions.md) — @alex — energy: med — effort: L
+
 ## Side quests (time-boxed, logged)
 
 <!-- Sanctioned distractions. Every one gets a box; spent hours count against the
