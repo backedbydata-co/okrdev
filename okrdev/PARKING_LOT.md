@@ -11,6 +11,7 @@ Nothing in Captured gets worked on. Ever. Triage first.
      size. Both are 5-second calls, not analysis. -->
 
 - [2026-07-30] Live-call coaching as a repeatable okrdev capability (Zoom RTMS-based, replacing the one-off local rig in docs/live-coached-sessions.md) — @alex — energy: med — effort: L
+- [2026-07-30] Ship the live-coaching rig with okrdev (templates/live-coach/) instead of leaving it as untracked facilitator tooling on one Mac — it took a day to build and dies with the machine — @alex — energy: med — effort: M
 
 ## Side quests (time-boxed, logged)
 
