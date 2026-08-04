@@ -89,6 +89,19 @@ Known gotchas, all hit for real during the dry run:
 - **Jargon and proper nouns get mangled** ("okrdev" → "OK or death") while numbers come
   through clean ("$12,000 to $20,000", "300 referred signups"). That asymmetry is exactly
   why the coach echoes names and KR ids before writing them.
+- **The earcon leaks into the mic** on open-backed headphones: the confirm chime came back
+  as `[ sound effect ]` in the facilitator's own track. Harmless, but closed-back (and
+  wired) headphones keep the transcript clean.
+- **Whisper's non-speech markers arrive in three shapes** — bracketed (`[BLANK_AUDIO]`),
+  bare and punctuated (`Silence.`), and half-bracketed when a VAD chunk boundary eats one
+  side (`sound effect ]`). The merger filters all three; each shape was added because the
+  previous rules missed it live.
+- **`coach.py init` resets the board** — it wiped a drafted objective off the shared
+  screen mid-session when used just to set the cycle label. It now refuses on a non-empty
+  board (`--force` to override), and `coach.py cycle` sets the label non-destructively.
+- **A missing pids file must not make the pipeline immortal**: `stop-call.sh` now sweeps
+  by absolute-path pattern after the pids file, and `start-call.sh`'s double-start guard
+  scans for a running `whisper-stream` rather than trusting the pids file alone.
 
 ### Path B — hosted meeting bot (Vexa): if you'd rather skip audio plumbing
 
@@ -277,9 +290,24 @@ Three surfaces replace it. The rig is at `~/zoom-coach/` (see its README).
 
 | Surface | Carries | Seen by |
 |---|---|---|
-| **Board** (`board.py`) | The draft itself — objectives, KRs, DRIs — with four quality gates per KR and a segment clock | Screen-shared: both humans |
-| **Queue** (`coach.py queue`) | Challenges, accumulated silently; `--drain` prints them when asked | Facilitator, on request |
+| **Board** (`board-server.py` → a browser window) | The draft itself — objectives, KRs, DRIs — with four quality gates per KR and a segment clock. Polls once a second, updates live. | Screen-shared: both humans |
+| **Chat** (the Claude session, backed by `coach.py queue`) | Challenges, written to be spoken, pushed there unprompted; the queue keeps the board's counter honest | Facilitator's eyes only |
 | **Ping** (`coach-ping.sh`) | A soft private earcon — inaudible to the call | Facilitator's headphones |
+
+The board is a local web page: `board-server.py` serves it on `127.0.0.1` only (not
+reachable from the network), the page re-renders from state once a second, and a failed
+poll keeps the last good frame rather than blanking a screen the guest is watching. A
+terminal renderer (`board.py`) remains as fallback.
+
+**The facilitator can take the wheel.** Press `e` and the board becomes editable: click a
+gate to cycle its state, click any text to fix it inline, add or remove KRs, restart the
+segment clock. Read-only stays pixel-identical until then, so the guest sees nothing
+until editing is deliberately switched on — and when it is, a frame and a pill make the
+mode unmistakable to both people. This matters because the coach lags: a transcript is
+12–45 s behind, mishears jargon, and sometimes scores a gate wrong. Without a manual
+override the facilitator's only recourse is typing into the window he is *not* sharing,
+which breaks the flow the board exists to protect. Writes route through `coach.py` so
+there is still exactly one writer and one lock.
 
 **The board is the shared artifact, not a channel.** It shows the document being built,
 so looking at it is participation rather than distraction — standard facilitation
@@ -288,15 +316,19 @@ to be current to the second. Gates render as a compact `outcome ✓ target ✗ d
 row, absorbed in a glance; a failing gate is the whole message, with no prose attached.
 Queue *text* never appears there.
 
-**Challenges wait for a boundary.** When a gate fails, it flips red on the board and the
-argument goes into the queue. At a segment break the facilitator asks "coach, what've you
-got?" and the coach prints them. That is the entire coaching channel, and it fires at
-exactly the moments interruption is cheapest.
+**Challenges go to the facilitator's private chat, unprompted.** When a gate fails it
+flips red on the board, and the challenge itself — one line, written to be spoken, question
+over verdict — lands in the Claude chat window immediately. Because the board is what's
+screen-shared, chat is effectively the facilitator's earpiece: the chime says something is
+waiting, and he glances and voices it at a moment *he* chooses. Nothing requires him to ask
+for it, and nothing arrives on the shared screen as prose. The queue still tracks each
+challenge so the board's counter stays honest for the room, and it drains silently once a
+challenge has been raised aloud.
 
-**Share the board window, never the Claude session.** The drained challenges and the
-coach's reasoning about the guest's KRs land in the session — sharing that one by mistake
+**Share the board window, never the Claude session.** With challenges pushed to chat, the
+Claude window *always* contains critique of the guest's KRs — sharing it by mistake
 inverts the entire privacy design in front of the guest. Confirm what Zoom is sharing
-before they join.
+before they join; it is a tech-check step, not a habit to trust.
 
 **Queue entries are written to be spoken, not read.** The facilitator voices them in his
 own words, which is what makes this coaching rather than grading — so one short line,
