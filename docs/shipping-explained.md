@@ -79,7 +79,8 @@ break anything, submit nonsense into every form, and nothing real is touched. Wh
 proposal closes, the preview and its database evaporate.
 
 The preview is the non-technical reviewer's superpower. You don't judge a change by reading
-code. You judge it by using it.
+code. You judge it by using it. When your coach says **demo**, this is what it means: the
+preview plus the exact clicks to try — the change shown to you instead of described to you.
 
 One rule that follows from this: preview links must open without any special account — no
 login wall. That's a required, verified step of the okrdev stack install. If a preview link
@@ -147,6 +148,7 @@ privately before it appears anywhere shared ([ai-coach.md](ai-coach.md)).
 | **merge** | The accept button. The proposal joins the live version — and on the okrdev stack, goes live automatically. |
 | **CI** | A robot that checks every proposal: runs the tests, tries the build. Green means it passed; red means a problem was caught before anyone real saw it. |
 | **preview** | A private, disposable copy of the app at a URL you can click, showing the proposal as if it had been accepted. |
+| **demo** | The preview plus the exact clicks to try: the change shown to you instead of described to you. |
 | **CODEOWNERS** | A file that means "this kind of change needs sign-off from this person." GitHub asks them automatically. |
 | **migration** | A change to the shape of the database — the structure holding real customer data. Always treated as risky, always reviewed by the domain expert. |
 | **drift** | Work that doesn't trace to any key result and hasn't declared what it is instead. The coach notices and asks — privately, first. |

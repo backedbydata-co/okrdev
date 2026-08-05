@@ -12,12 +12,22 @@ Nothing in Captured gets worked on. Ever. Triage first.
 
 - [2026-07-30] Live-call coaching as a repeatable okrdev capability (Zoom RTMS-based, replacing the one-off local rig in docs/live-coached-sessions.md) — @alex — energy: med — effort: L
 - [2026-07-30] Ship the live-coaching rig with okrdev (templates/live-coach/) instead of leaving it as untracked facilitator tooling on one Mac — it took a day to build and dies with the machine — @alex — energy: med — effort: M
+- [2026-08-04] Repo-topology doctrine, when promoted: seam test as the decision procedure (a second repo iff a different audience speaks a different language about the same words), Expo-style toolchain splits as the named exception class, satellites-conform-to-hub federation note — @alex — energy: med — effort: S
+- [2026-08-04] Planning throwaway-prototype homework (coach-built, deleted after the session, never for non-code objectives) — trial once in a real planning session before doctrining it; drop the idea if it changes no argument in two cycles — @alex — energy: low — effort: S
+- [2026-08-04] roles.md § The DRI: one paragraph on the inversion (about the outcome the DRI is precisely the expert; the coach is the builder extracting that knowledge — why straw-men arrive in the DRI's vocabulary and an evidence line is a probe, not an audit) — promote from evidence.md's one-liner only if load-bearing in real coaching conversations — @alex — energy: low — effort: S
+- [2026-08-04] examples/acme-fitness refresh after the narrative-floor trigger fires in a live cycle: one worked exchange in an example check-in (the question, a "nothing clickable — next artifact is the signed contract" answer, the Judgment-calls re-class line) + one "archived — already solved elsewhere, adopt X" epitaph in the example parking lot + rephrase the example okrs' "behind a flag" anchors into domain-noun events — lifted from real usage, never invented — @alex — energy: med — effort: S
+- [2026-08-04] Separate maintenance PR for pre-existing sync wrinkles (keep the evidence.md diff clean): repo-root CLAUDE.md coach block one revision behind templates/CLAUDE-okrdev.md (rule 3 issue-capture wording); okrdev/config.md okrdev_version 0.1.0 vs template 0.2.0; decide README repo-map row or stated exemption for docs/live-coached-sessions.md; write the one-line versioning policy into adoption.md § Upgrading (skills/templates change → bump plugin.json + template config together; docs-only → no bump — today it's only reconstructable from git history) — @alex — energy: med — effort: S
+- [2026-08-04] Coherence sweep one week after evidence.md lands (per the cycle's #1 health metric): grep "three triggers" appears nowhere; threshold triple (3 check-ins / ≥0.5 / once per KR) verbatim across method.md, rituals.md, skills/checkin, skills/coach, and the template comment; fence sentence in both ai-coach.md and evidence.md; build/box/buy wording matching across evidence.md, parking-lot.md, skills/triage, skills/coach — @alex — energy: med — effort: S
+- [2026-08-04] Vocabulary watch: if real DRIs stumble on build/box/buy despite the verbs being everyday words, spend shipping-explained.md glossary rows deliberately (a budget decision, not a default); same watch on whether the "demo" row's definition survives contact with non-code DRIs — @alex — energy: low — effort: S
+- [2026-08-04] Level 2 evaluation, only if dogfooding shows the want: soft "anything to click?" nudge on KR-tagged PRs with no preview (okr-gate or PR template) — must be argued against the install-footprint red line and the non-code fence before any template change — @alex — energy: low — effort: S
 
 ## Side quests (time-boxed, logged)
 
 <!-- Sanctioned distractions. Every one gets a box; spent hours count against the
      budget in config.md:
      - [2026-07-13] <idea> — @<who> — box: 4h — spent: 2h — status: open — notes: — -->
+
+- [2026-08-04] Evidence doctrine: docs/evidence.md + demo/domain-language wiring across method, rituals, and six skills — @alex — box: 4h — spent: 2h — status: done — notes: produced the evidence.md PR (KR: side-quest); spent is the coach's estimate, DRI to correct at review; coherence sweep parked in Captured
 
 ## Promoted
 

@@ -90,8 +90,15 @@ costs more than its minutes, it dies — protect the fifteen.
    a. **KR confidence table.** One row per KR (skip `Status: dropped` ones). `Prev` = last
       check-in's `Now`; for a KR's first appearance use the cycle file's `Confidence:` value.
       Leave `Now` blank — that's the human's call, not yours. While you're here, scan the last
-      three check-ins for flat streaks and early-high values; you'll enforce the triggers in
-      step 11.
+      three check-ins for flat streaks and early-high values, and note any KR whose
+      Evidence/note entries have been narrative-only ("on track," "feels close") for all
+      three — then grep the Judgment calls of every check-in this cycle
+      (`okrdev/checkins/<cycle>/*.md`) for an evidence re-class line on each such KR ("KR2.1
+      moves through negotiation — expected evidence: the signed contract"). The
+      `expected evidence:` marker is the grep contract — every re-class line carries it,
+      demoable-slice answers included ("KR1.2 — expected evidence: clickable export flow").
+      A re-classed KR is never asked the narrative-floor question again this cycle. You'll
+      enforce the triggers in step 11.
 
    b. **What moved.** Ground truth, best effort by environment: `git log` on the default branch
       since the last check-in date (e.g. `git log --since="2026-07-06" --format='%h %s%n%b'`),
@@ -126,7 +133,10 @@ costs more than its minutes, it dies — protect the fifteen.
 ## Run the ritual
 
 9. **Wins first.** Open by asking each attendee for one win — before status, before numbers.
-   Accountability without celebration dies by week four. Write one line per attendee.
+   Accountability without celebration dies by week four. Write one line per attendee. When a
+   win is code-shaped and you already hold the preview URL from 8f, offer the link into the
+   win line — offer, never require, and a win with no artifact ("closed the vendor, verbal
+   yes") is written with identical weight. Never mention the absence of a demo.
 
 10. **Deliver the bridge report** from 8f in a line or two per person, plain words only ("your
     pricing-page proposal has a preview link ready — want the click-test steps?"). Skip it
@@ -146,6 +156,18 @@ costs more than its minutes, it dies — protect the fifteen.
       mid-cycle revision: a PR to the cycle file with a `Revised: <date> — <reason>` block
       preserving the original text. Never edit an active KR silently, not even to make it
       harder.
+    - **Narrative-only evidence 3 check-ins running, at ≥0.5** (from your 8a scan, minus any
+      KR re-classed in any of this cycle's Judgment calls) → ask once, generatively: "anything I can
+      click, a number I can pull — or what would the first demoable slice be?" Accept a
+      one-line answer — "nothing clickable; this KR moves through calls, next artifact is the
+      signed contract" is complete, and itself evidence. Record it as a Judgment-calls line
+      ("KR2.1 moves through negotiation — expected evidence: the signed contract"): that line
+      is the permanent re-class, and it's what next week's 8a scan reads. Once per KR per
+      cycle — never twice. Fires only here, inside the walk; below 0.5 the named-decision
+      trigger owns the KR instead. When the unchanged-3+-weeks rule trips on the same KR
+      the same week — flat confidence and narrative evidence usually travel together — ask
+      only this question: its answer is the evidence line, satisfying both. Evidence ranks
+      per docs/evidence.md: clickable or measurable beats narrated.
 
 12. **What moved.** Present your pre-draft, then ask each DRI what moved that git can't see —
     sales calls, ops fixes, a partnership conversation, a pricing page rewrite in some CMS.

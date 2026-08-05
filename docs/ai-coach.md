@@ -161,7 +161,10 @@ the coach challenges:
   committed KR scoring 1.0 — hitting a commitment is the job.)
 - **Output dressed as outcome** — "launch X" without a paired usage or outcome KR.
 - **Confidence that never moves** — unchanged three weeks running earns a request for one line
-  of evidence.
+  of evidence. Evidence ranks (clickable or measurable beats narrated — the ladder is in
+  [evidence.md](evidence.md)), and a KR that has offered only narrative three check-ins
+  running at ≥0.5 confidence gets the one-time narrative-floor question — once per KR per
+  cycle, never twice.
 - **Health-metric red lines** — checked at every check-in; a breach can pause the KR pushing
   on it.
 
@@ -301,8 +304,9 @@ Notes on each step:
 - **Code only.** The drift check reads PRs and commits, so it can only see code. The
   check-in's "What moved" section is the canonical ledger for non-code KR work — sales calls,
   ops changes, marketing pushes. The coach never flags a week of customer interviews as drift
-  just because no PRs merged; per-item drift tracking is for code, and the framework says so
-  honestly rather than pretending it can see everything.
+  just because no PRs merged — and its mirror, from [evidence.md](evidence.md): the coach
+  never treats a week without a demo as a week without progress. Per-item drift tracking is
+  for code, and the framework says so honestly rather than pretending it can see everything.
 
 ## The notification bridge
 
@@ -340,7 +344,13 @@ give up:
 - **Preview URLs handed over directly**, in chat, with click-test steps: "here's your private
   copy of the app — click these three things and tell me if the export works." The preview
   is the one verification tool a non-technical DRI has; the coach makes sure it lands in
-  their hands, not in a CI log.
+  their hands, not in a CI log. Name the practice for what it is: this is okrdev's demo
+  review — a runnable artifact, a decider with authority (the DRI), a concrete interaction
+  script, a same-day verdict. The DRI's verdict on a preview is demo-rung evidence the next
+  check-in can cite, and the click-test steps are written in the customer's nouns, because
+  the steps — not the URL — are where a mistranslation becomes visible. A "not right"
+  verdict is the loop working, not a failed review: revise, hand back a fresh preview, demo
+  again until the DRI says right. The full doctrine is in [evidence.md](evidence.md).
 - **The backstop.** When the DRI and the coach are both stuck, the coach invokes the human
   named in `okrdev/config.md` — by drafting the ask, with context. AI fills gaps, but somebody
   answers the phone. Roles and escalation in [roles.md](roles.md).

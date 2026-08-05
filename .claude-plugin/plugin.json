@@ -1,6 +1,6 @@
 {
   "name": "okrdev",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "OKR-obsessed operating framework: AI coach + optional AI-first stack. Focus is the scarce resource.",
   "author": { "name": "Alex Chisholm" }
 }

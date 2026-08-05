@@ -157,6 +157,19 @@ today is the system working — the week filtered the dopamine out. `energy: hig
 weeks running is a strong side-quest candidate. `effort: L` means the real decision is "does
 this belong in next cycle's planning?", not "should we squeeze it in?"
 
+Three verbs sharpen the reason line — **build, box, or buy** (the full lens is in
+[evidence.md](evidence.md)). **Buy**: the idea is a solved problem the market already sells —
+archive it with "already solved elsewhere — adopt X" as the epitaph, the sharpest reason line
+there is (the triage script's "duplicate of what CRM already does" is the house example).
+**Box**: it keeps the lights on but doesn't win anything — box, as in: it gets one, a
+bounded budget (a time-box or the maintenance budget), never open-ended investment — and it
+never auto-promotes to next-cycle candidacy on its own. **Build**:
+work only this team can do that a stakeholder of the mission would recognize as winning — the
+only thing promote is for. Why the lens earns a place in a framework premised on cheap
+execution: when building is cheap, teams build the already-solved because they can. The
+build-the-buyable trap gets worse, not better, in exactly the era this framework is built
+for.
+
 ## Side quests and the box-hours budget
 
 A side quest is a sanctioned distraction: work everyone agrees serves no KR, done anyway,
@@ -191,8 +204,10 @@ table before the hours are gone.
 **When the box runs out**, the quest gets a decision at the next check-in, like everything
 else:
 
-- **Close it** — `status: done`, with a note on what it produced or taught. A closed quest
-  that produced nothing was still cheap; that's the box doing its job.
+- **Close it** — `status: done`, with a note on what it produced or taught. At the close the
+  coach asks once — "anything to show? a link, a screenshot, one line" — and never mid-box:
+  the box is sanctioned play, not a deliverable contract. A closed quest that produced
+  nothing was still cheap; that's the box doing its job.
 - **Extend it** — a new box, set deliberately and logged. Extension is legal; *silent* overrun
   is what the `spent` field exists to catch.
 - **Promote it** — it proved itself. It maps to a KR now, or it goes in as a next-cycle

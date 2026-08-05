@@ -82,6 +82,16 @@ and argue about it at planning, where arguing is the job.
      template if it doesn't exist. At Level 0, where there are no check-in files, record it
      in the item's `notes:` field instead.
 
+   Three verbs make the 30-second reason faster (full lens in
+   [../../docs/evidence.md](../../docs/evidence.md)): **buy** — a solved problem the market
+   already sells; archive with "already solved elsewhere — adopt X" as the epitaph, the
+   sharpest reason line there is ("duplicate of what CRM already does" is the house example).
+   **Box** — keeps-the-lights-on work; box, as in: it gets one — a bounded budget (a
+   side-quest time-box or the maintenance share), never open-ended investment — and it never
+   auto-promotes to next-cycle candidacy on its own. **Build** — work only this team
+   can do that a stakeholder of the mission would recognize as winning; that's what promote
+   is reserved for. Reasons, not extra questions — the pace stays thirty seconds per item.
+
    Issue items get their decision recorded by closing the issue with a comment —
    `gh issue close <n> --comment "okrdev triage: promoted → KR1.3"`,
    `"okrdev triage: archived — <reason>"`, or `"okrdev triage: side-quest, box: 4h"` — and
@@ -102,7 +112,9 @@ and argue about it at planning, where arguing is the job.
 
 5. **Sweep the open side-quests.** For every `status: open` item in `## Side quests`:
    - Ask for a `spent:` update and write it.
-   - Finished → `status: done`.
+   - Finished → `status: done` — and ask once at the close: "anything to show? a link, a
+     screenshot, one line." Record it in `notes:`; "no" costs nothing, and the question is
+     never asked mid-box. Demoable output is the strongest promotion argument at the next triage.
    - Box blown (`spent` at or past `box`, still open) → force a named decision: close it as
      done-enough, extend the box once with a reason in `notes:`, or promote it — a side-quest
      that keeps eating hours is evidently real work and should compete at planning like real

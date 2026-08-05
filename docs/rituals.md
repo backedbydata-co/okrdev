@@ -57,6 +57,9 @@ The coach reads, in order:
    okrdev mid-life has implicit priorities already visible in what people have been shipping.
    The scan turns them into explicit straw-man candidates so the first cycle reflects reality
    instead of aspiration.
+   Translate upward as you draft: `git log` speaks implementation language, so straw-man KRs
+   sourced from it take their vocabulary from `okrdev/MISSION.md` and prior check-ins' "What
+   moved" lines — straw-men arrive in the DRI's words, not the repo's.
 
 From these it drafts 1–3 candidate objectives, each with 2–4 candidate KRs, candidate health
 metrics, and suggested DRIs — in the canonical cycle-file format, marked clearly as a draft.
@@ -70,6 +73,12 @@ metrics, and suggested DRIs — in the canonical cycle-file format, marked clear
    inspiring, and time-bound, and each gets exactly one human DRI. The coach's job here is
    subtraction: every objective beyond the first must justify the focus it steals. If the
    room wants five, the coach asks which two would hurt most to drop — those are the real ones.
+   Two more challenges live here. An objective whose KRs make the DRI switch vocabularies
+   mid-list is two objectives — the test is that one DRI can argue every KR of the objective
+   in its own words, without a translator (a straddling objective predicts exactly the
+   shared-ownership drift the one-DRI rule exists to prevent). And the lights-on challenge:
+   "this keeps the lights on; it doesn't win anything — is it an objective, or a maintenance
+   budget?"
 3. **Argue the KRs (30 min).** Two to four per objective, one DRI each. This is where the coach
    pushes back hardest, per the quality rules in [method.md](method.md):
    - **Outcome, not output.** "Launch the referral program" only survives paired with a KR that
@@ -86,7 +95,13 @@ metrics, and suggested DRIs — in the canonical cycle-file format, marked clear
      some things, like payroll and uptime, are not stretch goals — and an all-committed one,
      which usually means nobody's reaching.
    - **Milestone KRs get anchors now.** If a KR isn't a metric, define what 0.3, 0.7, and 1.0
-     look like during planning. Anchors invented at the retro are scored by mood.
+     look like during planning — phrased as observable past-tense events ("first paying
+     customer migrated"), not implementation states ("backend deployed"). Anchors invented at
+     the retro are scored by mood; event-phrased anchors leave the retro nothing to negotiate.
+   - **Customer's words, not the toolchain's.** Every noun in a KR heading should survive
+     being said to a stakeholder of the objective — Postgres is how, not what. Tool names and
+     internal mechanism get translated up; a technical domain's own terms (sev-1) stay —
+     and when the objective's stakeholders are engineers, their tools are those terms.
 4. **Health metrics (10 min).** Pick 2–4 for the cycle — monitored, not targeted, each with a
    red line and a source. Every volume or speed KR must name the quality metric it could break,
    either in its `Notes:` or in the health table. This is the Goodhart defense: for every target
@@ -148,16 +163,28 @@ judgment.
    `## Wins` — the first section of every check-in, on purpose. Accountability without
    celebration dies by week four; a ritual that opens with drift and blockers becomes a ritual
    people dread, then skip, then delete.
+   When a win is code-shaped and the coach already holds the preview URL from the
+   notification bridge, it offers the link into the win line — offered, never required. A win
+   with no artifact ("closed the vendor, verbal yes") is written with identical weight, and
+   the absence of a demo is never mentioned.
 2. **KR confidence.** Walk the table. Each DRI updates their numbers (0.0–1.0) with a one-line
    evidence note. The coach enforces the triggers — this is where confidence stops being theater:
    - **Below 0.5 two weeks running** → the coach forces a named decision: re-scope, re-staff,
      kill, or accept-the-miss. The decision is logged in Judgment calls. Hoping is not on the
      list.
    - **Unchanged 3+ weeks** → the DRI writes one line of evidence for why the number is right.
-     A confidence that never moves is a confidence nobody is checking.
+     A confidence that never moves is a confidence nobody is checking. Evidence ranks:
+     clickable or measurable beats narrated — the ladder is in [evidence.md](evidence.md).
    - **≥0.9 early in the cycle** → early-sandbag flag. The coach proposes raising the target,
      logged as a revision if accepted. (Same if the target is actually hit before 60% of the
      cycle has elapsed.)
+   - **Narrative-only evidence 3 check-ins running, at ≥0.5** → the coach asks once:
+     "anything I can click, a number I can pull — or what would the first demoable slice be?"
+     One line answers it — "nothing clickable; this KR moves through calls, next artifact is
+     the signed contract" is a complete answer, and itself evidence. Logged in Judgment
+     calls, the answer re-classes the KR's expected evidence for the cycle; the question
+     never fires twice on one KR. When the unchanged-3+-weeks rule trips on the same KR the
+     same week, this question subsumes it — one ask, and the answer is the evidence line.
 3. **What moved.** Review the pre-draft; DRIs add non-code work — sales calls, ops changes,
    marketing pushes. This section is the canonical ledger for non-code KR progress; in most
    real businesses the work that moves KRs never touches a PR, and if it isn't recorded here
@@ -315,14 +342,19 @@ the contested cases.
      "0.85" destroys both signals.
    - **Committed misses get a root-cause note.** Not blame — a sentence on what broke, because
      a committed KR was a promise and promises that break silently break again.
-   - The coach challenges in both directions. **Inflation:** "0.9 — show me the number."
+   - The coach challenges in both directions. **Inflation:** "0.9 — show me the number." Its
+     milestone twin replays the anchors: "0.7 claimed — show the thing in its 0.7 state." The
+     anchors written at planning are the demo script, and a non-code KR demos in its own
+     medium — the signed contract, the published page, the hire started.
      **Sandbagging:** an aspirational KR that hit early while confidence sat high and flat from
      week one gets named as a sandbag candidate — the lesson is about next cycle's targets, not
      this cycle's score. A committed KR scoring 1.0 is never flagged; committed KRs are
      *supposed* to score 1.0, and flagging them just teaches people to report 0.93.
 2. **Revisions review (10 min).** Walk every `Revised:` block and every `Status: dropped` KR.
    Was each amendment a legitimate response to new information, or a target quietly walking
-   toward the actual? The audit trail exists to be read exactly once, here.
+   toward the actual? Evidence re-class lines from the cycle's Judgment calls get the same
+   replay — "expected evidence was the signed contract; did it arrive?" The audit trail
+   exists to be read exactly once, here.
 3. **Adherence and process (5 min).** The coach reports the check-in adherence stat and the
    cycle's judgment-call, override, and emergency totals. A cycle with 6/13 check-ins didn't
    fail because the KRs were wrong — that's a lesson about cadence, and it goes in the file.

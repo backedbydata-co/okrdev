@@ -16,7 +16,10 @@ attendees: [<name>, <name>]   # omit or single-name for solo mode
 
 <!-- Triggers the coach enforces: <0.5 two weeks running forces a named decision
      (re-scope / re-staff / kill / accept-the-miss); unchanged 3+ weeks needs one
-     line of evidence; ≥0.9 early raises the sandbag question. -->
+     line of evidence; ≥0.9 early raises the sandbag question; three narrative-only
+     evidence check-ins at ≥0.5 earns the one-time ask — anything clickable, a number,
+     or the first demoable slice? (one line answers it for the cycle, logged in
+     Judgment calls). -->
 
 ## What moved
 

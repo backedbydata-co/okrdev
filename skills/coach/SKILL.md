@@ -49,7 +49,7 @@ may and may not do — is `docs/ai-coach.md`.
 6. **Full status.** Gather everything first, then report short and actionable-first.
 
    a. **Confidence trends.** Pull the latest per-KR confidence from the cycle file and the
-      check-in tables, and flag the three triggers:
+      check-in tables, and flag the four triggers:
       - **Below 0.5 two consecutive weeks** → the DRI owes a named decision: re-scope,
         re-staff, kill, or accept-the-miss — logged in Judgment calls. Confidence that
         changes nothing is theater.
@@ -58,6 +58,11 @@ may and may not do — is `docs/ai-coach.md`.
       - **At or above 0.9 from week one, or the target already hit before 60% of the cycle
         has elapsed** → early-sandbag flag. Propose raising the target — as a logged revision
         through a PR, never a silent edit.
+      - **Narrative-only evidence three check-ins running, at ≥0.5** → the one-time
+        narrative-floor question is owed at the next check-in ("anything I can click, a
+        number I can pull — or what would the first demoable slice be?"). Skip any KR whose
+        Judgment calls already carry an evidence re-class line this cycle — the question
+        never fires twice on one KR.
 
    b. **Drift check.** Compute from ground truth, best effort for the environment:
       1. `git log --since="<last check-in date>"` on the default branch; add
@@ -115,6 +120,11 @@ may and may not do — is `docs/ai-coach.md`.
    - Serves no KR and is substantive → it gets classified before it starts: `side-quest`
      (needs a time-box — hand off to `/okrdev:side-quest`), `maintenance`, or `emergency`.
      Or park it — `/okrdev:park`, ten seconds — and stay on course. Challenge, never block.
+     There is no second standing question — "which key result does this serve?" keeps its
+     status as the one question that matters. Only when the answer is "none" does the
+     build/box/buy lens (docs/evidence.md) supply the one-line follow-up: a solved problem to
+     adopt, lights-on work for the maintenance budget or a box, or part of how you win — park
+     it toward next cycle.
    - Maintenance-shaped (bugfix, config, docs, small refactor) → classify silently in one
      line ("treating this as maintenance") and move on. Don't interrogate — nagging is how
      coach blocks get deleted by week three.

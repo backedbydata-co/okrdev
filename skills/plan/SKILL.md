@@ -78,6 +78,9 @@ Do the reading before the meeting, so the humans spend their 90 minutes arguing,
   You're learning what the team actually spends effort on, versus what the mission says.
   Anything that will consume real capacity this cycle should either become a KR or be named
   as maintenance out loud — invisible workstreams are how cycles get quietly eaten.
+  Translate upward as you draft: `git log` speaks implementation language, so straw-man KRs
+  built from the scan take their vocabulary from `okrdev/MISSION.md` and prior check-ins'
+  "What moved" lines — the straw man arrives in the DRI's words, not the repo's.
 - **First cycle, no data anywhere?** Note which candidate KRs will need `baseline: unknown`
   plus an instrumentation pairing (step 6). Don't invent numbers to look rigorous.
 
@@ -98,8 +101,11 @@ Hard constraints:
   the form `<metric> from <baseline> to <target>`.
 - **Milestone-shaped KRs** (no continuous metric): define the 0.3 / 0.7 / 1.0 stage anchors
   now, in `Notes:` — e.g. `Notes: milestones — 0.3 pilot agreement signed / 0.7 three studios
-  live / 1.0 ten studios live`. Retro scoring uses these anchors; anchors invented at retro
-  time are just vibes with a decimal point.
+  live / 1.0 ten studios live`. Phrase every anchor as an observable past-tense event, never
+  an implementation state — "pilot agreement signed," not "backend deployed" — which is
+  exactly why that example is the example: each stage either happened or it didn't. Retro
+  scoring uses these anchors; anchors invented at retro time are just vibes with a decimal
+  point, and a state-phrased anchor is a negotiation waiting for the retro.
 - **Health metrics**: 2–4 for the cycle, monitored not targeted, each with a red line and a
   source. These are the things the cycle's pushing could break.
 
@@ -141,6 +147,19 @@ transcribing whatever the room says first is the one failure mode you're here to
 - **Outcome, not output.** "Ship the referral feature" measures motion; "referred signups
   from 0 to 30/month" measures the point of shipping it. If a KR is done the moment the code
   merges, it's an output.
+- **Customer's words, not the toolchain's.** Every noun in a KR heading should survive being
+  said to a customer or stakeholder of the objective. The stakeholder test is primary; the
+  tool-name ban is only its most common verdict ("Postgres is how, not what — what does the
+  studio owner notice when this works?"). A technical domain's own terms pass ("sev-1
+  incidents from 4 to ≤1" is fine — sev-1 is a first-class noun of the reliability domain),
+  and when the objective's stakeholders are engineers — platform, infra, dev tools — their
+  tools are the domain's own nouns and pass too. Implementation-speak is the surface form of
+  an output KR: you can complete it while the business stands still.
+- **One objective, one vocabulary.** If arguing the KRs makes the DRI switch vocabularies
+  mid-list — half "churn, activation, studio," half "leads, quota, pipeline" — it's two
+  objectives. The test: one DRI can argue every KR of the objective in its own words, without
+  a translator. And the lights-on challenge for the objective itself: "this keeps the lights
+  on; it doesn't win anything — an objective, or a maintenance budget?"
 - **Measurable, baseline → target stated.** `baseline: unknown` is allowed only when paired
   with an instrumentation task that will establish it. First-cycle exception: "Instrument X
   and establish a baseline" is itself a valid KR — new or unmeasured businesses can't state

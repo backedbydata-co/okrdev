@@ -95,6 +95,11 @@ KRs come in two shapes:
   their scoring anchors *at planning*: what state earns 0.3, what earns 0.7, what earns 1.0.
   Written in `Notes:`. Anchors defined at planning are a rubric; anchors improvised at the
   retro are a negotiation, and negotiations drift toward whatever score feels comfortable.
+  Phrase each anchor as an observable past-tense event — "first paying customer migrated,"
+  "all studios off the old plan" — never as an implementation state ("backend deployed,"
+  "integration mostly complete"). An event either happened or it didn't, so the anchor is
+  binary at the retro; a state-phrased anchor reopens exactly the negotiation this rule
+  exists to close.
 
 ## Committed vs aspirational
 
@@ -155,6 +160,22 @@ of cycle one is often to make cycle two measurable — that's not a cop-out, it'
    rate, support load. This is Grove's pairing rule and the working half of the Goodhart
    defense: any measure you push hard enough stops measuring what you meant. The pair is the
    tripwire.
+6. **The customer's words, not the toolchain's.** Every noun phrase in a KR heading should
+   survive being said to a customer or stakeholder of that objective. "Migrate lead data to
+   Postgres" feels concrete but fails: Postgres is a noun the implementation chose, and the
+   migration can land while leads still wait 9 days. "Lead-to-first-appointment time from
+   9 days to 3" survives, and leaves the implementation free. The carve-out: the domain isn't
+   always the customer — "Sev-1 incidents from 4/quarter to ≤1" passes, because sev-1 is a
+   first-class noun of the reliability domain the objective lives in. The ban is on tool
+   names and internal mechanism (Postgres, React, the webhook retry queue), not on a
+   technical domain's own terms — and the stakeholder test is primary, the tool-name ban
+   only its most common verdict: when an objective's stakeholders are engineers (platform,
+   infra, dev tools), their tools are the domain's own nouns, and "Postgres major-version
+   upgrade downtime from 4h to 0" passes for the platform team whose customers say Postgres
+   daily. Why it's a rule: implementation-speak is the detectable
+   surface form of the output KR rule 1 bans in substance — completable while the business
+   stands still. The canned pushback: "Postgres is how, not what — what does the studio owner
+   notice when this works?" The full before/after table is in [evidence.md](evidence.md).
 
 ## KR ids are frozen
 
@@ -234,7 +255,7 @@ warning system — scores tell you what happened, confidence tells you what's ab
 **New KRs default to 0.5.** A good stretch KR is a coin flip at kickoff. Starting at 0.8
 means the target is soft; starting at 0.2 means it was never a plan.
 
-A confidence number that never changes anything is theater, so three triggers wire it to
+A confidence number that never changes anything is theater, so four triggers wire it to
 behavior:
 
 1. **Below 0.5 two consecutive weeks → a named decision.** The coach forces a choice among
@@ -247,11 +268,25 @@ behavior:
 2. **Unchanged three-plus weeks → one line of evidence.** A confidence stuck at 0.6 for a
    month usually means nobody is looking, not that nothing is moving. The coach asks the DRI
    for a single line of evidence supporting the number — a metric reading, a shipped change, a
-   customer signal. If the evidence exists, fine, write it down. If it doesn't, the honest
-   number is probably different, and now you know.
+   customer signal. Evidence ranks — the ladder is in [evidence.md](evidence.md): anything you
+   can click or measure beats anything you can only narrate. If the evidence exists, fine,
+   write it down. If it doesn't, the honest number is probably different, and now you know.
 
 3. **At or above 0.9 early → the early-sandbag flag.** Near-certainty in week one or two means
    the target wasn't a stretch. See the next section.
+4. **Narrative-only evidence three check-ins running, at ≥0.5 → one question, once.** When a
+   KR's evidence lines have been narration ("on track," "feels close") for three consecutive
+   check-ins while its confidence sits at or above 0.5, the coach asks once, generatively:
+   "anything I can click, a number I can pull — or what would the first demoable slice be?" A
+   one-line answer settles it — including "nothing clickable; this KR moves through calls,
+   and the next artifact is the signed contract," which is itself evidence. The answer is
+   logged as one Judgment-calls line and permanently re-classes the KR's expected evidence
+   type for the cycle: the trigger never fires twice on the same KR. Below 0.5, trigger 1
+   owns the conversation instead — stacking a demo request on a KR already being re-scoped or
+   killed is nagging. When trigger 2 trips on the same KR the same week — flat confidence
+   and narrative evidence usually travel together — this question subsumes it: one ask, and
+   the answer doubles as the evidence line. The calibration argument lives in
+   [evidence.md](evidence.md).
 
 ## Sandbagging detection
 

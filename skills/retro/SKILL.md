@@ -78,7 +78,10 @@ For each KR, the DRI states the actual; you apply the rubric:
 While scoring, challenge in both directions:
 
 - **Inflation.** A score must trace to evidence. "0.8 — what's the actual?" is the whole
-  move. Confidence history is your mirror: a KR that sat at 0.9 all cycle and scores 0.4
+  move. Milestone claims replay their anchors: "0.7 claimed — show the thing in its 0.7
+  state," in its own medium — a preview for code; the signed contract, the published page,
+  the hire started for everything else. The anchors from planning are the demo script.
+  Confidence history is your mirror: a KR that sat at 0.9 all cycle and scores 0.4
   (or the reverse) means the check-ins were theater — name it, kindly.
 - **Sandbagging — aspirational KRs only.** The signals: target hit before 60% of the cycle
   had elapsed, plus confidence ≥0.9 flat from week one. Flag it as an input to next
@@ -110,7 +113,9 @@ declare victory is inflation with paperwork.
 
 Then the cycle's judgment calls, assembled in step 3: overrides (what pattern do they show?),
 emergencies (were they? what did they protect? recurring emergencies mean something upstream
-is broken), and side-quests (did the box-hours budget hold?). This is the framework keeping
+is broken), side-quests (did the box-hours budget hold?), and evidence re-class lines,
+each replayed against the cycle's end state: "expected evidence was the signed contract —
+did it arrive?" This is the framework keeping
 its core promise — the coach never blocks, it remembers, and the retro is where the memory
 gets read.
 

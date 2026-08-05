@@ -93,8 +93,10 @@ said its name out loud. Your job is to make that take under a minute.
 12. **Track the box.** Update `spent:` as the work happens, or when they report back. When
     spent reaches the box, remind them once — advisory, like everything here. Then it's their
     call:
-    - Done? Set `status: done`, final `spent:`, one line in `notes:` if there's anything worth
-      remembering.
+    - Done? Set `status: done`, final `spent:`, and ask once: "anything to show? a link, a
+      screenshot, one line" — recorded in `notes:`. "No" costs nothing. Never ask mid-box:
+      the box is sanctioned play, not a deliverable contract. Demoable output is the
+      strongest promotion argument at the next triage.
     - Not done but worth more? Extend the box — new `box:` value, extension noted in `notes:`,
       and the extra hours count against this week's budget like any other box.
     - Not done and not worth more? Stop, set `status: done` with `notes: box spent, parked the

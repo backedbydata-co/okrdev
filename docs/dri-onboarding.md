@@ -178,9 +178,11 @@ too — honestly, just with a weaker step 3:
 
 - **Brownfield code repo, no previews.** The coach demonstrates the change another way —
   screenshots of before and after, a recorded walkthrough, or running the app locally and
-  describing it. That works, but it's the coach showing you evidence rather than you gathering
-  it. This gap is the single best argument for adopting the Level 2 rails or the stack module
-  ([adoption.md](adoption.md)).
+  describing it. These fallbacks are the demo rung of the evidence ladder in
+  [evidence.md](evidence.md), in another medium — "a summary you read is a claim; a preview
+  you clicked is evidence" now has a named ladder behind it. That works, but it's the coach
+  showing you evidence rather than you gathering it. This gap is the single best argument for
+  adopting the Level 2 rails or the stack module ([adoption.md](adoption.md)).
 - **Non-code business, repo as ledger.** Your first shipped change is an edit to a shared
   document — the mission, a checklist, a price list — through the exact same proposal-and-merge
   flow. Same proposal page, same review, same merge button; there's simply no app to preview.
