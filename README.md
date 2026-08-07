@@ -98,6 +98,7 @@ weeks and the recovery — in [examples/acme-fitness](examples/acme-fitness/).
 | [MANIFESTO.md](MANIFESTO.md) | Why okrdev exists |
 | [docs/method.md](docs/method.md) | The OKR system: cycles, KR rules, scoring, confidence, health metrics |
 | [docs/evidence.md](docs/evidence.md) | What counts as proof: the evidence ladder, the demo review, and the customer's-words rule |
+| [docs/testing.md](docs/testing.md) | How okrdev tests itself: red-first fixes, deterministic rails, coach-behavior scenarios |
 | [docs/rituals.md](docs/rituals.md) | Runnable scripts: planning, check-in, triage, retro |
 | [docs/roles.md](docs/roles.md) | DRI, builder, domain reviewer, backstop — and the AI's three hats |
 | [docs/parking-lot.md](docs/parking-lot.md) | The catalog-don't-chase protocol |
