@@ -610,6 +610,9 @@ a legitimate KR1.3 candidate found by writing tests: the loop working before the
 exists. Known risk, named: headless `claude -p` with the plugin and coach block loaded in a
 fixture repo is exactly the friction KR2.2 exists because of — Phase 2 may stall on the same
 install problem it helps prove fixed, and if it does, that stall is itself KR2.2 evidence.
+(`install.sh` has since landed the plugin half of that path — see `docs/adoption.md`,
+"Headless install"; loading the plugin into a fixture repo's session remains Phase 2's to
+prove.)
 
 **Phase 3 — growth only from chafe (rest of cycle).** No backfill. The first real Loop B
 pass converts the harness side-quest to `KR: 1.3` (see Classification); the retro reads the

@@ -57,6 +57,18 @@ okrdev is a [Claude Code](https://claude.com/claude-code) plugin plus a set of d
 /okrdev:plan        # when you're ready for Level 1: draft your first cycle's OKRs
 ```
 
+Prefer no dialogs? The first two steps also work headlessly — from a script, a CI job, or an
+agent bootstrapping a machine. Run this **outside** the repo you're adopting into (the clone
+would land at `okrdev/`, the path the method reserves for your ledger):
+
+```bash
+cd ~ && git clone https://github.com/backedbydata-co/okrdev.git
+./okrdev/install.sh   # registers the marketplace + installs the plugin, no TUI
+rm -rf ~/okrdev       # optional: the marketplace keeps its own copy under ~/.claude
+```
+
+Details and the by-hand equivalent in [docs/adoption.md](docs/adoption.md#headless-install).
+
 Then live in it:
 
 ```bash
@@ -107,6 +119,7 @@ weeks and the recovery — in [examples/acme-fitness](examples/acme-fitness/).
 | [docs/dri-onboarding.md](docs/dri-onboarding.md) | Zero to first shipped change, for non-technical DRIs |
 | [docs/shipping-explained.md](docs/shipping-explained.md) | PRs, CI, previews — in plain language, with a glossary |
 | [docs/stack.md](docs/stack.md) | The optional stack module and why each piece |
+| [install.sh](install.sh) | Headless plugin install — the Quickstart without the `/plugin` dialog |
 | [skills/](skills/) | The eight coach skills (install, plan, checkin, park, triage, side-quest, retro, coach) |
 | [templates/](templates/) | Everything `install` copies: okrdev/ files, coach block, GitHub rails, stack setup |
 | [examples/acme-fitness/](examples/acme-fitness/) | A full fictional cycle, warts included |

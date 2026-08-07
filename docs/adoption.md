@@ -277,6 +277,76 @@ options: make the repo public, pay for the plan, or accept advisory-only rails w
 than half-applying protection, because a rail you believe exists but doesn't is worse than no
 rail.
 
+## Headless install
+
+The Quickstart's `/plugin` commands are interactive — fine at a keyboard, a wall for a script,
+a CI job, or an agent bootstrapping a machine. The plugin CLI is halfway to headless:
+`claude plugin install okrdev@okrdev` is a real shell command, but marketplace registration has
+no shell equivalent — it exists only inside the `/plugin` dialog. `install.sh`, at the repo
+root, closes that gap:
+
+```bash
+cd ~ && git clone https://github.com/backedbydata-co/okrdev.git
+./okrdev/install.sh
+rm -rf ~/okrdev   # optional; see "the checkout is disposable" below
+```
+
+**Run it outside the repo you're adopting into.** The script never writes to the repo it runs
+from — but `git clone` does, and it lands at `okrdev/`, which is precisely the path the method
+reserves for your ledger. Clone it at the target repo's root and `/okrdev:install` will later
+find an `okrdev/` directory that is a copy of this project rather than your OKRs, read the repo
+as a half-finished install, and start filling gaps around it. `$HOME` or a temp dir, then.
+
+**The checkout is disposable.** Once the script finishes, the marketplace has its own copy
+under `~/.claude/plugins/marketplaces/okrdev/` and the clone you ran from has no further job.
+Deleting it changes nothing; keeping it costs a stale copy that will quietly fall behind.
+
+What it does, in order:
+
+1. **Prefers the official path the day it exists.** If a future CLI ships a
+   `claude plugin marketplace add` shell command, the script uses it and touches no state files
+   itself.
+2. **Registers the marketplace by writing what the dialog writes:** a clone of this repo under
+   `~/.claude/plugins/marketplaces/okrdev/` — taken from the checkout you're running it from,
+   so there's no second fetch and no second auth — plus one entry in
+   `~/.claude/plugins/known_marketplaces.json`. The file is backed up first; an existing
+   `okrdev` entry is left alone, so re-running is safe.
+3. **Hands off to the documented command:** `claude plugin install okrdev@okrdev`.
+
+Everything it writes is machine-level, under `~/.claude` (or `$CLAUDE_CONFIG_DIR` when set). It
+never touches the repo you run it from — the install-footprint red line governs what
+`/okrdev:install` later writes into *your* repo, and this script runs upstream of all that.
+
+Honesty about the seam: step 2 writes files the `/plugin` dialog owns and Claude Code has never
+documented. The script is defensive about it — validates before writing, backs up, adds one key
+rather than rewriting — but a Claude Code release could change that state's shape underneath
+it. If that happens the script fails with instructions rather than guessing; the interactive
+path in the Quickstart always works.
+
+**By hand, no script.** The same three moves, if you'd rather own them — or if you're on a
+machine with neither `jq` nor `node`, which the script needs for the JSON edit:
+
+```bash
+# 1. Put a clone where Claude Code keeps marketplaces:
+git clone https://github.com/backedbydata-co/okrdev.git \
+  ~/.claude/plugins/marketplaces/okrdev
+
+# 2. Add this entry to ~/.claude/plugins/known_marketplaces.json (create the
+#    file as {} first if it doesn't exist), keyed "okrdev", alongside any
+#    entries already there:
+#      "okrdev": {
+#        "source": { "source": "github", "repo": "backedbydata-co/okrdev" },
+#        "installLocation": "<home>/.claude/plugins/marketplaces/okrdev",
+#        "lastUpdated": "<now, ISO-8601>"
+#      }
+
+# 3. Install through the documented CLI:
+claude plugin install okrdev@okrdev
+```
+
+Either way: new sessions load the plugin, running sessions need `/reload-plugins`, and
+`/okrdev:install` in the target repo takes it from there.
+
 ## Install collisions
 
 First thing every brownfield adoption hits: the files okrdev wants to touch already exist.
@@ -326,6 +396,19 @@ not the date of the last edit. Two rules keep that true, and they are the releas
   adopter's repo, so there is no installed copy that could fall behind. Bumping for prose
   would spend every adopter's upgrade prompt on a diff with no files in it — and a prompt
   that's usually empty is a prompt people stop reading.
+- **Neither does a change to the acquisition path** — `install.sh`, the headless installer
+  above. It ships in the plugin, but it runs on your machine and puts nothing in your repo, so
+  it falls under the second rule's reasoning rather than the first's: there is no installed
+  copy that could fall behind, and bumping for it would produce exactly the empty upgrade
+  prompt that rule exists to prevent. Stated as its own bullet because the first rule's test —
+  *whether a file okrdev provided is now different* — reads as covering it, and the answer is
+  only obvious once you ask which repo the file lives in afterwards.
+
+  The seam this leaves: `templates/stack/branch-protection.sh` is also run rather than copied,
+  yet it does bump, because it sits under `templates/` where the blanket rule is worth more
+  than the exception. That is a deliberate rounding error, not an oversight — the cost is one
+  spurious bump on a file almost nobody edits, and the alternative is a per-file exception list
+  that has to be maintained forever.
 
 Worth stating rather than leaving to be rediscovered: a repo installed at 0.1.0 and never
 upgraded correctly still reads `0.1.0`. That is the marker working, not drift, and it is what

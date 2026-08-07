@@ -11,6 +11,11 @@ This is the machine-readable half of the 2026-Q3 cycle's **Install footprint** h
 a template that doesn't exist, or if any destination falls outside the red line. The manifest
 is the assertion; the prose is for whoever has to change it.
 
+Plugin *acquisition* is outside this manifest by construction: `install.sh` (the headless
+path, `docs/adoption.md` "Headless install") writes machine-level state under `~/.claude` and
+nothing in any repo. The red line governs what `/okrdev:install` writes into *your* repo,
+which begins only after the plugin exists.
+
 The metric's stated Source is `git status` after a fresh install. That is a real limit, not a
 formality, and the second table exists because of it: **four of install's writes leave no
 trace in a working tree at all.** A manifest that listed only files would let those four grow

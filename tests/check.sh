@@ -150,12 +150,183 @@ check_plugin_manifests() {
   ok "manifests: both parse, versions are semver, names agree"
 }
 
+# chafe: KR2.2 — okrdev itself could not be installed without clicking through
+# the /plugin dialog (parked 2026-07-23, promoted into the 2026-Q3 plan). The
+# CLI's real gap: `claude plugin install` is a shell command, marketplace
+# registration isn't. install.sh bridges it by writing the dialog's own state
+# files, so this check pins that behavior against a stub claude in a throwaway
+# CLAUDE_CONFIG_DIR — fixture clone from a local path, no network, per doctrine.
+check_headless_install() {
+  local script=install.sh
+  if [ ! -x "$script" ]; then
+    bad "headless install: $script missing or not executable"
+    return 1
+  fi
+  local tmp status=0
+  tmp=$(mktemp -d) || { bad "headless install: mktemp failed"; return 1; }
+
+  # A fixture marketplace repo: the script's contract is "any git-cloneable
+  # source holding .claude-plugin/", not "GitHub specifically".
+  mkdir -p "$tmp/market"
+  cp -R .claude-plugin "$tmp/market/"
+  # GIT_DIR beats `git -C`, and a pre-push hook runs with GIT_DIR set — so the
+  # unqualified form built the fixture inside THIS repo and the check failed
+  # only when run the way the repo asks you to run it. The suite has to be
+  # hermetic in a hook, or the local rail is the one place it doesn't work.
+  local fixture_git=(env -u GIT_DIR -u GIT_WORK_TREE -u GIT_INDEX_FILE
+                     -u GIT_OBJECT_DIRECTORY -u GIT_ALTERNATE_OBJECT_DIRECTORIES
+                     -u GIT_COMMON_DIR git)
+  if ! { "${fixture_git[@]}" -C "$tmp/market" init -q -b main &&
+         "${fixture_git[@]}" -C "$tmp/market" add -A &&
+         "${fixture_git[@]}" -C "$tmp/market" -c user.email=check@okrdev -c user.name=check \
+             -c commit.gpgsign=false commit -qm fixture; }; then
+    bad "headless install: could not build the fixture marketplace repo"
+    rm -rf "$tmp"
+    return 1
+  fi
+
+  # A stub claude on PATH — the docs/testing.md pattern. It refuses the
+  # marketplace subcommand exactly like today's CLI, accepts plugin install,
+  # and records argv so the handoff to the documented command is assertable.
+  mkdir -p "$tmp/bin" "$tmp/claude-home"
+  cat > "$tmp/bin/claude" << 'STUB'
+#!/usr/bin/env bash
+printf '%s\n' "$*" >> "${CLAUDE_STUB_LOG:?}"
+case "${1-} ${2-}" in
+  "plugin marketplace") echo "error: unknown command 'marketplace'" >&2; exit 1 ;;
+  "plugin install") exit 0 ;;
+  *) exit 0 ;;
+esac
+STUB
+  chmod +x "$tmp/bin/claude"
+
+  # Failure path first, both halves (the branch-protection.sh lesson): a PATH
+  # with git but no claude must exit 1 with the script's own message, not 127
+  # with bash's. /usr/bin:/bin carries git on macOS and Linux; no installer
+  # puts claude there.
+  local out code
+  out=$(env PATH="/usr/bin:/bin" CLAUDE_CONFIG_DIR="$tmp/claude-home" bash "$script" 2>&1)
+  code=$?
+  if [ "$code" -eq 1 ] && printf '%s' "$out" | grep -q 'the claude CLI is not on PATH'; then
+    ok "headless install: missing claude exits 1 with its own message"
+  else
+    bad "headless install: missing claude exited $code saying: ${out:-(nothing)}"
+    status=1
+  fi
+
+  # Happy path: stub claude shadows any real one; everything else is real.
+  local log="$tmp/stub.log" home="$tmp/claude-home"
+  out=$(PATH="$tmp/bin:$PATH" CLAUDE_STUB_LOG="$log" CLAUDE_CONFIG_DIR="$home" \
+        bash "$script" --marketplace-source "$tmp/market" 2>&1)
+  code=$?
+  local knownf="$home/plugins/known_marketplaces.json"
+  if [ "$code" -eq 0 ] &&
+     [ -f "$home/plugins/marketplaces/okrdev/.claude-plugin/marketplace.json" ] &&
+     jq -e '.okrdev.source.source == "git" and .okrdev.installLocation != null' "$knownf" > /dev/null 2>&1 &&
+     [ "$(jq -r '.okrdev.source.url' "$knownf")" = "$tmp/market" ] &&
+     grep -q '^plugin install okrdev@okrdev$' "$log"; then
+    ok "headless install: registers the marketplace and hands off to claude plugin install"
+  else
+    bad "headless install: happy path failed (exit $code)"
+    printf '%s\n' "$out" | sed 's/^/        /'
+    status=1
+  fi
+
+  # Idempotency: a second run must not clobber, duplicate, or fail.
+  out=$(PATH="$tmp/bin:$PATH" CLAUDE_STUB_LOG="$log" CLAUDE_CONFIG_DIR="$home" \
+        bash "$script" --marketplace-source "$tmp/market" 2>&1)
+  code=$?
+  if [ "$code" -eq 0 ] && [ "$(jq -r 'keys | length' "$knownf")" = 1 ]; then
+    ok "headless install: second run leaves existing state alone and exits 0"
+  else
+    bad "headless install: second run exited $code (keys: $(jq -r 'keys | length' "$knownf" 2>/dev/null))"
+    printf '%s\n' "$out" | sed 's/^/        /'
+    status=1
+  fi
+
+  # The default, no-argument path — the one the README actually tells people to
+  # run, and the only one that produces the `source: github` entry shape and the
+  # origin re-point. Every assert above passes --marketplace-source, so without
+  # this the shape a real adopter receives is never executed: a typo in the
+  # github branch stays green all the way to their machine. Still no network —
+  # script_dir is this checkout, and `remote set-url` never contacts anything.
+  local home2="$tmp/claude-home-default" known2 origin
+  known2=$home2/plugins/known_marketplaces.json
+  out=$(PATH="$tmp/bin:$PATH" CLAUDE_STUB_LOG="$log" CLAUDE_CONFIG_DIR="$home2" \
+        bash "$script" 2>&1)
+  code=$?
+  origin=$("${fixture_git[@]}" -C "$home2/plugins/marketplaces/okrdev" remote get-url origin 2> /dev/null)
+  if [ "$code" -eq 0 ] &&
+     jq -e '.okrdev.source == {source: "github", repo: "backedbydata-co/okrdev"}' "$known2" > /dev/null 2>&1 &&
+     [ "$origin" = "https://github.com/backedbydata-co/okrdev.git" ]; then
+    ok "headless install: default path registers the github source and re-points origin upstream"
+  else
+    bad "headless install: default path failed (exit $code, origin: ${origin:-none})"
+    printf '%s\n' "$out" | sed 's/^/        /'
+    jq -c '.okrdev.source' "$known2" 2> /dev/null | sed 's/^/        source: /'
+    status=1
+  fi
+
+  # An existing-but-empty known_marketplaces.json — `touch` instead of the
+  # by-hand step's `{}`, or a writer that died mid-write. jq accepts a 0-byte
+  # file and its assignment filter then emits nothing, so the first version of
+  # this script reported a successful registration over a file it left empty,
+  # forever, on every re-run. Both JSON backends must refuse it instead.
+  local home3="$tmp/claude-home-empty" known3
+  known3=$home3/plugins/known_marketplaces.json
+  mkdir -p "$home3/plugins"
+  : > "$known3"
+  out=$(PATH="$tmp/bin:$PATH" CLAUDE_STUB_LOG="$log" CLAUDE_CONFIG_DIR="$home3" \
+        bash "$script" --marketplace-source "$tmp/market" 2>&1)
+  code=$?
+  if [ "$code" -eq 0 ] && jq -e '.okrdev.installLocation != null' "$known3" > /dev/null 2>&1; then
+    ok "headless install: an empty known_marketplaces.json is written, not silently skipped"
+  else
+    bad "headless install: empty known_marketplaces.json left unregistered (exit $code)"
+    printf '%s\n' "$out" | sed 's/^/        /'
+    status=1
+  fi
+
+  # Debris at the clone destination — a `git clone` killed by a CI timeout
+  # leaves a partial dir. Skipping the clone over it registers a marketplace
+  # pointing at nothing, and every re-run skips it again.
+  local home4="$tmp/claude-home-debris"
+  mkdir -p "$home4/plugins/marketplaces/okrdev"
+  out=$(PATH="$tmp/bin:$PATH" CLAUDE_STUB_LOG="$log" CLAUDE_CONFIG_DIR="$home4" \
+        bash "$script" --marketplace-source "$tmp/market" 2>&1)
+  code=$?
+  if [ "$code" -eq 1 ] && printf '%s' "$out" | grep -q 'is not a marketplace clone'; then
+    ok "headless install: debris at the clone destination exits 1 rather than registering it"
+  else
+    bad "headless install: debris at the clone destination exited $code saying: ${out:-(nothing)}"
+    status=1
+  fi
+
+  # KR2.2's 1.0 anchor is "following only the README" — a script the docs
+  # never point at is a script that does not exist for adopters.
+  local f docs_ok=0
+  for f in README.md docs/adoption.md; do
+    if ! grep -q 'install\.sh' "$f"; then
+      bad "headless install: $f never mentions install.sh"
+      docs_ok=1
+      status=1
+    fi
+  done
+  # Scoped to its own flag, not the shared one: an assert that reports only
+  # when every other assert passed is an assert that goes quiet exactly when
+  # the run is worth reading.
+  [ $docs_ok -eq 0 ] && ok "headless install: README.md and docs/adoption.md both point at install.sh"
+
+  rm -rf "$tmp"
+  return $status
+}
+
 # chafe: branch-protection.sh shipped with die() called before its definition
 # and nothing caught it (fixed in the Phase 0 PR). shellcheck catches that whole
 # class. Skipped, loudly, when the tool is absent — a check that quietly does
 # nothing on a laptop is worse than one that says it didn't run.
 check_shell_lint() {
-  local scripts=(templates/stack/branch-protection.sh tests/check.sh)
+  local scripts=(templates/stack/branch-protection.sh tests/check.sh install.sh)
   if ! command -v shellcheck > /dev/null 2>&1; then
     ok "shell lint: SKIPPED — shellcheck not installed (CI installs it)"
     return 0
@@ -228,7 +399,7 @@ check_embedded_script_portability() {
   # platform-only builtin that fails into a fallback is the worst shape of
   # bug: no crash, no warning, just silence.
   local hits
-  hits=$(grep -rn -- 'stat -f%' docs/ templates/ skills/ 2>/dev/null)
+  hits=$(grep -rn -- 'stat -f%' docs/ templates/ skills/ install.sh 2>/dev/null)
   if [ -z "$hits" ]; then
     ok "embedded scripts: no BSD-only stat syntax"
   else
@@ -628,7 +799,7 @@ check_version_sync() {
     ok "version sync: template config and plugin.json both say $plugin_version"
   else
     bad "version sync: templates/okrdev/config.md says $tmpl_version, plugin.json says $plugin_version"
-    printf '        %s\n' "policy: any okrdev-provided file changes → bump both markers together (docs/adoption.md § Upgrading)"
+    printf '        %s\n' "policy: any file okrdev puts in your repo changes → bump both markers together (docs/adoption.md § Upgrading)"
   fi
 }
 
@@ -765,7 +936,7 @@ check_gnu_only_syntax() {
   # a scanner that flags its own source teaches people to ignore the scanner.
   local pattern='mktemp[^|;&]*--suffix|stat -c|date -[dr] |readlink -f|grep -P|base64 -w|find [^|;&]*-printf|head -n -|xargs -r' # portability-scanner
   local hits
-  hits=$(grep -rnE "$pattern" tests/ templates/ docs/ skills/ 2> /dev/null |
+  hits=$(grep -rnE "$pattern" tests/ templates/ docs/ skills/ install.sh 2> /dev/null |
     grep -v 'portability-scanner' |
     grep -vE '^[^:]*:[0-9]+:[[:space:]]*#')   # comments describe these bugs; they don't run
   if [ -z "$hits" ]; then
@@ -826,6 +997,7 @@ check_branch_protection_bad_input
 check_kr_grammar
 check_judgment_call_format
 check_plugin_manifests
+check_headless_install
 check_shell_lint
 check_workflow_lint
 check_workflow_injection
