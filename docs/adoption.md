@@ -299,22 +299,41 @@ files, templates) is upgrade material. When you accept, the version marker is bu
 version whose scaffolding this repo currently holds**, not the newest plugin ever released and
 not the date of the last edit. Two rules keep that true, and they are the release checklist:
 
-- **A change to `skills/` or `templates/` bumps `.claude-plugin/plugin.json` and
-  `templates/okrdev/config.md`'s `okrdev_version` together, in the same PR.** These are the
-  only changes that alter what an install writes, so they are the only ones an adopter has to
-  act on. Bumping one without the other ships a version number that lies in one of two
-  directions: a fresh install recording a version it doesn't match, or an upgrade that finds
-  nothing to offer.
+- **A change to anything okrdev puts in your repo bumps `.claude-plugin/plugin.json` and
+  `templates/okrdev/config.md`'s `okrdev_version` together, in the same PR.** That means all
+  of `skills/` and `templates/` — not only the files `/okrdev:install` copies, but the ones
+  the stack module has you copy by hand, because an upgrade diffs every okrdev-provided file
+  in your repo and cannot offer you a change it was never told about. Bumping one marker
+  without the other ships a version number that lies in one of two directions: a fresh
+  install recording a version it doesn't match, or an upgrade that finds nothing to offer.
+
+  The distinction is worth stating because it has already caused one wrong answer. An earlier
+  draft of this rule justified itself as "the only changes that alter what an install writes",
+  which reads as excluding the stack module's hand-copied `ci.yml` — so a Node version bump in
+  it would have shipped with no marker change, and every stack adopter running the upgrade
+  would have been told there was nothing to do. The test is not *who copied the file*. It is
+  *whether a file okrdev provided is now different*.
 - **A docs-only change bumps nothing.** `docs/` is read from the plugin, never copied into an
   adopter's repo, so there is no installed copy that could fall behind. Bumping for prose
   would spend every adopter's upgrade prompt on a diff with no files in it — and a prompt
   that's usually empty is a prompt people stop reading.
 
-Two consequences worth stating rather than leaving to be rediscovered. A repo installed at
-0.1.0 and never upgraded correctly still reads `0.1.0` — that is the marker working, not
-drift, and it is what makes the upgrade diff computable. And this repo's own
-`okrdev/config.md` is an adopter install like any other; it tracks whatever okrdev was
-installed here, not whatever okrdev now ships.
+Worth stating rather than leaving to be rediscovered: a repo installed at 0.1.0 and never
+upgraded correctly still reads `0.1.0`. That is the marker working, not drift, and it is what
+makes the upgrade diff computable. Nothing here nags you to upgrade.
+
+**okrdev's own repo is the one exception, and it is held tighter, not looser.** A release is
+not done until okrdev has upgraded itself — the marker in this repo's `okrdev/config.md`
+tracks the version it ships, and `tests/check.sh` fails if it doesn't. The reason is the
+claim at the top of that file: okrdev runs on itself, "the first and most honest test of
+whether the method survives contact with real work." A framework three releases behind its
+own scaffolding is not testing the upgrade path it sells; it is only testing the install it
+happened to get. This is not a special rule for the maintainer's convenience — it is the
+stricter one, and it exists because the drift it catches is invisible from the inside. It sat
+unnoticed for three releases before a check went looking.
+
+The example under `examples/acme-fitness/` is deliberately left on an older marker. A worked
+example of an adopter who hasn't upgraded is worth more than one that is magically current.
 
 ## Uninstalling
 

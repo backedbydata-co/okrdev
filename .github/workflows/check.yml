@@ -23,7 +23,7 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
-          node-version: '22'
+          node-version: '24'
       - name: Install the linters
         # Pinned: a linter that changes its mind on a Tuesday turns a required
         # check into a coin flip. Bump deliberately, like any other dependency.

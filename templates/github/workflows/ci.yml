@@ -82,7 +82,7 @@ jobs:
       - uses: actions/setup-node@v4
         if: steps.okrdev-only.outputs.skip != 'true'
         with:
-          node-version: 22 # match your local Node major
+          node-version: 24 # match your local Node major
           cache: pnpm
 
       - name: Install dependencies

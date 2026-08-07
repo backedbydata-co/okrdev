@@ -17,7 +17,7 @@ secret), branch protection last (so setup itself isn't fighting the gates).
 - A GitHub account (organization or personal) and the `gh` CLI, authenticated (`gh auth login`).
 - A Vercel account. A Neon account gets created through the Vercel integration if you don't have
   one.
-- Node 22+ and pnpm.
+- Node 24+ and pnpm.
 
 Everything here has a free tier. Two limits worth knowing before they bite:
 
@@ -248,7 +248,7 @@ jobs:
           ref: ${{ github.event.deployment.ref }}
       - uses: pnpm/action-setup@v4
       - uses: actions/setup-node@v4
-        with: { node-version: 22, cache: pnpm }
+        with: { node-version: 24, cache: pnpm }
       - run: pnpm install --frozen-lockfile
 
       # Apply this PR's committed migrations to its preview database branch,
@@ -308,7 +308,7 @@ jobs:
       - uses: actions/checkout@v4
       - uses: pnpm/action-setup@v4
       - uses: actions/setup-node@v4
-        with: { node-version: 22, cache: pnpm }
+        with: { node-version: 24, cache: pnpm }
       - run: pnpm install --frozen-lockfile
       - run: pnpm drizzle-kit migrate
         env:

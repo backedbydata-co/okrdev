@@ -62,7 +62,8 @@ Two artifact defects are on main today:
    meant to print. Nothing runs this script before it ships to users.
 
 The first defect was already caught: the parking lot's 2026-08-04 sync-wrinkles entry names
-the coach-block drift and the `okrdev_version` skew (live `0.1.0` vs template `0.3.0`),
+the coach-block drift and the `okrdev_version` skew (this repo's own install sits
+several releases behind the template it ships),
 headed for a maintenance PR. That sharpens the argument rather than weakening it. The
 framework's eyes work — capture happened, through the sanctioned path — and the fix still
 hasn't happened, because **a capture creates no forcing function**. A required check does:
@@ -384,11 +385,38 @@ the assert fail, put it back. An assert nobody has ever seen fail is a guess.
 
 | Cadence | What | Gate |
 |---|---|---|
+| Every save, by hand | `./tests/check.sh` — the whole of Layer D, ~1.5s | none; this is the loop |
+| Every push | the same script, via `tests/hooks/pre-push` | blocks, unless the red is declared |
 | Every PR | Layer D, full (<60s, no network, no secrets) | required check `check` — hard fail |
 | Weekly, scheduled before the check-in | Layer J: all scenarios × 3 trials, cheap judge | never blocks; upserts one issue on failure; ~60 seconds of check-in reading |
 | During a red-first fix | The new scenario + neighbor belt, manually | the fix's definition of done |
 | At the retro | The cycle's accumulated weekly summaries, read — not a fresh run | retro input |
 | On a model bump | Full replay + rebaseline, logged in that week's check-in | baselines never silently carry across models |
+
+**The loop is local; CI is the witness.** The whole of Layer D runs in about a
+second and a half on a laptop, with no network and no secrets, which is the entire
+reason it was built out of bash, node, jq and diff instead of a framework. Waiting on
+Actions to learn something `./tests/check.sh` would have said before you finished
+reading the diff is the slow loop this document claims to refuse — so wire the hook
+once per clone (`git config core.hooksPath tests/hooks`) and let CI confirm rather
+than discover.
+
+Two caveats, because a local run that *looks* green is worse than no local run.
+`check_local_loop` reports both rather than letting either stay invisible:
+
+- **A laptop is not the CI image.** Both defects Phase 1 part 2 caught lived exactly
+  in that gap — GNU vs BSD `mktemp`, and node 22 vs 24 silently changing
+  `node --test`'s default reporter out from under a count. Neither was reproducible
+  on the other machine, and each looked green where it wasn't.
+- **Missing linters skip, they don't fail.** `shellcheck` and `actionlint` absent
+  means those checks did not run — the line says SKIPPED for that reason, and the
+  advisory repeats it, because "all checks passed" over two checks that never
+  executed is the shape of lie this suite exists to refuse.
+
+Pushing a knowingly-red commit stays first-class, not a workaround: `OKRDEV_RED_FIRST=1
+git push` runs the checks, prints every failure, and lets the push through so CI can
+record the red a reviewer clicks. `--no-verify` also works and always will — okrdev
+does not ship a rail a human cannot step over.
 
 **Per-PR LLM evals are refused outright.** Recurring spend as a merge signal for a solo
 unfunded DRI is the first thing cut under pressure — an unreliable wire is worse than no

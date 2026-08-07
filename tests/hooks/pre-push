@@ -1,0 +1,57 @@
+#!/usr/bin/env bash
+#
+# okrdev pre-push — run the checks here, where they cost 1.5 seconds, so CI is
+# confirmation rather than discovery. A round trip to Actions to learn something
+# `./tests/check.sh` would have told you before lunch is the slow loop this
+# repo keeps saying it refuses.
+#
+# Wire it once per clone (hooks are not version-controlled, so this is opt-in
+# by nature):
+#
+#   git config core.hooksPath tests/hooks
+#
+# RED-FIRST IS NOT A BYPASS PROBLEM — it is a first-class path. docs/testing.md
+# requires pushing a knowingly-failing commit on its own so CI records the red
+# a reviewer can click. That is the method working, not a mistake to block:
+#
+#   OKRDEV_RED_FIRST=1 git push
+#
+# which still runs the checks and still prints every failure — it just lets the
+# push through and reminds you the fix commit is owed. `--no-verify` also works
+# and always will; okrdev never ships a rail a human cannot step over.
+
+set -uo pipefail
+
+root=$(git rev-parse --show-toplevel) || exit 0
+cd "$root" || exit 0
+
+[ -x tests/check.sh ] || exit 0
+
+if tests/check.sh; then
+  exit 0
+fi
+
+if [ -n "${OKRDEV_RED_FIRST:-}" ]; then
+  cat >&2 <<'EOF'
+
+  ── red-first push allowed ──────────────────────────────────────────────────
+  The suite is failing and you said so on purpose. CI will record this run.
+  What is owed next is the fix commit, pushed separately — two runs, two links.
+  A red commit that never gets its green is just a broken main with a story.
+
+EOF
+  exit 0
+fi
+
+cat >&2 <<'EOF'
+
+  ── push blocked: the checks are failing ────────────────────────────────────
+  Fix them, or say the red is deliberate:
+
+      OKRDEV_RED_FIRST=1 git push
+
+  That is the red-first path from docs/testing.md, not a workaround — it lets
+  the failing run reach CI where a reviewer can click it.
+
+EOF
+exit 1

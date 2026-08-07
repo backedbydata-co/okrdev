@@ -318,6 +318,34 @@ check_skill_references() {
   fi
 }
 
+# chafe: BOTH defects this suite caught in Phase 1 part 2 hid in the gap between
+# a laptop and CI — GNU vs BSD `mktemp`, and node 22 vs 24 changing `node --test`'s
+# default reporter out from under a count. A local run you cannot trust sends you
+# to Actions to find out, which is the slow loop this repo claims to refuse.
+check_local_loop() {
+  local ci_node local_node hooks notes=()
+  ci_node=$(sed -n "s/.*node-version: *'\{0,1\}\([0-9]*\).*/\1/p" .github/workflows/check.yml | head -1)
+  local_node=$(node --version 2>/dev/null | sed 's/^v\([0-9]*\).*/\1/')
+  if [ -n "$ci_node" ] && [ -n "$local_node" ] && [ "$ci_node" != "$local_node" ]; then
+    notes+=("node ${local_node} here vs ${ci_node} on CI — the two disagreed about \`node --test\` output once already")
+  fi
+  # Not on CI: the hook is a laptop concern, and CI has no laptop.
+  if [ -z "${CI:-}" ]; then
+    hooks=$(git config --get core.hooksPath 2>/dev/null)
+    [ "$hooks" = "tests/hooks" ] || notes+=("pre-push hook not wired — \`git config core.hooksPath tests/hooks\`")
+  fi
+  command -v shellcheck > /dev/null 2>&1 || notes+=("shellcheck missing — its check is skipping, not passing")
+  command -v actionlint > /dev/null 2>&1 || notes+=("actionlint missing — its check is skipping, not passing")
+  # Advisory on purpose. A contributor on the wrong node should be told, not
+  # blocked — but never left to assume a green run here means a green run there.
+  if [ ${#notes[@]} -eq 0 ]; then
+    ok "local loop: matches CI — a green run here means a green run there"
+  else
+    ok "local loop: ADVISORY — this run is weaker than CI will be"
+    printf '        - %s\n' "${notes[@]}"
+  fi
+}
+
 # chafe: this suite's own admission rule, made mechanical — the plan promises
 # growth only from chafe, and a promise nothing checks is theater.
 check_chafe_comments() {
@@ -600,7 +628,31 @@ check_version_sync() {
     ok "version sync: template config and plugin.json both say $plugin_version"
   else
     bad "version sync: templates/okrdev/config.md says $tmpl_version, plugin.json says $plugin_version"
-    printf '        %s\n' "policy: skills/ or templates/ change → bump both together (docs/adoption.md § Upgrading)"
+    printf '        %s\n' "policy: any okrdev-provided file changes → bump both markers together (docs/adoption.md § Upgrading)"
+  fi
+}
+
+# chafe: this repo's own install sat at 0.1.0 while it shipped 0.4.0 — three
+# releases of its own scaffolding that it had never run. Captured 2026-08-04 in
+# the parking lot's sync-wrinkles entry and still unfixed on 2026-08-07, which
+# is the parked-but-unfixed gap docs/testing.md says a required check closes.
+# The dogfood claim in okrdev/config.md ("okrdev runs on itself") is only true
+# if it runs on the version it ships.
+check_dogfood_current() {
+  # okrdev's OWN install only. examples/acme-fitness is fiction and is
+  # deliberately left on an old marker — a worked example of an adopter who
+  # has not upgraded is worth more than one that is magically current.
+  local live shipped
+  live=$(sed -n 's/^okrdev_version:[[:space:]]*\([0-9.]*\).*/\1/p' okrdev/config.md | head -1)
+  shipped=$(jq -r '.version' .claude-plugin/plugin.json)
+  if [ -z "$live" ]; then
+    bad "dogfood: no okrdev_version in okrdev/config.md"
+  elif [ "$live" = "$shipped" ]; then
+    ok "dogfood: this repo runs the okrdev it ships ($shipped)"
+  else
+    bad "dogfood: this repo runs okrdev $live but ships $shipped"
+    printf '        %s\n' "a release is not done until okrdev has upgraded itself (docs/adoption.md § Upgrading)"
+    printf '        %s\n' "run the upgrade — coach block, any okrdev-installed .github/ files, config keys — then move the marker"
   fi
 }
 
@@ -786,8 +838,10 @@ check_confidence_mirror
 check_footprint_manifest
 check_adoption_install_list
 check_version_sync
+check_dogfood_current
 check_glossary_promise
 check_threshold_tokens
+check_local_loop
 check_chafe_comments
 check_do_not_freeze
 
