@@ -166,7 +166,7 @@ The watcher, `~/zoom-coach/bin/coach-monitor.sh`:
 F=$1; C=$2; MIN=${3:-1200}; MAXW=${4:-45}; first=0
 while true; do
   OFF=$(cat "$C" 2>/dev/null || echo 0)
-  SZ=$(stat -f%z "$F" 2>/dev/null || echo 0)
+  SZ=$(wc -c < "$F" 2>/dev/null | tr -d '[:space:]'); [ -n "$SZ" ] || SZ=0
   [ "$SZ" -lt "$OFF" ] && { OFF=0; echo 0 > "$C"; }
   NEW=$((SZ-OFF)); now=$(date +%s)
   if [ "$NEW" -gt 0 ]; then

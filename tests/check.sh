@@ -125,6 +125,108 @@ check_plugin_manifests() {
   ok "manifests: both parse, versions are semver, names agree"
 }
 
+# chafe: branch-protection.sh shipped with die() called before its definition
+# and nothing caught it (fixed in the Phase 0 PR). shellcheck catches that whole
+# class. Skipped, loudly, when the tool is absent — a check that quietly does
+# nothing on a laptop is worse than one that says it didn't run.
+check_shell_lint() {
+  local scripts=(templates/stack/branch-protection.sh tests/check.sh)
+  if ! command -v shellcheck > /dev/null 2>&1; then
+    ok "shell lint: SKIPPED — shellcheck not installed (CI installs it)"
+    return 0
+  fi
+  if shellcheck "${scripts[@]}"; then
+    ok "shell lint: ${#scripts[@]} scripts clean"
+  else
+    bad "shell lint: shellcheck found problems (above)"
+  fi
+}
+
+# chafe: none yet — okrdev ships three workflow templates adopters run in their
+# own repos, and until Phase 0 nothing in this repo had ever executed or parsed
+# them. actionlint also runs shellcheck over each `run:` block.
+check_workflow_lint() {
+  local workflows=(.github/workflows/check.yml templates/github/workflows/ci.yml
+                   templates/github/workflows/neon-cleanup.yml templates/github/workflows/okr-gate.yml)
+  if ! command -v actionlint > /dev/null 2>&1; then
+    ok "workflow lint: SKIPPED — actionlint not installed (CI installs it)"
+    return 0
+  fi
+  if actionlint "${workflows[@]}"; then
+    ok "workflow lint: ${#workflows[@]} workflows clean"
+  else
+    bad "workflow lint: actionlint found problems (above)"
+  fi
+}
+
+# chafe: templates/stack/README.md ships a copy-pasteable e2e-preview workflow
+# that interpolates github.event.deployment.ref straight into a run: block, on a
+# deployment_status trigger holding NEON_API_KEY. A branch name carrying a quote
+# breaks out and runs arbitrary commands with the secrets in scope; git accepts
+# such names. actionlint does not flag it. Found in Phase 1 recon.
+check_workflow_injection() {
+  # GitHub expands ${{ }} textually before bash sees the script, so attacker-
+  # controllable context inside a run: body is a command-injection hole. The
+  # fix is always the same: bind it to env: and let bash read a variable.
+  # shellcheck disable=SC2016  # awk program: $0 and ${{ }} must stay literal
+  local scanner='
+    function indent(s) { match(s, /^ */); return RLENGTH }
+    function flag() { if ($0 ~ /\$\{\{[ ]*github\.(event|head_ref)/) print FILENAME ":" FNR ": " $0 }
+    BEGIN { active = (md ? 0 : 1) }
+    md && /^```ya?ml$/ { active = 1; in_run = 0; next }
+    md && /^```/       { active = 0; in_run = 0; next }
+    !active { next }
+    /^[ \t]*(- +)?run:/ { run_col = index($0, "run:") - 1; in_run = 1; flag(); next }
+    { if (in_run) {
+        if ($0 ~ /^[ \t]*$/) next
+        if (indent($0) <= run_col) { in_run = 0; next }
+        flag()
+      } }'
+  local hits
+  hits=$( { awk -v md=0 "$scanner" .github/workflows/*.yml templates/github/workflows/*.yml
+            awk -v md=1 "$scanner" templates/stack/README.md docs/*.md; } 2>/dev/null )
+  if [ -z "$hits" ]; then
+    ok "workflow injection: no untrusted github context inside a run: body"
+  else
+    bad "workflow injection: attacker-controllable context expanded into a shell"
+    printf '%s\n' "$hits" | sed 's/^/        /'
+    printf '        %s\n' "fix: bind it to env: and reference the variable from bash"
+  fi
+}
+
+# chafe: docs/live-coached-sessions.md ships a coach-monitor.sh using `stat -f%z`,
+# which is BSD-only. On Linux it errors, `|| echo 0` swallows it, and the watcher
+# loops forever emitting nothing — a rig that looks armed and transmits nothing.
+# The linters pass it clean; only running it on Linux finds this. Phase 1 recon.
+check_embedded_script_portability() {
+  # Scripts pasted out of docs run on whatever laptop the reader has. A
+  # platform-only builtin that fails into a fallback is the worst shape of
+  # bug: no crash, no warning, just silence.
+  local hits
+  hits=$(grep -rn -- 'stat -f%' docs/ templates/ skills/ 2>/dev/null)
+  if [ -z "$hits" ]; then
+    ok "embedded scripts: no BSD-only stat syntax"
+  else
+    bad "embedded scripts: BSD-only \`stat -f%\` fails silently on Linux"
+    printf '%s\n' "$hits" | sed 's/^/        /'
+    printf '        %s\n' 'fix: use wc -c, which is POSIX and needs no stat dialect'
+  fi
+}
+
+# chafe: the gate states the KR grammar a FOURTH time at okr-gate.yml:252, as an
+# id re-parse, and check_kr_grammar cannot see it — it greps `^KR:`. The two are
+# coupled by an unguarded `idMatch[2]`, so a one-sided edit throws a TypeError on
+# every PR instead of warning. Found in Phase 1 recon.
+check_gate_grammar_tests() {
+  if node --test tests/gate-grammar.test.js > /tmp/okrdev-gate-test.log 2>&1; then
+    ok "okr-gate grammar: $(grep -c '^ok ' /tmp/okrdev-gate-test.log) unit tests pass"
+  else
+    bad "okr-gate grammar: unit tests failed"
+    grep -E '^not ok|Error|assert' /tmp/okrdev-gate-test.log | head -12 | sed 's/^/        /'
+  fi
+  rm -f /tmp/okrdev-gate-test.log
+}
+
 # chafe: none yet — the gate is the only real code okrdev ships, and a syntax
 # error in it would surface first in an adopter's Actions log.
 check_gate_js_syntax() {
@@ -229,7 +331,12 @@ check_branch_protection_bad_input
 check_kr_grammar
 check_judgment_call_format
 check_plugin_manifests
+check_shell_lint
+check_workflow_lint
+check_workflow_injection
+check_embedded_script_portability
 check_gate_js_syntax
+check_gate_grammar_tests
 check_skill_references
 check_chafe_comments
 check_do_not_freeze

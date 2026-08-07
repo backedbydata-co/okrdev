@@ -338,9 +338,19 @@ live-cycle-solo, with a bare repo wired as origin.
 2. Write the failing assert in `tests/`; commit it — CI on the PR branch goes red.
 3. Fix; CI green. One PR, red commit then green commit, `KR:` and `Red-first:` lines.
 
-A validator with no failing fixture is untested code, so every new assert must demonstrate
-red on something real first — a live defect, or a checked-in mutation fixture (a cycle file
-with two `active` statuses, a deliberately diverged KR regex) it must reject.
+**Push the red commit on its own, and let CI record it, before pushing the fix.** Learned in
+Phase 0 the hard way: both commits went up in one push, so CI only ran the head and produced a
+green run that proved nothing about whether the checks could ever fail. The red-first *claim*
+was in the git history; the red-first *evidence* was not, and a reviewer had no way to check
+it without a local checkout. Two pushes cost nothing and leave a failing run linked from the
+PR — the difference between rung-5 narrative and something a reader can click.
+
+A validator with no failing run is untested code, so every new assert must demonstrate red on
+something real first — a live defect, or a checked-in mutation fixture (a cycle file with two
+`active` statuses, a deliberately diverged KR regex) it must reject. Where an assert is green
+from day one because the thing it guards genuinely agrees today — the KR grammar's three
+copies, the linters — say so, and mutation-test it instead: break the thing on purpose, watch
+the assert fail, put it back. An assert nobody has ever seen fail is a guess.
 
 **Loop B — skill and doctrine edits** (coach behavior). The red artifact is a scenario:
 

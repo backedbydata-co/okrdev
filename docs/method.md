@@ -219,6 +219,29 @@ Dropping a KR is an amendment like any other: PR, `Status: dropped`, reason, num
 Raising a target after a sandbag flag (below) is too — logged as a revision, so the retro can
 see the target moved and why.
 
+**Health-metric rows amend the same way.** A red line or a measurement source can be wrong for
+the same reasons a target can, so the protocol reaches them too — with one placement rule,
+because a table cell has nowhere to put a `Revised:` block. The note goes on its own line
+directly beneath the health-metrics table, naming the metric it revises:
+
+```markdown
+| Metric | Red line | Source |
+|--------|----------|--------|
+| Support ticket volume | >40/wk | Helpdesk dashboard |
+
+Revised: 2026-08-14 — support ticket volume: source moved from the helpdesk dashboard to the
+weekly export; the dashboard counts reopened tickets twice. Original source: "Helpdesk
+dashboard". Red line unchanged.
+```
+
+Two rules keep this from becoming the loophole the protocol exists to close. **A red line is
+never renegotiated during its own breach** — fix the breach, then amend, in that order. A line
+argued down while it is red will be argued down generously, which is the whole failure mode.
+And **automating a metric's source only ever adds detections, never removes them**: if a script
+takes over part of the measuring, the manual pass it replaces stays until someone shows the
+script catches what the human caught. A metric that got easier to satisfy without anyone
+deciding it should be is no longer measuring what it was named for.
+
 ## Scoring
 
 Every KR gets a score from 0.0 to 1.0, set once, at the retro (`/okrdev:retro`). The rubric is
