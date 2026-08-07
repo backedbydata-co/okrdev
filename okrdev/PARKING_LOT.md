@@ -18,7 +18,7 @@ Nothing in Captured gets worked on. Ever. Triage first.
 
 - [2026-08-04] Evidence doctrine: docs/evidence.md + demo/domain-language wiring across method, rituals, and six skills — @alex — box: 4h — spent: 2h — status: done — notes: produced the evidence.md PR (KR: side-quest); spent is the coach's estimate, DRI to correct at review; coherence sweep parked in Captured
 - [2026-08-06] Phase 1.5 — the adopter prescription's four doctrine edits (stack.md Tests, ai-coach.md conduct line, PR-template comment, adoption.md pointer) — @alex — box: 2h — spent: 1h — status: done — notes: decision-sourced (2026-08-06 W32 ruling), per docs/testing.md § Classification; all four surfaces wired in one PR (KR: side-quest); spent is the coach's estimate, DRI to correct; PR-template edit pulled the versioning policy → 0.5.0
-- [2026-08-07] Local loop as 5th adopter-prescription item (#15) — @alex — box: 1h — spent: — status: open — notes: decision-sourced (2026-08-06 prescription ruling); sanctioned at the W32 check-in to run immediately, not next week — spend can reach but not pass the 4h/week line
+- [2026-08-07] Local loop as 5th adopter-prescription item (#15) — @alex — box: 1h — spent: 1h — status: done — notes: decision-sourced (2026-08-06 prescription ruling); sanctioned at the W32 check-in to run immediately, not next week; closed by the item-5 PR (KR: side-quest) — spent is the coach's estimate, DRI to correct at review; W32 spend now at the 4h/week line
 
 ## Promoted
 

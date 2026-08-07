@@ -106,7 +106,7 @@ expansion, so the split is named here and carried in every phase's PR tags:
   green), the harness has earned its `KR: 1.3` tag and the retro judges the rest. If that
   never happens this cycle, the side-quest box was the honest price of finding out.
 
-- **The adopter prescription's four implementation PRs are a `side-quest`, decision-sourced**
+- **The adopter prescription's implementation PRs are a `side-quest`, decision-sourced**
   — they trace to the 2026-08-06 DRI ruling logged in the W32 Judgment calls, not to a
   dogfood chafe, and KR1.3's own admission rule ("found by dogfooding … not speculative
   polish") is not this document's to rewrite. If the DRI wants decision-sourced doctrine to
@@ -505,8 +505,25 @@ The prescription itself — strategic halves only, cargo-cult refused:
    first, cheap judge second, chafe-grown corpus) is the recommended testing shape, with
    this repo as the worked example. This one is advice with a pointer, not a gated
    prescription — it asks nothing to be installed.
+5. **The loop is local; CI confirms rather than discovers.** Item 1 is priced by the loop
+   that runs it: "a bug becomes a failing test" is an easy sell when the suite answers in
+   seconds on a laptop, and a hard one when every answer costs a push and a wait — so the
+   fast local loop is prescribed with red-first, scoped to what a laptop can honestly run
+   (lint, typecheck, unit tests), never the preview-bound smoke tests, which verify on real
+   infrastructure precisely because localhost approximations lie. The genuinely non-obvious
+   half is parity, learned here the hard way: a laptop is not the CI image, and a local
+   green that leaned on the difference is not the green it looks like — both portability
+   defects Phase 1 part 2 caught lived in exactly that gap, one silently vacuous on every
+   laptop from a GNU-only flag that CI's ubuntu never tripped, the other counting 7 tests
+   on CI and 0 on a laptop from the same command when the runtime major changed the
+   reporter. Adopters are told this failure mode, not handed a script: `check_local_loop`
+   (§ What runs where) is the worked example, and like item 4 this half is advice with a
+   pointer — it asks nothing to be installed; its stack-module gate is only the surface it
+   sits on, stack.md being read by stack adopters alone. Escape hatches stay doctrine:
+   anything wired locally is opt-in and step-overable, a knowingly-red push stays
+   first-class, and the never-list line outranks the loop everywhere they touch.
 
-Where it wires — four small doctrine PRs, itemized in Phase 1.5:
+Where it wires — small doctrine PRs, itemized in Phase 1.5:
 
 | Prescription | Adopter-facing surface | Gate |
 |---|---|---|
@@ -514,6 +531,7 @@ Where it wires — four small doctrine PRs, itemized in Phase 1.5:
 | Red-first conduct line | ai-coach.md's unblocking duties, level-conditioned in its own text | prose gate: "at Level 2 or on the stack module" |
 | Verify-steps named as the spec, promotion rule | one comment line in the Level 2 PR template citing evidence.md; the promotion rule in stack.md's Tests section | Level 2 opt-in; stack module |
 | Agent-contract testing | adoption.md, one pointer paragraph at this document | none needed — advice, nothing installed |
+| Local loop + parity warning | stack.md's Tests section, directly after the two rules | stack module |
 
 ## Cost and flakiness policy
 
@@ -585,18 +603,21 @@ red-first micro-PR, each behind a doctrine pin where semantics are unsettled (th
 adoption.md).
 
 **Phase 1.5 — the adopter prescription (weeks 2–3), `side-quest`, decision-sourced.** The
-four doctrine PRs from the prescription's wiring table: stack.md's Tests section gains
-red-first and the chafe-gated promotion rule; ai-coach.md's unblocking duties gain the
-level-conditioned conduct line; the PR template comment names How-to-verify as the spec
-with a citation to evidence.md; adoption.md points agent-shaped products here. Each PR
-lands the prescription as words wired into a surface adopters already meet — no new
-artifacts. One thing said plainly rather than around: **this cycle has no adopter on the
-stack or the Level 2 rails.** the outside project is Level 0, and the fence is real, so the
-prescription cannot legitimately reach it until its DRIs choose to move up the ladder —
-whether they do is the market test, and until an in-scope adopter exists the prescription
-is doctrine shipped ahead of demand, tagged accordingly. If it converts a real adopter,
-the retro records that; if it sits unused all cycle, that is retro evidence about the
-2026-08-06 decision, recorded like any other.
+doctrine PRs from the prescription's wiring table: stack.md's Tests section gains
+red-first, the chafe-gated promotion rule, and the local-loop paragraph with its parity
+warning; ai-coach.md's unblocking duties gain the level-conditioned conduct line; the PR
+template comment names How-to-verify as the spec with a citation to evidence.md;
+adoption.md points agent-shaped products here. Each lands the prescription as words wired
+into a surface adopters already meet — no new artifacts. One thing said plainly rather
+than around: when this phase was planned, **no adopter was on the stack or the Level 2
+rails.** That resolved by half on 2026-08-07 — the outside project moved up the ladder to Level 2
+(v0.5.0), which was exactly the market test this paragraph named — so the Level-2-gated
+pieces now have one real adopter in scope. The stack-gated pieces, the local loop
+included, remain doctrine shipped ahead of demand: the outside project runs the rails, not the
+stack. The fence is unchanged either way — the prescription reaches an adopter only when
+they opt in. If it converts a real adopter, the retro records that; if the stack half
+sits unused all cycle, that is retro evidence about the 2026-08-06 decision, recorded
+like any other.
 
 **Phase 2 — the scenario harness (weeks 3–4), `side-quest`, time-boxed.**
 `tests/fixtures/build.sh` (a fixture is a seed dir turned throwaway git repo;
@@ -672,7 +693,7 @@ The single map — every rule fragment above, its attachment point, and nothing 
 | Harness classification | The `KR:`-tag taxonomy itself: Layer D under the promoted KR1.3 item, Layer J as a logged side-quest with a named conversion condition |
 | Health-metric automation (mechanical half) | The 2026-Q3 coherence row's Source — via the Phase 1 doctrine pin, then amendment |
 | Weekly scenario run | The check-in's existing health-metrics step (~60 seconds: one line from one issue); the coach's existing issue/PR bridge surfaces the failure issue |
-| Adopter prescription | The stack module and Level 2 rails, via Phase 1.5's four doctrine PRs — the same opt-in gates as every stack opinion, with the one level-agnostic conduct line gated in its own prose |
+| Adopter prescription | The stack module and Level 2 rails, via Phase 1.5's doctrine PRs — the same opt-in gates as every stack opinion, with the one level-agnostic conduct line gated in its own prose |
 | Retro | Reads the cycle's accumulated weekly summaries — no fresh run |
 | Suite growth | KR1.3's definition of a countable fix (Loop B, red-first) |
 

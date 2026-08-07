@@ -166,6 +166,17 @@ infrastructure, so every test has to earn its seconds.
   suite grown from real breakage stays small, meaningful, and trusted; a smoke suite grown
   from completeness becomes the untended garden nobody believes when it goes red.
 
+**The loop is local; CI confirms rather than discovers.** Red-first is priced by the loop
+that runs it: an easy sell when lint, typecheck, and the Vitest units answer in seconds on a
+laptop, and a hard one when every answer costs a push and a wait. So run the cheap
+deterministic checks where they are cheap — the preview still owns verification, branch
+protection still owns enforcement, and anything you wire locally is opt-in and step-overable,
+because a knowingly-red push has to stay first-class. One warning travels with the speed: a
+local green that skipped a missing linter, or ran on a different runtime major than CI pins,
+is not the green it looks like. okrdev tells itself this with a parity advisory in its own
+harness (`check_local_loop` — [testing.md](testing.md) § What runs where); you are told the
+failure mode, not handed a script. Nothing here lands in your repo.
+
 A green suite proves less than it feels like it proves: the verdict order stays demo above
 suite, metric above demo, exactly as [evidence.md](evidence.md) ranks them. Tests are the
 regression floor under real-use evidence, never a substitute for it.
