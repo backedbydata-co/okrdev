@@ -610,14 +610,24 @@ template comment names How-to-verify as the spec with a citation to evidence.md;
 adoption.md points agent-shaped products here. Each lands the prescription as words wired
 into a surface adopters already meet — no new artifacts. One thing said plainly rather
 than around: when this phase was planned, **no adopter was on the stack or the Level 2
-rails.** That resolved by half on 2026-08-07 — the outside project moved up the ladder to Level 2
-(v0.5.0), which was exactly the market test this paragraph named — so the Level-2-gated
-pieces now have one real adopter in scope. The stack-gated pieces, the local loop
-included, remain doctrine shipped ahead of demand: the outside project runs the rails, not the
-stack. The fence is unchanged either way — the prescription reaches an adopter only when
-they opt in. If it converts a real adopter, the retro records that; if the stack half
-sits unused all cycle, that is retro evidence about the 2026-08-06 decision, recorded
-like any other.
+rails.** That resolved on 2026-08-07, both halves inside a day — the outside project moved to
+Level 2 (v0.5.0) and then took the stack module, which is exactly the market test this
+paragraph named. Every gate the prescription rides now has one real adopter behind it,
+the local loop included. The fence is untouched: opting in is still the only way the
+words reach anyone.
+
+Two honesty notes on that, because a market test with n=1 proves less than it feels
+like. First, one adopter is a signal, not a verdict, and the DRI who chose it also
+wrote the prescription's parent ruling — the retro should weigh it knowing that.
+Second, the outside project took the stack by **mapping, not re-tooling**: it kept plain SQL
+migrations and `node --test` where the properties the stack wants already held
+(reviewable DDL in the diff, units on every PR), installed only the genuinely missing
+pieces, and logged three deliberate exceptions as decisions. That is the stack module
+meeting a real brownfield repo for the first time, and it is worth more to this
+document than a clean-room install would have been — the mapping is where the doctrine
+either holds or chafes, and this repo's own [stack.md](stack.md) does not yet name that
+mode. Whether the prescription earns its keep from here is a retro question about the
+2026-08-06 decision, recorded like any other.
 
 **Phase 2 — the scenario harness (weeks 3–4), `side-quest`, time-boxed.**
 `tests/fixtures/build.sh` (a fixture is a seed dir turned throwaway git repo;
