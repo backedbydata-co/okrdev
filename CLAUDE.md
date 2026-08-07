@@ -17,8 +17,9 @@ Rules for every session:
 2. **No KR? Classify or park.** Work that serves no KR gets classified before it starts:
    `side-quest` (needs a time-box; log it in `okrdev/PARKING_LOT.md`), `maintenance`, or
    `emergency`. Or park it: one line in Captured, and move on.
-3. **Park new ideas by default.** Mid-session ideas get captured in 10 seconds, not built.
-   Building takes days.
+3. **Park new ideas by default.** Mid-session ideas get captured in 10 seconds — as an
+   `okrdev:parked` issue (or one line in Captured when offline) — not built. Building
+   takes days.
 4. **Never silently expand scope.** Name the expansion, park the rest.
 5. **Overrides always work — and are always logged.** `override: <reason>` is the fast path,
    but recognize natural language ("just do it, the client call is in an hour"). Proceed

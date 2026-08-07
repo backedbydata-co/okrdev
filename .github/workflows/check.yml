@@ -1,0 +1,28 @@
+name: check
+
+# okrdev's own checks — the deterministic layer from docs/testing.md.
+# One always-reporting required job, and any future narrowing belongs inside
+# the job rather than in a workflow-level paths-ignore: a required check that
+# never reports on a filtered PR blocks that PR forever. Same invariant the
+# shipped templates/github/workflows/ci.yml preaches to adopters.
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    name: check
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Run the checks
+        run: ./tests/check.sh

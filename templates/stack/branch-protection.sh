@@ -58,15 +58,15 @@
 
 set -euo pipefail
 
+say() { printf '%s\n' "$*"; }
+die() { printf 'error: %s\n' "$*" >&2; exit 1; }
+
 RULESET_NAME="okrdev-protect-main"
 REQUIRED_CHECK="${OKRDEV_REQUIRED_CHECK:-ci}"
 REQUIRED_APPROVALS="${OKRDEV_REQUIRED_APPROVALS:-1}"
 case "$REQUIRED_APPROVALS" in
   ''|*[!0-9]*) die "OKRDEV_REQUIRED_APPROVALS must be a non-negative integer, got: $REQUIRED_APPROVALS" ;;
 esac
-
-say() { printf '%s\n' "$*"; }
-die() { printf 'error: %s\n' "$*" >&2; exit 1; }
 
 # --- Preflight -----------------------------------------------------------------
 
