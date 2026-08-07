@@ -149,6 +149,27 @@ mistakes that matter — the thing you verify is the thing you ship, not a local
 with mocked data. Keep the smoke suite small and meaningful: it runs on every PR against real
 infrastructure, so every test has to earn its seconds.
 
+**How tests get written — two rules, both halves of okrdev's own method:**
+
+- **Red first, where it earns its cost.** For a substantive fix or a load-bearing path, the
+  bug becomes a failing test before the fix, and the fix is done when it turns green. The
+  coach does the building, so the coach writes the failing test silently when one is cheap —
+  "I made the check fail first, on purpose, so we know the fix worked" — and simply skips it
+  when the repo cannot honestly assert the behavior. No ceremony lands on small fixes:
+  maintenance still classifies silently, and a coach that makes bugfixes feel expensive
+  teaches people to stop mentioning bugfixes. That never-list line outranks this rule
+  everywhere they touch.
+- **Promotion is chafe-gated, not automatic.** The How-to-verify steps on a PR are already a
+  test a human runs — [evidence.md](evidence.md) calls them the domain language made
+  falsifiable. They get promoted into a Playwright smoke test against the preview **when the
+  path has broken once or burned a DRI** — not one test per shipped capability. A smoke
+  suite grown from real breakage stays small, meaningful, and trusted; a smoke suite grown
+  from completeness becomes the untended garden nobody believes when it goes red.
+
+A green suite proves less than it feels like it proves: the verdict order stays demo above
+suite, metric above demo, exactly as [evidence.md](evidence.md) ranks them. Tests are the
+regression floor under real-use evidence, never a substitute for it.
+
 **Exit.** Both are standard open-source tools. There is nothing to exit from.
 
 ### Delivery: GitHub Actions, protected main, squash merges, deploy = merge

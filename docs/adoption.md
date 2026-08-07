@@ -136,6 +136,15 @@ Heroku.
 What it is, why each piece, and the exit path for every choice: [stack.md](stack.md). The
 step-by-step setup: `../templates/stack/README.md`.
 
+**If your product is an agent following a contract document** — a support agent with a
+policy file, a coach with a rules block, anything whose riskiest surface is a model reading
+instructions — the testing shape that fits is the one okrdev uses on itself: scripted user
+turns, deterministic file-and-state asserts first, a cheap LLM judge second, and a scenario
+corpus that grows only from real misbehavior, never from speculative coverage. The pattern,
+the scenario format, and okrdev's own harness as the worked example are in
+[testing.md](testing.md). This is advice with a pointer, not part of any install — nothing
+here lands in your repo.
+
 ## Non-code businesses
 
 The method runs fine in a repo that contains nothing but the `okrdev/` directory. The repo is

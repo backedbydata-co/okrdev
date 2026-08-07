@@ -473,8 +473,9 @@ How it enters is constrained by the same two fences as every other okrdev opinio
   (An earlier draft added glossary rows; dropped — the glossary is exactly the vocabulary a
   DRI must learn, and the coach can say "I made the check fail first, on purpose, so we know
   the fix worked" in words the dictionary already has. Specifying that edit did surface a
-  live drift worth a Layer D assert: the glossary holds eleven rows while
-  shipping-explained.md's own opening still promises "ten words.")
+  live drift worth a Layer D assert: the glossary had grown to eleven rows while
+  shipping-explained.md's opening still promised "ten words" — red-first fixed in
+  Phase 1 part 2, and `check_glossary_promise` now holds the sentence to the table.)
 
 The prescription itself — strategic halves only, cargo-cult refused:
 

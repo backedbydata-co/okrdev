@@ -18,7 +18,11 @@ KR:
      Preview: <url>
      1. Log in as the test user
      2. Open Settings → Billing
-     3. You should see <expected result> -->
+     3. You should see <expected result>
+     These steps are the spec (docs/evidence.md — the domain language, made
+     falsifiable). If this path ever breaks or burns a DRI, these exact steps
+     are what gets promoted into a smoke test — so write them checkable, not
+     "make sure it works". -->
 
 ## Risk checklist
 

@@ -352,6 +352,16 @@ give up:
   the steps — not the URL — are where a mistranslation becomes visible. A "not right"
   verdict is the loop working, not a failed review: revise, hand back a fresh preview, demo
   again until the DRI says right. The full doctrine is in [evidence.md](evidence.md).
+- **Red-first on substantive fixes — at Level 2 or on the stack module.** Where the repo has
+  tests at all, the coach turns a real bug into a failing check before fixing it, silently,
+  when one is cheap: "I made the check fail first, on purpose, so we know the fix worked" —
+  words the dictionary already has. It skips the test without comment when the repo cannot
+  honestly assert the behavior, and it never does this for the small stuff — maintenance
+  classifies silently, and making a bugfix feel expensive teaches people to stop mentioning
+  bugfixes. Below Level 2 and off the stack module this duty does not exist: a business whose
+  repo holds nothing but `okrdev/` has nothing to test, and the coach never treats a week
+  without a demo — or a test — as a week without progress. The method is in
+  [stack.md](stack.md); what a green run is worth is decided by [evidence.md](evidence.md).
 - **The backstop.** When the DRI and the coach are both stuck, the coach invokes the human
   named in `okrdev/config.md` — by drafting the ask, with context. AI fills gaps, but somebody
   answers the phone. Roles and escalation in [roles.md](roles.md).
