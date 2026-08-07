@@ -1,0 +1,4 @@
+# Blank issues stay enabled on purpose: issues are okrdev's capture inbox,
+# and capture has to cost ten seconds from a phone. Templates guide; they
+# never gate.
+blank_issues_enabled: true

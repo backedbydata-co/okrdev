@@ -247,7 +247,7 @@ sessions, and on a GitHub-remote repo they no longer have to:
   label. Title = the idea; energy and effort in the body if you have the extra five seconds.
   It lands in the same triage sweep as everything parked from a session.
 - **From a collaborator:** anyone with repo access can park from the GitHub UI — no Claude
-  session needed. The collaborator files "referral program for studio owners" from his browser, and it
+  session needed. Maya files "referral program for studio owners" from their browser, and it
   gets its fair hearing on Thursday like everything else.
 - **The low-tech fallback:** note ideas wherever you already do (phone notes, a text to
   yourself), then open your next session with "park three things from my phone notes." The

@@ -1,0 +1,26 @@
+# okrdev is markdown and shell — nothing here builds, so this file is not
+# about artifacts. It exists for the things that must never land in a public
+# repo, plus the noise every clone accumulates.
+
+# Secrets. The stack docs keep credentials in repo secrets and local env
+# files; the env files stay local. This rule is why a future `.env` is a
+# non-event instead of an incident.
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+
+# Editor and OS noise.
+.DS_Store
+Thumbs.db
+*.swp
+.idea/
+.vscode/
+
+# Node. tests/gate-grammar.test.js runs on bare `node --test` with no
+# install step, but a stray `npm install` shouldn't dirty the tree.
+node_modules/
+
+# Anything you want ignored locally without editing this shared file belongs
+# in .git/info/exclude.
