@@ -36,9 +36,12 @@ may and may not do — is `docs/ai-coach.md`.
      land the PR that flips it to `active`. No cycle file at all → suggest `/okrdev:plan`. A
      cycle past its `end:` date but still `active` → suggest `/okrdev:retro`.
 
-4. **Staleness before anything else.** If the last check-in is more than 10 days old in an
-   active cycle, raise it before answering the actual question, and offer the two-minute
-   gap-spanning catch-up (`/okrdev:checkin`). No guilt trips — systems die by silent decay,
+4. **Staleness before anything else.** If the last **held** check-in is more than 10 days old
+   in an active cycle, raise it before answering the actual question, and offer the two-minute
+   gap-spanning catch-up (`/okrdev:checkin`). Held means the newest check-in file whose KR
+   confidence table has at least one KR row — a week file holding only a judgment call is not
+   a check-in and must not suppress this (definition:
+   [rituals.md](../../docs/rituals.md)). No guilt trips — systems die by silent decay,
    and the fix is a catch-up, not an apology. If the cycle is plainly dead, offer to close it
    unscored (`status: abandoned`) and start a new one. That's allowed, without ceremony.
 

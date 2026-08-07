@@ -11,7 +11,7 @@ bloat comes from humans doing clerical work the coach should have done before an
 | Weekly check-in | Weekly | ~15 min | `/okrdev:checkin` |
 | Parking-lot triage | Inside the check-in (or standalone) | ~5 min | `/okrdev:triage` |
 | Cycle retro | Once per cycle, at the end | ~60 min | `/okrdev:retro` |
-| Missed-cadence catch-up | Whenever a check-in is >10 days overdue | ~2 min | built into `/okrdev:checkin` |
+| Missed-cadence catch-up | Whenever the last held check-in is >10 days old | ~2 min | built into `/okrdev:checkin` |
 
 The division of labor never changes: **the coach drafts, computes, and remembers; the humans
 argue, decide, and own.** Every number in these scripts is wired to a behavior — confidence that
@@ -379,9 +379,19 @@ Systems like this die by silent decay, not by decision. Nobody decides to stop d
 a week gets skipped, then the next one is awkward because of the gap, then the awkwardness is
 the reason. The catch-up script exists to make the gap cost two minutes instead of the system.
 
-**Trigger:** the most recent check-in is more than 10 days old while a cycle is `active`. The
-coach raises it at the start of any session — before other work, in one line, no guilt:
-"Last check-in was W27, we're in W29. Two-minute catch-up, or should we close this cycle?"
+**Trigger:** the most recent *held* check-in is more than 10 days old while a cycle is
+`active`. The coach raises it at the start of any session — before other work, in one line, no
+guilt: "Last check-in was W27, we're in W29. Two-minute catch-up, or should we close this
+cycle?"
+
+**What "held" means** — the canonical definition, and the one every staleness check reads: a
+check-in file whose **KR confidence table has at least one KR row**. A week file can exist
+without a check-in ever having happened. Rule 5 tells the coach to create one to log a
+judgment call mid-week; `/okrdev:checkin` creates one before the humans arrive. Dating
+staleness by the newest *file* would let either of those disarm the tripwire for ten days —
+the ritual skipped and the alarm silenced by the same write. The confidence table is the
+right marker because it is the one section only the humans can fill: the coach can pre-draft
+every other section alone, but a confidence number is a judgment it isn't allowed to make.
 
 ### The catch-up script
 

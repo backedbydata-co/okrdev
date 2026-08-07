@@ -68,8 +68,15 @@ in [parking-lot.md](parking-lot.md).
 
 ### Level 1 — The method
 
-**What installs:** `okrdev/MISSION.md`, `okrdev/okrs/<cycle>.md`, `okrdev/checkins/`,
-`okrdev/LESSONS.md`, and the full coach block. This is okrdev proper.
+**What installs:** `okrdev/MISSION.md`, `okrdev/LESSONS.md`, `level: 1` in
+`okrdev/config.md`, and the full coach block replacing Level 0's minimal one. This is okrdev
+proper.
+
+**What install deliberately does not write:** the cycle file. `okrdev/okrs/<cycle>.md` is
+`/okrdev:plan`'s to create — it deserves a real planning session, not the tail end of an
+install — and `okrdev/checkins/<cycle>/` appears the first time a check-in or a logged
+judgment call needs it. So a freshly installed Level 1 repo has no objectives and no check-in
+history yet. That's the expected state, not a half-finished install.
 
 **What you get:** a mission the coach can hold you to, 1–3 objectives per cycle with 2–4 key
 results each, weekly check-ins the coach pre-drafts so they genuinely take 15 minutes, and a
@@ -287,6 +294,27 @@ and proposes the changes file by file. Files you've customized get a shown diff 
 never a silent overwrite — your `MISSION.md`, your cycle files, and your check-in history are
 yours and are never touched by an upgrade at all. Only the scaffolding (coach block, workflow
 files, templates) is upgrade material. When you accept, the version marker is bumped.
+
+**What the marker tracks — the versioning policy.** `okrdev_version` records **the plugin
+version whose scaffolding this repo currently holds**, not the newest plugin ever released and
+not the date of the last edit. Two rules keep that true, and they are the release checklist:
+
+- **A change to `skills/` or `templates/` bumps `.claude-plugin/plugin.json` and
+  `templates/okrdev/config.md`'s `okrdev_version` together, in the same PR.** These are the
+  only changes that alter what an install writes, so they are the only ones an adopter has to
+  act on. Bumping one without the other ships a version number that lies in one of two
+  directions: a fresh install recording a version it doesn't match, or an upgrade that finds
+  nothing to offer.
+- **A docs-only change bumps nothing.** `docs/` is read from the plugin, never copied into an
+  adopter's repo, so there is no installed copy that could fall behind. Bumping for prose
+  would spend every adopter's upgrade prompt on a diff with no files in it — and a prompt
+  that's usually empty is a prompt people stop reading.
+
+Two consequences worth stating rather than leaving to be rediscovered. A repo installed at
+0.1.0 and never upgraded correctly still reads `0.1.0` — that is the marker working, not
+drift, and it is what makes the upgrade diff computable. And this repo's own
+`okrdev/config.md` is an adopter install like any other; it tracks whatever okrdev was
+installed here, not whatever okrdev now ships.
 
 ## Uninstalling
 

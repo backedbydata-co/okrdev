@@ -39,7 +39,11 @@ costs more than its minutes, it dies — protect the fifteen.
 
 ## Handle gaps first
 
-6. Find the most recent check-in file in `okrdev/checkins/<cycle>/`. If it's more than 10 days
+6. Find the most recent **held** check-in in `okrdev/checkins/<cycle>/` — the newest file whose
+   KR confidence table has at least one KR row. Skip files that have one but left it empty:
+   those are week files created to log a judgment call or pre-drafted and never held, and
+   counting them as check-ins is how a skipped ritual silences its own alarm (the definition
+   and the reasoning are in [rituals.md](../../docs/rituals.md)). If it's more than 10 days
    old (or there is none and the cycle started more than 10 days ago), offer the gap-spanning
    catch-up before anything else: one "what moved" covering the whole gap, one confidence pass,
    two minutes total. No week-by-week archaeology, and no guilt trip — systems die by silent

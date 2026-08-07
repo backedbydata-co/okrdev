@@ -132,11 +132,22 @@ What it asserts, grown from verified contracts:
   and `skills/checkin/SKILL.md` — all agreeing today; the assert strips regex delimiters
   and flags, then requires the three bodies byte-identical, freezing them before any one
   drifts. The judgment-call line format, stated in six places today, stays identical in all
-  six. The numeric thresholds (10-day staleness, ~30% maintenance share, ~5%-or-two
-  emergencies, 0.5×2-weeks, three-weeks-flat, 0.9-early, 4 box-hours) get token-count
-  asserts over an explicit file list — `10 days` appears in the named files, `9 days` and
-  `11 days` nowhere — because the *numbers* agree today while the phrasing legitimately
-  varies, and a phrasing-level assert would be the bespoke prose parser this plan refuses.
+  six. The numeric thresholds split, and the split is the finding: **a threshold is
+  assertable only where one literal substring covers every legitimate occurrence.** Four
+  qualify — `10 days`, `30% of PRs`, `5% of PRs`, `60% of the cycle` — and get token-count
+  asserts over an explicit file list, in both directions: every named file states it, and no
+  other file does. The three that don't qualify (the two-per-cycle emergency ceiling,
+  three-weeks-flat, and 4 box-hours) vary in phrasing *and numeral* across their copies — the
+  emergency ceiling alone is written six ways, and `4` means three different things in this
+  repo. Picking a winner among those spellings would be a doctrine decision made inside a
+  test, so they become `DO_NOT_FREEZE` entries instead: a future session cannot quietly
+  normalize them into assertability without the list failing first.
+
+  The negative tokens are scoped to the staleness file list, never repo-wide. `9 days`
+  appears four times legitimately — it is the canonical output-vs-outcome example in
+  [method.md](method.md) and [evidence.md](evidence.md), and acme's KR1.2 target — so a
+  repo-wide negative would be permanently red on the documents that teach the rule. A
+  negative token has to be scoped to the files that *state* the rule.
   (Phase 1, not Phase 0: it is not a five-line grep.)
 - **Extracted-code tests.** The okr-gate JS pulled out of its YAML — with one honest
   wrinkle: `github-script` runs the body inside an AsyncFunction, so its top-level `await`
@@ -434,8 +445,8 @@ How it enters is constrained by the same two fences as every other okrdev opinio
   (An earlier draft added glossary rows; dropped — the glossary is exactly the vocabulary a
   DRI must learn, and the coach can say "I made the check fail first, on purpose, so we know
   the fix worked" in words the dictionary already has. Specifying that edit did surface a
-  live drift worth a Layer D assert: the glossary holds eleven rows while two files still
-  promise "ten words.")
+  live drift worth a Layer D assert: the glossary holds eleven rows while
+  shipping-explained.md's own opening still promises "ten words.")
 
 The prescription itself — strategic halves only, cargo-cult refused:
 
@@ -507,7 +518,7 @@ Where it wires — four small doctrine PRs, itemized in Phase 1.5:
 ## Rollout
 
 **Phase 0 — the first PR (a focused day; honestly not an afternoon).**
-`.github/workflows/check.yml` + `tests/check.sh` with ~7 byte-exact asserts, exactly two red
+`.github/workflows/check.yml` + `tests/check.sh`, exactly two red
 against main today: the coach-block three-way diff (red: the rule-3 drift) and the
 `branch-protection.sh` invalid-input smoke test (red: exit 127, `die` before definition).
 Green from day one: the KR-grammar three-copy identity, the six-file judgment-call-line

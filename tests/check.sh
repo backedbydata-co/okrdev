@@ -33,6 +33,31 @@ coach_block() { sed -n '/^<!-- okrdev:start -->$/,/^<!-- okrdev:end -->$/p' "$1"
 # flags and trailing punctuation so three different embeddings compare equal.
 kr_grammar() { grep -h '\^KR:' "$1" | head -1 | sed 's/.*\(\^KR:.*\\s\*\$\).*/\1/'; }
 
+# A check-in is HELD when its KR-confidence table carries at least one KR row.
+# The existence of a week file proves nothing: rule 5 tells the coach to create
+# one to log a judgment call mid-week, and /okrdev:checkin drafts one before the
+# humans arrive. docs/rituals.md § the missed-cadence catch-up is the canonical
+# definition of "held"; this is its one executable copy, shared by everything
+# below that needs it, because a second copy is a second thing to drift.
+#
+# The header row is `| KR | DRI | ...`, so the digit is load-bearing: matching
+# `^| KR` alone counts an empty table as populated, which is exactly how a
+# never-held week silences a staleness rule.
+held_checkin_rows() { grep -E '^\|[[:space:]]*KR[0-9]' "$1" 2> /dev/null; }
+
+# Newest held check-in in a cycle's directory, or empty. Filenames are
+# <yyyy>-W<nn>.md with a zero-padded ISO week, so lexical order is chronological
+# order — including across a year boundary, which is why the year leads.
+newest_held_checkin() {
+  local dir=$1 f newest=
+  for f in "$dir"/*.md; do
+    [ -f "$f" ] || continue
+    held_checkin_rows "$f" > /dev/null || continue
+    if [ -z "$newest" ] || [[ "$f" > "$newest" ]]; then newest=$f; fi
+  done
+  printf '%s' "$newest"
+}
+
 # ── Checks ─────────────────────────────────────────────────────────────────
 
 # chafe: the block drifted from its template for a month (PARKING_LOT 2026-08-04,
@@ -218,8 +243,24 @@ check_embedded_script_portability() {
 # coupled by an unguarded `idMatch[2]`, so a one-sided edit throws a TypeError on
 # every PR instead of warning. Found in Phase 1 recon.
 check_gate_grammar_tests() {
-  if node --test tests/gate-grammar.test.js > /tmp/okrdev-gate-test.log 2>&1; then
-    ok "okr-gate grammar: $(grep -c '^ok ' /tmp/okrdev-gate-test.log) unit tests pass"
+  local passed
+  # The reporter is pinned. node picks it from whether stdout is a TTY, and
+  # the default for a redirected run changed between node 22 and 24 — so this
+  # counted 7 on CI and 0 on a laptop, from the same command. A count that
+  # depends on the runtime's version is not a count.
+  if node --test --test-reporter=tap tests/gate-grammar.test.js > /tmp/okrdev-gate-test.log 2>&1; then
+    passed=$(grep -c '^ok ' /tmp/okrdev-gate-test.log)
+    # "Exit 0" and "tests ran" are different claims. node picks its reporter
+    # from whether stdout is a TTY, so redirecting the run can change the
+    # output format out from under the count and leave it reporting zero
+    # passes next to the word "pass" — green, and meaningless.
+    if [ "$passed" -lt 1 ]; then
+      bad "okr-gate grammar: node --test exited 0 but $passed tests were counted — nothing was verified"
+      printf '        %s\n' "the reporter's output format is not what the count expects:"
+      head -3 /tmp/okrdev-gate-test.log | sed 's/^/        /'
+    else
+      ok "okr-gate grammar: $passed unit tests pass"
+    fi
   else
     bad "okr-gate grammar: unit tests failed"
     grep -E '^not ok|Error|assert' /tmp/okrdev-gate-test.log | head -12 | sed 's/^/        /'
@@ -235,17 +276,28 @@ check_gate_js_syntax() {
   # github-script evaluates the body inside an AsyncFunction, so its top-level
   # `await` and `return` are legal there and nowhere else. Re-wrap to match.
   body=$(sed -n '/^          script: |$/,$p' "$yml" | tail -n +2 | sed 's/^            //')
-  tmp=$(mktemp --suffix=.js)
+  # `mktemp -d` plus a fixed name, not `mktemp --suffix` — the latter is
+  # GNU-only, and when it failed on macOS $tmp became empty, the redirect below
+  # failed, and `node --check ""` exited 0. The check reported "ok" having
+  # parsed nothing. check_gnu_only_syntax now guards the whole class.
+  local dir
+  dir=$(mktemp -d) || { bad "okr-gate: could not create a temp dir"; return 1; }
+  tmp=$dir/gate.js
   { printf 'async function gate(github, core, context, process) {\n'
     printf '%s\n' "$body"
     printf '}\n'; } > "$tmp"
-  if node --check "$tmp" 2>/dev/null; then
+  if [ ! -s "$tmp" ]; then
+    bad "okr-gate: extracted an empty script body from $yml — the extractor is broken"
+    rm -rf "$dir"
+    return 1
+  fi
+  if node --check "$tmp" 2> /dev/null; then
     ok "okr-gate: embedded script parses"
   else
     bad "okr-gate: embedded script has a syntax error"
     node --check "$tmp" 2>&1 | sed 's/^/        /'
   fi
-  rm -f "$tmp"
+  rm -rf "$dir"
 }
 
 # chafe: none yet — /okrdev:uninstall is documented but unimplemented (parked,
@@ -298,6 +350,381 @@ check_chafe_comments() {
   fi
 }
 
+# chafe: the cycle file and the check-ins state each KR's confidence twice, and
+# nothing kept them equal. Live near-miss found writing this check: the naive
+# "newest check-in by filename" reads 2026-W32 — a file created only to log a
+# judgment call, with a header-only confidence table — and passes vacuously
+# while the real numbers came from W31. Handoff issue #11, item (a).
+check_confidence_mirror() {
+  local corpora=(okrdev examples/acme-fitness)
+  local root cycle_file cycle checkin report status=0
+  for root in "${corpora[@]}"; do
+    local active
+    active=$(grep -l '^status: active' "$root"/okrs/*.md 2> /dev/null)
+    if [ -z "$active" ]; then
+      bad "confidence mirror: $root has no cycle file with 'status: active'"
+      status=1
+      continue
+    fi
+    # At most one active cycle — docs/testing.md names two-actives as a fixture
+    # the suite must reject. Taking the first match would pick a winner and
+    # report green, which is how the invariant would get lost.
+    if [ "$(printf '%s\n' "$active" | wc -l | tr -d ' ')" -ne 1 ]; then
+      bad "confidence mirror: $root has more than one cycle with 'status: active'"
+      printf '%s\n' "$active" | sed 's/^/        /'
+      status=1
+      continue
+    fi
+    cycle_file=$active
+    cycle=$(basename "$cycle_file" .md)
+    # "Newest" is a lexical compare, which is only chronological while every
+    # filename is fixed-width: 2026-W9.md sorts after 2026-W28.md and would
+    # silently select the wrong check-in. `date +%G-W%V` zero-pads, so this can
+    # only arrive by hand — which is exactly when a silent wrong answer is
+    # worst. Refuse the input instead of mis-sorting it.
+    local misnamed
+    misnamed=$(find "$root/checkins/$cycle" -name '*.md' 2> /dev/null |
+      grep -vE '/[0-9]{4}-W[0-9]{2}\.md$')
+    if [ -n "$misnamed" ]; then
+      bad "confidence mirror: check-in filenames must be <yyyy>-W<nn>.md or 'newest' is not chronological"
+      printf '%s\n' "$misnamed" | sed 's/^/        /'
+      status=1
+      continue
+    fi
+    checkin=$(newest_held_checkin "$root/checkins/$cycle")
+    if [ -z "$checkin" ]; then
+      # Not "no check-ins yet, fine" — a live cycle whose confidences are
+      # mirrored nowhere is the state this check exists to notice.
+      bad "confidence mirror: $root/checkins/$cycle has no held check-in (no table with KR rows)"
+      status=1
+      continue
+    fi
+    report=$(awk -v cyc="$cycle_file" -v chk="$checkin" '
+      function trim(s) { gsub(/^[ \t]+|[ \t]+$/, "", s); return s }
+      BEGIN {
+        while ((getline line < cyc) > 0) {
+          if (line ~ /^## KR[0-9]+\.[0-9]+:/) { split(line, a, ":"); id = trim(substr(a[1], 4)); cur = id }
+          else if (cur != "" && line ~ /^Status:[ \t]*dropped/) { dropped[cur] = 1 }
+          else if (id != "" && line ~ /^Confidence:/) {
+            # Strip a trailing comment before trimming: the cycle TEMPLATE
+            # ships `Confidence: 0.5  # a good stretch KR is a coin flip`, so a
+            # DRI who keeps the hint would otherwise compare the whole line.
+            v = line; sub(/^Confidence:/, "", v); sub(/#.*$/, "", v)
+            want[id] = trim(v); order[++n] = id; id = ""
+          }
+        }
+        while ((getline line < chk) > 0) {
+          if (line ~ /^\|[ \t]*KR[0-9]/) {
+            split(line, f, "|"); k = trim(f[2]); got[k] = trim(f[5]); rows++
+          }
+        }
+        # Both sides must have found something. A parser that silently matched
+        # nothing would report "all mirrored" over two empty sets.
+        if (n == 0)    { print "PARSE|no KR headings with a Confidence: line in " cyc; exit }
+        if (rows == 0) { print "PARSE|no KR rows parsed out of " chk; exit }
+        for (i = 1; i <= n; i++) {
+          id = order[i]
+          # A dropped KR is CHECKED whenever it appears — it still carries a
+          # confidence and is the one most likely to rot — but it is not
+          # REQUIRED to appear, because skills/checkin/SKILL.md tells the coach
+          # "one row per KR (skip Status: dropped ones)". Requiring it would go
+          # red on a correctly written check-in; requiring nothing would stop
+          # checking it at all. Asserting over the intersection decides neither
+          # reading, which is the rule for doctrine the docs have not settled.
+          # The acme KR1.2 row is dropped and present in W36, so this path has
+          # live cover today.
+          if (!(id in got)) {
+            if (!(id in dropped)) print "MISS|" id " has Confidence: " want[id] " but no row in the check-in"
+          }
+          else if (got[id] != want[id]) print "DIFF|" id " cycle says " want[id] ", check-in Now says " got[id]
+          seen[id] = 1
+        }
+        for (k in got) if (!(k in seen)) print "EXTRA|" k " has a check-in row but no KR in the cycle file"
+        print "COUNT|" n
+      }')
+    # The count line is always emitted, so "a COUNT line exists" is not the
+    # success condition — the absence of problem lines is. Getting this
+    # backwards made the check report "5 KRs match" over a deliberately
+    # corrupted table; caught by mutation-testing it, which is why the doctrine
+    # says to.
+    local problems count
+    problems=$(printf '%s\n' "$report" | grep -v '^COUNT|')
+    count=$(printf '%s\n' "$report" | sed -n 's/^COUNT|//p')
+    if [ -n "$count" ] && [ -z "$problems" ]; then
+      ok "confidence mirror: $root — $count KRs match $(basename "$checkin")"
+    else
+      bad "confidence mirror: $root disagrees with $(basename "$checkin")"
+      printf '%s\n' "$problems" | sed 's/^[A-Z]*|/        /'
+      status=1
+    fi
+  done
+  return $status
+}
+
+# chafe: docs/adoption.md listed a cycle file under Level 1's "What installs"
+# while skills/install/SKILL.md says in bold not to create one. That
+# contradiction sat on main and had to be escalated to the DRI by hand
+# (handoff issue #11, decision 1) — a reviewer-class coherence breach of
+# exactly the kind the cycle's health metric names, and nothing mechanical
+# could see it. The manifest is what a check can read.
+check_footprint_manifest() {
+  local manifest=tests/install-footprint.md
+  local skill=skills/install/SKILL.md
+  local t missing=() outside=() unlisted=() phantom=() all copied refs status=0
+  [ -f "$manifest" ] || { bad "footprint: $manifest is missing"; return 1; }
+
+  # shellcheck disable=SC2016  # backticks are markdown code spans, not a subshell
+  local span='`templates/[A-Za-z0-9._/-]+`'
+  all=$(grep -oE "$span" "$manifest" | tr -d '`' | sort -u)
+  # Table A only — the per-level install list. Scoping matters: the manifest
+  # also carries a table of templates install deliberately does NOT copy, and
+  # comparing against the whole document would make the next assert vacuous by
+  # construction (every template listed somewhere ⇒ nothing can ever be missing).
+  copied=$(sed -n '/^| Level | Destination/,/^$/p' "$manifest" | grep -oE "$span" | tr -d '`' | sort -u)
+  refs=$(grep -oE "$span" "$skill" | tr -d '`' | sort -u)
+  if [ -z "$all" ] || [ -z "$copied" ] || [ -z "$refs" ]; then
+    bad "footprint: scan found nothing (manifest=$(printf '%s' "$all" | grep -c .) copied=$(printf '%s' "$copied" | grep -c .) skill=$(printf '%s' "$refs" | grep -c .)) — the scan itself is broken"
+    return 1
+  fi
+
+  # Every template the manifest names must exist. A manifest that points at a
+  # deleted template is worse than none: it reports green about a broken install.
+  while read -r t; do
+    [ -n "$t" ] || continue
+    [ -e "$t" ] || missing+=("$t")
+  done <<< "$all"
+
+  # Every template the install skill reaches for must be accounted for — either
+  # as a copy (table A) or as a deliberate non-copy (table B). This is the half
+  # that catches install GROWING a write nobody wrote down.
+  while read -r t; do
+    [ -n "$t" ] || continue
+    printf '%s\n' "$all" | grep -qxF "$t" || unlisted+=("$t")
+  done <<< "$refs"
+
+  # And the other direction: the manifest may not claim a copy install never
+  # makes. Without this the manifest could drift into wishful thinking and
+  # still pass everything above.
+  while read -r t; do
+    [ -n "$t" ] || continue
+    printf '%s\n' "$refs" | grep -qxF "$t" || phantom+=("$t")
+  done <<< "$copied"
+
+  # The health metric's red line, mechanized: okrdev/, the marked CLAUDE.md
+  # block, and .github/ at Level 2. Anything else is a breach by definition.
+  while read -r t; do
+    [ -n "$t" ] || continue
+    case "$t" in okrdev/* | CLAUDE.md | .github/*) ;; *) outside+=("$t") ;; esac
+  done < <(sed -n '/^| Level | Destination/,/^$/p' "$manifest" |
+    awk -F'|' 'NR > 2 { gsub(/^[ \t]+|[ \t]+$/, "", $3); sub(/ \(marked block only\)$/, "", $3)
+                        gsub(/`/, "", $3); if ($3 != "" && $3 != "—") print $3 }' | sort -u)
+
+  if [ ${#missing[@]} -gt 0 ]; then
+    bad "footprint: manifest names templates that do not exist: ${missing[*]}"
+    status=1
+  fi
+  if [ ${#unlisted[@]} -gt 0 ]; then
+    bad "footprint: $skill uses templates the manifest does not list: ${unlisted[*]}"
+    status=1
+  fi
+  if [ ${#phantom[@]} -gt 0 ]; then
+    bad "footprint: the manifest claims installs $skill never makes: ${phantom[*]}"
+    status=1
+  fi
+  if [ ${#outside[@]} -gt 0 ]; then
+    bad "footprint: destinations outside the red line (okrdev/, CLAUDE.md, .github/): ${outside[*]}"
+    status=1
+  fi
+  [ $status -eq 0 ] && ok "footprint: $(printf '%s' "$copied" | grep -c .) templates copied by install, $(printf '%s' "$all" | grep -c .) accounted for, every destination inside the red line"
+  return $status
+}
+
+# chafe: docs/adoption.md's Level 1 "What installs" listed a cycle file and a
+# checkins/ directory that install has never written — the contradiction that
+# blocked the footprint manifest and had to go to the DRI as a ruling (handoff
+# issue #11, decision 1). The manifest alone would not have caught it: nothing
+# compared the adopter-facing description to the install skill. This does.
+check_adoption_install_list() {
+  local doc=docs/adoption.md manifest=tests/install-footprint.md
+  local dests claimed p missing=() found=0
+  # The manifest's destination column is the source of truth: it is checked
+  # against the install skill in both directions by check_footprint_manifest,
+  # so agreeing with it means agreeing with what install actually does.
+  dests=$(sed -n '/^| Level | Destination/,/^$/p' "$manifest" |
+    awk -F'|' 'NR > 2 { gsub(/^[ \t]+|[ \t]+$/, "", $3); sub(/ \(marked block only\)$/, "", $3)
+                        gsub(/`/, "", $3); if ($3 != "" && $3 != "—") print $3 }' | sort -u)
+  # Every repo path adoption.md promises a level installs. Bounded on purpose:
+  # only backticked spans that name a destination inside the red line, only
+  # inside a "**What installs:**" block. Not a prose parser — a token scan over
+  # one named paragraph, the same shape as the glossary row count.
+  # The block ends at the next bolded lead-in or the next heading, NOT at the
+  # next blank line: Level 2 states its installs as a bulleted list, and a
+  # blank-line terminator would silently read only its first sentence.
+  # shellcheck disable=SC2016  # backticks are markdown code spans, not a subshell
+  local dest_span='`(okrdev|\.github)/[A-Za-z0-9._<>/-]*`|`CLAUDE\.md`'
+  claimed=$(awk '/^\*\*What installs:\*\*/         { inblock = 1; print; next }
+                 /^\*\*/ || /^#{2,3} /             { inblock = 0 }
+                 inblock' "$doc" |
+    grep -oE "$dest_span" | tr -d '`' | sort -u)
+  if [ -z "$claimed" ]; then
+    bad "adoption list: no installed paths found in $doc — the scan is broken"
+    return 1
+  fi
+  while read -r p; do
+    [ -n "$p" ] || continue
+    found=$((found + 1))
+    printf '%s\n' "$dests" | grep -qxF "$p" || missing+=("$p")
+  done <<< "$claimed"
+  if [ ${#missing[@]} -eq 0 ]; then
+    ok "adoption list: all $found paths $doc promises are ones install actually writes"
+  else
+    bad "adoption list: $doc promises paths install never writes: ${missing[*]}"
+    printf '        %s\n' "either $doc is wrong, or the install skill and $manifest are — one of them has to give"
+  fi
+}
+
+# chafe: none yet — green on arrival, so it was mutation-tested instead (break
+# one number, watch it fail, put it back). Install copies the config template
+# verbatim and never sets the version, so a skew here makes every adopter
+# record a version they don't have, silently. Handoff issue #11, item (c).
+check_version_sync() {
+  # Deliberately NOT asserted: okrdev/config.md (0.1.0) and the acme example.
+  # Those record what was installed, not what ships — see the versioning policy
+  # in docs/adoption.md § Upgrading. Asserting them would freeze a lie.
+  local tmpl_version plugin_version
+  tmpl_version=$(sed -n 's/^okrdev_version:[[:space:]]*\([0-9.]*\).*/\1/p' templates/okrdev/config.md | head -1)
+  plugin_version=$(jq -r '.version' .claude-plugin/plugin.json)
+  if [ -z "$tmpl_version" ]; then
+    bad "version sync: no okrdev_version found in templates/okrdev/config.md"
+  elif [ "$tmpl_version" = "$plugin_version" ]; then
+    ok "version sync: template config and plugin.json both say $plugin_version"
+  else
+    bad "version sync: templates/okrdev/config.md says $tmpl_version, plugin.json says $plugin_version"
+    printf '        %s\n' "policy: skills/ or templates/ change → bump both together (docs/adoption.md § Upgrading)"
+  fi
+}
+
+# chafe: docs/shipping-explained.md opens by promising "one story, ten words,
+# one table" over a glossary that has held eleven rows since the demo row
+# landed. Found while specifying the adopter prescription (docs/testing.md).
+check_glossary_promise() {
+  local doc=docs/shipping-explained.md
+  local promise word rows n
+  # Unwrapped first: the sentence is hard-wrapped at 95 columns and today the
+  # break falls between "one" and "story", so a line-oriented grep sees neither
+  # half. A check that can be defeated by a reflow is a check that will be.
+  promise=$(tr '\n' ' ' < "$doc" | grep -oE 'one story, [a-z]+ words, one table' | head -1)
+  if [ -z "$promise" ]; then
+    bad "glossary promise: the 'one story, N words, one table' sentence is gone from $doc"
+    return 1
+  fi
+  word=${promise#one story, }
+  word=${word% words, one table}
+  case "$word" in
+    seven) n=7 ;; eight) n=8 ;; nine) n=9 ;; ten) n=10 ;; eleven) n=11 ;;
+    twelve) n=12 ;; thirteen) n=13 ;; fourteen) n=14 ;; fifteen) n=15 ;;
+    *) bad "glossary promise: '$word' is not a number word this check knows — add it"; return 1 ;;
+  esac
+  rows=$(grep -c '^| \*\*' "$doc")
+  if [ "$rows" -eq "$n" ]; then
+    ok "glossary promise: $doc promises $word words and defines $rows"
+  else
+    bad "glossary promise: $doc promises $word ($n) words, the glossary defines $rows"
+    printf '        %s\n' "fix whichever is wrong — the sentence at the top, or the table"
+  fi
+}
+
+# chafe: the same number is stated in up to six files and the copies have to
+# move together, but only where a single literal covers every legitimate use.
+# The three thresholds whose phrasing AND numeral both vary are in
+# DO_NOT_FREEZE instead — see the entries below. Handoff issue #11, item (d).
+check_threshold_tokens() {
+  local staleness="CLAUDE.md templates/CLAUDE-okrdev.md docs/ai-coach.md docs/rituals.md skills/coach/SKILL.md skills/checkin/SKILL.md"
+  local share="docs/method.md docs/rituals.md docs/ai-coach.md skills/coach/SKILL.md skills/checkin/SKILL.md"
+  local sandbag="docs/method.md docs/ai-coach.md skills/coach/SKILL.md skills/checkin/SKILL.md skills/retro/SKILL.md"
+  # docs/testing.md quotes all four while explaining this very check. It states
+  # nothing — it describes — so it is exempt from the "and nowhere else" half
+  # everywhere, rather than being reworded to dodge its own greps.
+  local plan=docs/testing.md
+  local specs=(
+    "10 days|$staleness|$plan"
+    "30% of PRs|$share|$plan"
+    "5% of PRs|$share|$plan"
+    "60% of the cycle|$sandbag|$plan"
+  )
+  local spec token files exempt f status=0 msg anchored
+  for spec in "${specs[@]}"; do
+    IFS='|' read -r token files exempt <<< "$spec"
+    # Anchored on a non-digit, because a plain substring match is satisfied by
+    # a bigger number: `5% of PRs` is a substring of `15% of PRs`, so someone
+    # could change the threshold in one file and this check would still pass.
+    # Same shape for `10 days` inside `110 days`.
+    anchored="(^|[^0-9])$(printf '%s' "$token" | sed 's/[.[\*^$]/\\&/g')"
+    msg=""
+    for f in $files; do
+      grep -qE -- "$anchored" "$f" || msg+=" states-it-no-longer:$f"
+    done
+    # The other half: nowhere else may state it. A threshold that grows a
+    # seventh home is exactly how the copies start disagreeing, and a
+    # positive-only assert never notices.
+    while read -r f; do
+      case " $files $exempt " in *" $f "*) continue ;; esac
+      msg+=" also-states-it:$f"
+    done < <(grep -rlE --include='*.md' -- "$anchored" . 2> /dev/null | sed 's|^\./||' | sort)
+    if [ -z "$msg" ]; then
+      ok "threshold '$token': stated in all $(printf '%s' "$files" | wc -w | tr -d ' ') files, and nowhere else"
+    else
+      bad "threshold '$token' drifted:$msg"
+      status=1
+    fi
+  done
+  # Staleness only: the negative tokens. Scoped to the files that STATE the
+  # rule, never repo-wide — "9 days" is the canonical output-vs-outcome example
+  # in method.md and evidence.md and acme's KR1.2 target, so a repo-wide
+  # negative is permanently red on documents that are correct.
+  # The hyphenated spelling is live in the repo (acme's W28 says "9-day
+  # median"), so it is a form a future edit can reach for. Both are checked.
+  local near
+  for near in '9 days' '11 days' '9-day' '11-day'; do
+    for f in $staleness; do
+      if grep -qE -- "(^|[^0-9])$near" "$f"; then
+        bad "threshold: '$near' appears in $f, which states the 10-day rule"
+        status=1
+      fi
+    done
+  done
+  [ $status -eq 0 ] && ok "threshold: no near-miss staleness numbers in the 6 files that state the rule"
+  return $status
+}
+
+# chafe: check_gate_js_syntax used `mktemp --suffix=.js`, which is GNU-only. On
+# macOS mktemp errors, $tmp is empty, the redirect fails, and `node --check ""`
+# exits 0 — so the check printed "ok" having parsed nothing, on every laptop in
+# the project. CI is ubuntu-latest, so CI never saw it. Found running this
+# suite locally for handoff issue #11. Sibling of the BSD-only check above:
+# same failure shape, opposite platform.
+check_gnu_only_syntax() {
+  # Both directions matter now. This suite already refuses BSD-only syntax in
+  # scripts it ships to readers; it has to refuse GNU-only syntax in the
+  # scripts it runs itself, or "the checks passed" means "the checks passed on
+  # Linux" and nobody is told which.
+  # The pattern list matches itself, so it carries a sentinel and the results
+  # are filtered by it. Same shape as check_workflow_injection's awk program:
+  # a scanner that flags its own source teaches people to ignore the scanner.
+  local pattern='mktemp[^|;&]*--suffix|stat -c|date -[dr] |readlink -f|grep -P|base64 -w|find [^|;&]*-printf|head -n -|xargs -r' # portability-scanner
+  local hits
+  hits=$(grep -rnE "$pattern" tests/ templates/ docs/ skills/ 2> /dev/null |
+    grep -v 'portability-scanner' |
+    grep -vE '^[^:]*:[0-9]+:[[:space:]]*#')   # comments describe these bugs; they don't run
+  if [ -z "$hits" ]; then
+    ok "portability: no GNU-only syntax in scripts this repo runs or ships"
+  else
+    bad "portability: GNU-only syntax fails on macOS/BSD — where most of this project is written"
+    printf '%s\n' "$hits" | sed 's/^/        /'
+    printf '        %s\n' 'fix: use the POSIX form, or one that works on both'
+  fi
+}
+
 # DO_NOT_FREEZE — "<what this suite must never assert>|<file>|<the divergent text>"
 # Each entry asserts its divergence still EXISTS. When one stops being true,
 # check_do_not_freeze fails and the entry is either promoted to a real rule
@@ -305,6 +732,22 @@ check_chafe_comments() {
 DO_NOT_FREEZE=(
   "check-in health rows paraphrase the cycle's red lines|okrdev/checkins/2026-Q3/2026-W31.md|reviewer-class contradiction on main >1 week"
   "thresholds share their number, never their phrasing|docs/ai-coach.md|more than 10 days old"
+  # The acme example ships a SAMPLED cycle — W28, W29, W36 standing in for ten
+  # weeks — so its Prev column deliberately does not chain. The anchor is the
+  # proof: W36 reads Prev 0.9 for KR2.1 while W29 left it at Now 0.75, because
+  # the weeks that moved it are not in the repo (W36 itself cites a W33 that
+  # does not exist). Backfilling check-ins to satisfy a chaining assert would
+  # be inventing evidence in the one directory that exists to teach people what
+  # evidence looks like. Handoff issue #11, item (f).
+  "the acme example's check-ins chain week to week|examples/acme-fitness/checkins/2026-Q3/2026-W36.md|| KR2.1 | jordan | 0.9 | 1.0 |"
+  # Three thresholds vary in phrasing AND numeral across their copies, so a
+  # token assert cannot cover them without picking a winner — which would be a
+  # doctrine decision made inside a test. Each entry pins one phrasing that
+  # must keep existing, so a future session cannot quietly normalize them into
+  # assertability without this list failing first. Handoff issue #11, item (d).
+  "the emergency ceiling's numeral: 'two' and '2' both live|docs/method.md|more than two a cycle"
+  "the flat-confidence window's numeral: 'three' and '3' both live|docs/method.md|three check-ins"
+  "4 box-hours means three different things|okrdev/config.md|side_quest_box_hours_per_week"
 )
 
 # chafe: this suite's other admission rule. A do-not-freeze list written as a
@@ -335,9 +778,16 @@ check_shell_lint
 check_workflow_lint
 check_workflow_injection
 check_embedded_script_portability
+check_gnu_only_syntax
 check_gate_js_syntax
 check_gate_grammar_tests
 check_skill_references
+check_confidence_mirror
+check_footprint_manifest
+check_adoption_install_list
+check_version_sync
+check_glossary_promise
+check_threshold_tokens
 check_chafe_comments
 check_do_not_freeze
 

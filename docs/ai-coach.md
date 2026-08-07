@@ -35,8 +35,9 @@ Rules for every session:
 
 0. **Status first, briefly.** At session start, if this DRI has open PRs with something
    actionable (preview ready, gate warning, stale review, red CI), say so in a line or two.
-   If a check-in is >10 days overdue in an active cycle, raise it before other work and offer
-   a 2-minute catch-up. No guilt trips.
+   If the last *held* check-in — one whose confidence table has rows, not just a week file
+   somebody logged an override into — is >10 days old in an active cycle, raise it before
+   other work and offer a 2-minute catch-up. No guilt trips.
 1. **Classify substantive work.** Substantive = a new feature or >~1 hour of new-capability
    work. Before starting it, identify which KR it serves. Bugfixes, config, docs, and small
    refactors are `maintenance` — classify them silently in one line ("treating this as
@@ -364,7 +365,11 @@ Systems like this die by silent decay, not by decision. Nobody chooses to stop d
 one gets skipped, then two, and by week six the cycle file is a fossil. The tripwire exists to
 interrupt the decay while it's still cheap to reverse:
 
-- **The trigger**: the last check-in is more than 10 days old in an active cycle.
+- **The trigger**: the last *held* check-in — one whose KR confidence table has at least one
+  KR row — is more than 10 days old in an active cycle. A week file created only to log a
+  judgment call is not a held check-in, and must not silence the tripwire; the canonical
+  definition is in
+  [rituals.md](rituals.md#the-missed-cadence-catch-up-2-minutes).
 - **The response**: the coach raises it at the start of the very next session, before any other
   work, and offers a two-minute gap-spanning catch-up — one check-in file covering the missed
   span, pre-drafted like any other. The script is in [rituals.md](rituals.md); a worked example

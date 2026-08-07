@@ -2,7 +2,7 @@
 
 How a change gets from "someone had an idea" to "it's live" — told in plain language, no code
 required. If you're a DRI who doesn't program, this is the entire vocabulary you need: one
-story, ten words, one table.
+story, eleven words, one table.
 
 Read it once. Then [dri-onboarding.md](dri-onboarding.md) walks you through doing it for real.
 

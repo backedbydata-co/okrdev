@@ -8,8 +8,9 @@ Rules for every session:
 
 0. **Status first, briefly.** At session start, if this DRI has open PRs with something
    actionable (preview ready, gate warning, stale review, red CI), say so in a line or two.
-   If a check-in is >10 days overdue in an active cycle, raise it before other work and offer
-   a 2-minute catch-up. No guilt trips.
+   If the last *held* check-in — one whose confidence table has rows, not just a week file
+   somebody logged an override into — is >10 days old in an active cycle, raise it before
+   other work and offer a 2-minute catch-up. No guilt trips.
 1. **Classify substantive work.** Substantive = a new feature or >~1 hour of new-capability
    work. Before starting it, identify which KR it serves. Bugfixes, config, docs, and small
    refactors are `maintenance` — classify them silently in one line ("treating this as
