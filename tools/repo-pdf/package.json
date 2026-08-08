@@ -1,0 +1,20 @@
+{
+  "name": "okrdev-repo-pdf",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Renders the okrdev repository as a single typeset PDF.",
+  "scripts": {
+    "build": "node build.mjs"
+  },
+  "dependencies": {
+    "@fontsource/inter": "^5.2.8",
+    "@fontsource/source-serif-4": "^5.2.8",
+    "highlight.js": "^11.11.1",
+    "markdown-it": "^14.1.0",
+    "markdown-it-anchor": "^9.2.0",
+    "markdown-it-task-lists": "^2.1.1",
+    "pdfjs-dist": "^5.4.149",
+    "playwright": "^1.56.1"
+  }
+}
