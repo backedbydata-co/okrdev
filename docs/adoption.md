@@ -286,16 +286,24 @@ no shell equivalent — it exists only inside the `/plugin` dialog. `install.sh`
 root, closes that gap:
 
 ```bash
-cd ~ && git clone https://github.com/backedbydata-co/okrdev.git
-./okrdev/install.sh
-rm -rf ~/okrdev   # optional; see "the checkout is disposable" below
+dir=$(mktemp -d)
+git clone https://github.com/backedbydata-co/okrdev.git "$dir/okrdev"
+"$dir/okrdev/install.sh"
+rm -rf "$dir"   # optional; see "the checkout is disposable" below
 ```
 
 **Run it outside the repo you're adopting into.** The script never writes to the repo it runs
 from — but `git clone` does, and it lands at `okrdev/`, which is precisely the path the method
 reserves for your ledger. Clone it at the target repo's root and `/okrdev:install` will later
 find an `okrdev/` directory that is a copy of this project rather than your OKRs, read the repo
-as a half-finished install, and start filling gaps around it. `$HOME` or a temp dir, then.
+as a half-finished install, and start filling gaps around it.
+
+**Why `mktemp -d` and not `~`.** An earlier version of this block cloned to `~/okrdev` and
+cleaned up with `rm -rf ~/okrdev`. For most readers that is the same thing. For a reader who
+already keeps a repo at `~/okrdev` — not far-fetched, given what this project is called — the
+clone fails on a non-empty destination and the cleanup line then deletes their work. Copy-paste
+instructions should not name a fixed path in `$HOME` and then `rm -rf` it. `mktemp -d` gives a
+directory that is guaranteed new, so the cleanup can only remove what the clone created.
 
 **The checkout is disposable.** Once the script finishes, the marketplace has its own copy
 under `~/.claude/plugins/marketplaces/okrdev/` and the clone you ran from has no further job.
@@ -379,7 +387,12 @@ version whose scaffolding this repo currently holds**, not the newest plugin eve
 not the date of the last edit. Two rules keep that true, and they are the release checklist:
 
 - **A change to anything okrdev puts in your repo bumps `.claude-plugin/plugin.json` and
-  `templates/okrdev/config.md`'s `okrdev_version` together, in the same PR.** That means all
+  `templates/okrdev/config.md`'s `okrdev_version` together, in the same PR** — and, in this
+  repo, `okrdev/config.md`'s marker with them, because okrdev runs on itself and a release is
+  not done until it has upgraded itself. That third file is not optional and never was:
+  `check_dogfood_current` has always failed the build when it disagrees. This checklist named
+  two files while CI enforced three, which is the kind of gap that only shows up on release
+  day. That means all
   of `skills/` and `templates/` — not only the files `/okrdev:install` copies, but the ones
   the stack module has you copy by hand, because an upgrade diffs every okrdev-provided file
   in your repo and cannot offer you a change it was never told about. Bumping one marker
