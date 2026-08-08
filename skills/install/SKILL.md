@@ -1,6 +1,6 @@
 ---
 name: install
-description: Install, upgrade, or level-up okrdev in the current repo. Walks the adoption ladder — Level 0 parking lot, Level 1 method, Level 2 collaboration rails, optional stack module — creating okrdev/ files from templates, appending the marked CLAUDE.md coach block, and merging (never overwriting) anything that already exists. Use when someone says "install okrdev", "set up okrdev", "add okrdev to this repo", "upgrade okrdev", "move us to Level 1/2", or asks how to get started with okrdev.
+description: Install, upgrade, or level-up okrdev in the current repo. Walks the adoption ladder — Level 0 parking lot, Level 1 method, Level 2 collaboration rails, optional stack module — creating okrdev/ files from templates, appending the marked coach block to the host agent's instructions file (CLAUDE.md or AGENTS.md), and merging (never overwriting) anything that already exists. Use when someone says "install okrdev", "set up okrdev", "add okrdev to this repo", "upgrade okrdev", "move us to Level 1/2", or asks how to get started with okrdev.
 ---
 
 # Install okrdev
@@ -26,7 +26,19 @@ Two rules govern everything below:
 1. **Detect state.** In the target repo, check:
    - Is this a git repo? (`git rev-parse --is-inside-work-tree`)
    - Does `okrdev/` exist? Does `okrdev/config.md` carry `okrdev_version` in its frontmatter?
-   - Does `CLAUDE.md` contain `<!-- okrdev:start -->`?
+   - **Which file does the host agent read?** `CLAUDE.md` on Claude Code, `AGENTS.md` on
+     Codex. This is the *only* platform-specific thing about an okrdev install — the coach
+     block itself carries no platform tokens, so nothing else forks. Resolve it in this order,
+     and stop at the first hit:
+     1. **Existing markers win.** If either file already contains `<!-- okrdev:start -->`,
+        that file is the destination, whatever the host. A repo that was installed from one
+        agent and is now being upgraded from another must not sprout a second block.
+     2. Otherwise, the host you are running in.
+     3. If you genuinely cannot tell, ask — one question, with the default named.
+   - Does that file contain `<!-- okrdev:start -->`?
+   - **Do *both* `CLAUDE.md` and `AGENTS.md` carry the markers?** They should never. If they
+     do, say so and stop: two coach blocks drift, and the repo needs a human to say which one
+     is real. Offer to delete the other after they choose.
    - Do `.github/pull_request_template.md`, `.github/CODEOWNERS`, or
      `.github/workflows/okr-gate.yml` already exist?
 
@@ -81,8 +93,8 @@ Two rules govern everything below:
      a collaborator straight from the GitHub UI, no Claude session needed. No `gh`, no
      remote, or the remote isn't GitHub? Skip silently — the Captured section works
      everywhere. This applies at every level; don't make it a ceremony of its own.
-   - Add the **minimal Level 0 coach block** to `CLAUDE.md`, following the collision rules in
-     step 8. Use exactly this text:
+   - Add the **minimal Level 0 coach block** to the instructions file resolved in step 1,
+     following the collision rules in step 8. Use exactly this text:
 
      ```markdown
      <!-- okrdev:start -->
@@ -168,14 +180,24 @@ Two rules govern everything below:
    variable that actually controls the gate — `gh variable set OKRDEV_STRICT_GATE --body true`.
    One without the other is a gate that says one thing and does another.
 
-8. **CLAUDE.md collision rules** (apply at every level):
-   - No `CLAUDE.md` → create one containing just the coach block.
-   - `CLAUDE.md` exists without the markers → append the block at the end, between
+8. **Instructions-file collision rules** (apply at every level). "The instructions file" is
+   the one resolved in step 1 — `CLAUDE.md` or `AGENTS.md`, never both:
+   - File doesn't exist → create one containing just the coach block.
+   - File exists without the markers → append the block at the end, between
      `<!-- okrdev:start -->` and `<!-- okrdev:end -->`. Touch nothing else — the rest of the
      file is the user's.
    - Markers already present → replace only the content between them. This is how level
      changes and upgrades apply cleanly, and how uninstall stays a deletion instead of an
      archaeology project.
+   - **Never write both files.** One install, one instructions file. Writing both doubles the
+     footprint and creates two copies of the block free to drift apart — which is exactly how
+     this repo's own coach block sat a revision behind its template for a month. If the host
+     changed since the last install, *move* the block: write the new file, delete the markers
+     and the block from the old one, and say what you did.
+   - **Never write the other agent's file to be helpful.** A Codex user does not want a
+     `CLAUDE.md` appearing in their repo, and the reverse is equally true. If they want both,
+     the bridge is theirs to make — Claude Code documents an `@AGENTS.md` import line for
+     exactly this, and it belongs in their file, not in okrdev's write.
 
 9. **Stack module.** Offer it **only** if the repo is greenfield (empty or brand-new) or the
    user explicitly asks. It is never a prerequisite for anything else — if asked, say so
@@ -206,7 +228,8 @@ Two rules govern everything below:
 
 1. Read `okrdev_version` from `okrdev/config.md` frontmatter and compare it with this
    plugin's version in `.claude-plugin/plugin.json`.
-2. Diff **only template-derived content**: the coach block between the CLAUDE.md markers,
+2. Diff **only template-derived content**: the coach block between the markers in the
+   instructions file,
    any `.github/` files okrdev installed, and `okrdev/config.md` frontmatter keys (new keys
    get proposed with their defaults). New capabilities get offered the same folded-in way —
    e.g. the `okrdev:parked` capture label (step 4) when the repo is on GitHub and the label
@@ -217,7 +240,9 @@ Two rules govern everything below:
 
 ## Uninstall (if asked)
 
-Delete `okrdev/`, remove the CLAUDE.md block including its markers, delete the
+Delete `okrdev/`, remove the coach block including its markers — check **both** `CLAUDE.md`
+and `AGENTS.md` regardless of the host you are running in, because the install may have been
+done from the other one — delete the
 `okrdev:parked` label (closing any still-open parked issues with a note), and optionally
 delete `.github/pull_request_template.md`, `.github/workflows/okr-gate.yml`, and
 `.github/CODEOWNERS` if okrdev installed them. That's the entire footprint — "removable" is
