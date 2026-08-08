@@ -34,7 +34,8 @@ pointed it at, with your own credentials, and GitHub's terms govern that.
 
 [okrdev.com](https://okrdev.com) is a single static HTML page. It runs **no JavaScript** — the
 Content-Security-Policy served with it sets `script-src 'none'`, which you can verify with
-`curl -sI https://okrdev.com`. It sets no cookies and includes no analytics, no tag manager,
+`curl -sIL https://okrdev.com`. The `-L` matters: the apex 308-redirects to `www`, and the
+redirect itself carries no headers worth reading. It sets no cookies and includes no analytics, no tag manager,
 and no third-party embeds.
 
 The host (Vercel) writes standard server access logs, as any web host does.
