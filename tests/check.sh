@@ -127,11 +127,15 @@ check_judgment_call_format() {
   fi
 }
 
-# chafe: none yet — the manifests are what a `/plugin install` reads first, and
-# nothing has ever checked they parse.
+# chafe: the manifests are what a `/plugin install` reads first, and nothing had
+# ever checked they parse. Then the plugin-directory readiness audit (2026-08-08)
+# found plugin.json short four fields a public listing renders — no `license`
+# while shipping MIT, no `repository`, and no `homepage` after okrdev.com went
+# live — and two descriptions free to drift apart, because only `.name` was ever
+# compared across the pair.
 check_plugin_manifests() {
   local plugin=.claude-plugin/plugin.json market=.claude-plugin/marketplace.json
-  local f version
+  local f version status=0 missing=()
   for f in "$plugin" "$market"; do
     if ! jq empty "$f" 2>/dev/null; then
       bad "manifests: $f is not valid JSON"
@@ -145,9 +149,28 @@ check_plugin_manifests() {
   fi
   if [ "$(jq -r '.name' "$plugin")" != "$(jq -r '.plugins[0].name' "$market")" ]; then
     bad "manifests: plugin.json and marketplace.json disagree on the plugin name"
-    return 1
+    status=1
   fi
-  ok "manifests: both parse, versions are semver, names agree"
+  # The description is what a browsing user reads before installing anything.
+  # Two copies, no assert, is the same shape as the coach block's month of drift.
+  if [ "$(jq -r '.description' "$plugin")" != "$(jq -r '.plugins[0].description' "$market")" ]; then
+    bad "manifests: plugin.json and marketplace.json disagree on the description"
+    status=1
+  fi
+  for f in license homepage repository; do
+    [ -z "$(jq -r --arg k "$f" '.[$k] // ""' "$plugin")" ] && missing+=("$f")
+  done
+  # `keywords` must be an array: a bare string is a load error, not a warning,
+  # so the plugin would fail to load rather than list badly.
+  [ "$(jq -r 'if (.keywords | type) == "array" then (.keywords | length) else -1 end' "$plugin")" -lt 1 ] &&
+    missing+=("keywords[]")
+  if [ ${#missing[@]} -gt 0 ]; then
+    bad "manifests: plugin.json is missing directory-listing fields: ${missing[*]}"
+    status=1
+  fi
+  [ $status -eq 0 ] &&
+    ok "manifests: both parse, version is semver, names and descriptions agree, listing fields present"
+  return $status
 }
 
 # chafe: KR2.2 — okrdev itself could not be installed without clicking through
