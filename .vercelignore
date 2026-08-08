@@ -1,0 +1,14 @@
+# The deploy payload is the website, and nothing else.
+#
+# okrdev is a framework repo that happens to contain a landing page. Without
+# this file every deploy would upload docs/, skills/, templates/, tests/ and
+# dist/ — none of which the site serves. Same class of problem as the plugin
+# payload shipping the whole repo (issue #8); worth not repeating here.
+#
+# Standard .gitignore semantics: `/*` matches top-level entries only, so
+# re-including /site does not fight an excluded parent directory.
+
+/*
+
+!/site
+!/vercel.json
