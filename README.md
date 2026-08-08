@@ -98,6 +98,17 @@ Then live in it:
 /okrdev:retro       # end of cycle: score honestly, extract lessons
 ```
 
+You can also just say what you want — the skills trigger on plain language. Five to start with:
+
+- "install okrdev in this repo"
+- "park this idea"
+- "run our weekly check-in"
+- "is this aligned?"
+- "score the quarter"
+
+These are the starter prompts listed in the plugin directories, kept here verbatim so the
+listing and the repo can't disagree — `check_starter_prompts` fails the build if they drift.
+
 Neither agent? The skills are plain markdown — copy `skills/*` into wherever your agent looks
 for skills, along with `templates/*` (the skills create files from them; they resolve
 `templates/` relative to where you copied it), or hand any capable agent the docs. The format
@@ -139,6 +150,7 @@ weeks and the recovery — in [examples/acme-fitness](examples/acme-fitness/).
 | [docs/shipping-explained.md](docs/shipping-explained.md) | PRs, CI, previews — in plain language, with a glossary |
 | [docs/stack.md](docs/stack.md) | The optional stack module and why each piece |
 | [docs/codex.md](docs/codex.md) | Running okrdev on Codex: what differs from Claude Code, and what was verified |
+| [docs/codex-submission.md](docs/codex-submission.md) | Directory-listing materials: test cases, starter prompts, release notes |
 | [install.sh](install.sh) | Headless plugin install — the Quickstart without the `/plugin` dialog |
 | [skills/](skills/) | The eight coach skills (install, plan, checkin, park, triage, side-quest, retro, coach) |
 | [templates/](templates/) | Everything `install` copies: okrdev/ files, coach block, GitHub rails, stack setup |
