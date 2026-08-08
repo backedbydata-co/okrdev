@@ -1,31 +1,36 @@
 # Privacy
 
 **okrdev collects nothing.** There is no telemetry, no analytics, and no account. This document
-exists because the Claude plugin directory asks every listed plugin for one, and because "we
-collect nothing" is worth being able to point at rather than assert.
+exists because the Claude and OpenAI plugin directories ask every listed plugin for one, and
+because "we collect nothing" is worth being able to point at rather than assert.
 
 Last updated: 2026-08-08.
 
 ## The plugin
 
-okrdev is a set of skills — markdown instructions that Claude Code reads — plus templates and
-docs. It ships **no MCP servers**, opens no network connections of its own, and has no server
-side for data to reach.
+okrdev is a set of skills — markdown instructions your coding agent reads — plus templates and
+docs. It runs on Claude Code and on Codex. It ships **no MCP servers**, opens no network
+connections of its own, and has no server side for data to reach.
 
 Everything okrdev produces is a file in **your** repository: `okrdev/` holds your mission, cycle
 OKRs, check-ins, lessons, and parking lot. Those files live wherever your repo lives, under your
 git history and your access control. Deleting the `okrdev/` directory and the marked block in
-your `CLAUDE.md` removes okrdev entirely — the uninstall procedure is in
+your agent's instructions file removes okrdev entirely — the uninstall procedure is in
 [docs/adoption.md](docs/adoption.md).
 
 Two things worth naming plainly, because they are the only places anything leaves your machine:
 
-- **Claude Code sends your prompts and the files it reads to Anthropic**, exactly as it does
-  without okrdev installed. okrdev changes what Claude reads in your repo; it does not change
-  where that goes. Anthropic's handling of it is covered by the
-  [Anthropic Privacy Policy](https://www.anthropic.com/legal/privacy).
+- **Your agent sends your prompts and the files it reads to whoever makes it**, exactly as it
+  does without okrdev installed. okrdev changes what the agent reads in your repo; it does not
+  change where that goes. Claude Code sends to Anthropic, under the
+  [Anthropic Privacy Policy](https://www.anthropic.com/legal/privacy); Codex sends to OpenAI,
+  under the [OpenAI Privacy Policy](https://openai.com/policies/privacy-policy). Stated as two
+  sentences rather than one generalisation, because which company receives your repository
+  contents is not a detail to smooth over.
 - **`install.sh` clones this repository from GitHub** and writes Claude Code's own marketplace
   state under `~/.claude`. That is a git clone and two local files. It sends nothing anywhere.
+  The Codex equivalent, `codex plugin marketplace add`, writes `~/.codex/config.toml` and is
+  the agent's own command, not okrdev's.
 
 Where a skill uses `gh` to read or open issues and pull requests, it is acting on the repo you
 pointed it at, with your own credentials, and GitHub's terms govern that.

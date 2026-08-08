@@ -356,13 +356,17 @@
   <div class="wrap">
     <section id="install">
       <p class="sec-label">Quickstart</p>
-      <h2>Three commands to install. One directory to uninstall.</h2>
+      <h2>Two commands to install. One directory to uninstall.</h2>
       <div class="install-cols">
         <div>
 <pre class="code"><span class="c"># In the Claude Code app (Mac/Windows), open your</span>
 <span class="c"># project folder and type into the chat:</span>
 <span class="k">/plugin</span> marketplace add backedbydata-co/okrdev
 <span class="k">/plugin</span> install okrdev
+
+<span class="c"># On Codex, the same two steps are shell commands:</span>
+<span class="k">codex</span> plugin marketplace add backedbydata-co/okrdev
+<span class="k">codex</span> plugin add okrdev@okrdev
 
 <span class="c"># then, with your project still open:</span>
 <span class="k">/okrdev:install</span>   <span class="c"># walks the adoption ladder, starts at Level 0</span>
@@ -377,6 +381,10 @@
           </ul>
         </div>
         <div class="install-side">
+          <h3>Which agent?</h3>
+          <p>okrdev is a plugin for <b>Claude Code</b> and <b>Codex</b>. Same skills, same files —
+             Claude Code invokes them as <span class="mono">/okrdev:park</span>, Codex with an
+             <span class="mono">@</span> mention.</p>
           <h3>New to Claude Code?</h3>
           <p>It's Anthropic's AI agent, and okrdev installs into it as a plugin. Get the
              desktop app at <a href="https://claude.com/claude-code">claude.com/claude-code</a> —
@@ -385,10 +393,11 @@
              (<span class="mono">./okrdev/install.sh</span>) for scripts and CI.</p>
           <h3>What it touches</h3>
           <p>One <span class="mono">okrdev/</span> directory and one marked, removable block in
-             your <span class="mono">CLAUDE.md</span>. Level 2 optionally adds a few files under
+             your agent's instructions file — <span class="mono">CLAUDE.md</span> on Claude Code,
+             <span class="mono">AGENTS.md</span> on Codex, never both. Level 2 optionally adds a few files under
              <span class="mono">.github/</span>. Your build system, deploy pipeline, and framework
              choices: untouched.</p>
-          <h3>No Claude Code?</h3>
+          <h3>Neither agent?</h3>
           <p>The skills are plain markdown — copy them into your repo and hand any capable
              agent the docs. The format is the framework.</p>
           <h3>Not a software business?</h3>
