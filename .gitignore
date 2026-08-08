@@ -22,5 +22,12 @@ Thumbs.db
 # install step, but a stray `npm install` shouldn't dirty the tree.
 node_modules/
 
+# Build output. `source: "./"` in .claude-plugin/marketplace.json makes this
+# repo the plugin directory, which the marketplace copies into every
+# installer's cache — so a tracked build artifact is something every adopter
+# downloads. The repo PDF (tools/repo-pdf) was 91% of that payload before it
+# came out. Regenerate it, don't commit it. Enforced by check_payload.
+/dist/
+
 # Anything you want ignored locally without editing this shared file belongs
 # in .git/info/exclude.

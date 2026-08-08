@@ -321,6 +321,44 @@ STUB
   return $status
 }
 
+# chafe: `source: "./"` in marketplace.json makes this repo the plugin
+# directory, and the marketplace copies that whole directory into every
+# installer's cache. dist/okrdev-repo.pdf — generated, tracked, unignored —
+# was 6,157,688 bytes: 91% of everything an adopter downloaded, for a file
+# nothing reads at runtime. Parked as issue #8 and mis-sized there as a repo
+# restructure (M-L); it was one artifact (S). No other check measured the
+# payload, so nothing would have noticed the next one.
+check_payload() {
+  local limit=204800 scanned=0 oversize=() generated=() meta path size
+  while IFS=$'\t' read -r meta path; do
+    scanned=$((scanned + 1))
+    size=${meta##* }
+    case "$path" in dist/*) generated+=("$path") ;; esac
+    [ "$size" -gt "$limit" ] && oversize+=("$path (${size} bytes)")
+  done < <(git ls-tree -r --long HEAD)
+
+  # A scan that finds nothing passes vacuously — same trap check_chafe_comments
+  # guards against. This repo tracks ~70 files; insist the walk actually ran.
+  if [ "$scanned" -lt 20 ]; then
+    bad "payload: walked $scanned tracked files — the scan itself is broken"
+    return 1
+  fi
+  # Report both classes rather than returning on the first. A run that names
+  # only the artifact you already knew about invites a second red push for the
+  # one it stopped before reaching.
+  local status=0
+  if [ ${#generated[@]} -gt 0 ]; then
+    bad "payload: build output is tracked and ships to every installer: ${generated[*]}"
+    status=1
+  fi
+  if [ ${#oversize[@]} -gt 0 ]; then
+    bad "payload: tracked file over $((limit / 1024))KB — every adopter downloads it: ${oversize[*]}"
+    status=1
+  fi
+  [ $status -eq 0 ] && ok "payload: $scanned tracked files, none generated, largest under $((limit / 1024))KB"
+  return $status
+}
+
 # chafe: branch-protection.sh shipped with die() called before its definition
 # and nothing caught it (fixed in the Phase 0 PR). shellcheck catches that whole
 # class. Skipped, loudly, when the tool is absent — a check that quietly does
@@ -998,6 +1036,7 @@ check_kr_grammar
 check_judgment_call_format
 check_plugin_manifests
 check_headless_install
+check_payload
 check_shell_lint
 check_workflow_lint
 check_workflow_injection
