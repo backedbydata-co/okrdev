@@ -132,11 +132,14 @@ check_judgment_call_format() {
 # found plugin.json short four fields a public listing renders — no `license`
 # while shipping MIT, no `repository`, and no `homepage` after okrdev.com went
 # live — and two descriptions free to drift apart, because only `.name` was ever
-# compared across the pair.
+# compared across the pair. The Codex port then made it three manifests carrying
+# the same identity, and added a failure that only surfaces in a portal preview
+# after submission: a listing pointing at a logo that isn't there.
 check_plugin_manifests() {
   local plugin=.claude-plugin/plugin.json market=.claude-plugin/marketplace.json
-  local f version status=0 missing=()
-  for f in "$plugin" "$market"; do
+  local codex=.codex-plugin/plugin.json
+  local f version status=0 missing=() missing_assets=()
+  for f in "$plugin" "$market" "$codex"; do
     if ! jq empty "$f" 2>/dev/null; then
       bad "manifests: $f is not valid JSON"
       return 1
@@ -168,8 +171,34 @@ check_plugin_manifests() {
     bad "manifests: plugin.json is missing directory-listing fields: ${missing[*]}"
     status=1
   fi
+
+  # Two directories, two manifests, one product. Shared identity is projected
+  # and compared as a whole rather than field by field: adding a field to the
+  # projection is one edit, and a field nobody thought to compare is exactly how
+  # the coach block drifted for a month.
+  local shared='{name, version, description, homepage, repository, license,
+                 keywords, author: .author.name}'
+  if ! diff -u <(jq -S "$shared" "$plugin") <(jq -S "$shared" "$codex") > /tmp/okrdev-manifest-diff; then
+    bad "manifests: .claude-plugin and .codex-plugin disagree on shared identity"
+    sed 's/^/        /' /tmp/okrdev-manifest-diff
+    status=1
+  fi
+  rm -f /tmp/okrdev-manifest-diff
+
+  # A listing that points at a missing logo renders a broken card, and the only
+  # place that surfaces is the portal preview — after submission.
+  local asset
+  while read -r asset; do
+    [ -n "$asset" ] || continue
+    [ -f "${asset#./}" ] || missing_assets+=("$asset")
+  done < <(jq -r '.interface | (.logo // empty), (.composerIcon // empty)' "$codex")
+  if [ ${#missing_assets[@]} -gt 0 ]; then
+    bad "manifests: $codex points at assets that do not exist: ${missing_assets[*]}"
+    status=1
+  fi
+
   [ $status -eq 0 ] &&
-    ok "manifests: both parse, version is semver, names and descriptions agree, listing fields present"
+    ok "manifests: 3 parse, version is semver, names/descriptions agree, shared identity matches, listing fields and assets present"
   return $status
 }
 
