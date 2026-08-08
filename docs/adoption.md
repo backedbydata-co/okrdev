@@ -405,23 +405,34 @@ not the date of the last edit. Two rules keep that true, and they are the releas
   it would have shipped with no marker change, and every stack adopter running the upgrade
   would have been told there was nothing to do. The test is not *who copied the file*. It is
   *whether a file okrdev provided is now different*.
-- **A docs-only change bumps nothing.** `docs/` is read from the plugin, never copied into an
-  adopter's repo, so there is no installed copy that could fall behind. Bumping for prose
-  would spend every adopter's upgrade prompt on a diff with no files in it — and a prompt
-  that's usually empty is a prompt people stop reading.
-- **Neither does a change to the acquisition path** — `install.sh`, the headless installer
-  above. It ships in the plugin, but it runs on your machine and puts nothing in your repo, so
-  it falls under the second rule's reasoning rather than the first's: there is no installed
-  copy that could fall behind, and bumping for it would produce exactly the empty upgrade
-  prompt that rule exists to prevent. Stated as its own bullet because the first rule's test —
-  *whether a file okrdev provided is now different* — reads as covering it, and the answer is
-  only obvious once you ask which repo the file lives in afterwards.
+- **Every shipped change bumps.** Not only `skills/` and `templates/` — docs too, and the
+  acquisition path, and anything else that reaches an adopter. One rule, no exemption list.
 
-  The seam this leaves: `templates/stack/branch-protection.sh` is also run rather than copied,
-  yet it does bump, because it sits under `templates/` where the blanket rule is worth more
-  than the exception. That is a deliberate rounding error, not an oversight — the cost is one
-  spurious bump on a file almost nobody edits, and the alternative is a per-file exception list
-  that has to be maintained forever.
+  This replaced a narrower rule on 2026-08-08, and the original is worth keeping because its
+  reasoning was correct for the world it was written in. It said a docs-only change bumps
+  nothing, because `docs/` is read from the plugin and never copied into an adopter's repo, so
+  there is no installed copy that could fall behind — and *"bumping for prose would spend every
+  adopter's upgrade prompt on a diff with no files in it, and a prompt that's usually empty is a
+  prompt people stop reading."* An exemption for `install.sh` followed from the same argument.
+
+  What changed is that the version acquired a second consumer. Once okrdev is listed in a plugin
+  directory, `plugin.json`'s `version` is the **distribution cache key** — the installed copy
+  lives at a versioned path (`~/.codex/plugins/cache/okrdev/okrdev/<version>`), and the version
+  is the only signal that there is anything new to fetch. Measured, not assumed: a docs-only
+  change at an unchanged version is still *retrievable* by an explicit re-install, but nothing
+  tells anyone to run one. And **seven of the eight skills read `docs/` at runtime**, so a docs
+  fix is a behaviour fix. A marker that stays put through those is not being conservative; it is
+  withholding a signal.
+
+  The empty-prompt problem the old rule was avoiding is real, and it is solved where it belongs —
+  in the upgrade path, which now says a release changed no scaffolding and there is nothing to
+  apply, rather than presenting an empty diff. Telling an adopter "0.7.0 is out, nothing to do
+  here" is strictly better than never telling them at all.
+
+  One consequence, stated so nobody reads it as drift: `okrdev_version` in an adopter's repo can
+  now sit several releases behind the newest plugin while being perfectly correct, because it
+  records the last version whose scaffolding they actually applied. That was always true. It is
+  just more visible when every release bumps.
 
 Worth stating rather than leaving to be rediscovered: a repo installed at 0.1.0 and never
 upgraded correctly still reads `0.1.0`. That is the marker working, not drift, and it is what
