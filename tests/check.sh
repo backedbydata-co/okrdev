@@ -411,6 +411,41 @@ check_payload() {
   return $status
 }
 
+# chafe: the Claude directory submission (2026-08-08) went out with five starter
+# prompts, three of which appeared nowhere in README.md — "verified" by grepping
+# the README *and* skills/ together and reading the hit as a README hit. A
+# listing that promises a phrase the docs never use sends the curious user's
+# first attempt into nothing, which is the exact moment adoption is won or lost.
+check_starter_prompts() {
+  local doc=README.md manifest=.codex-plugin/plugin.json
+  local prompt missing=() found=0
+  # The README block is the source of truth; the manifest's defaultPrompt must
+  # be one of them. Bounded to a named list so this stays a token scan, not a
+  # prose parser — same shape as the glossary and threshold checks.
+  while read -r prompt; do
+    [ -n "$prompt" ] || continue
+    found=$((found + 1))
+  done < <(sed -n 's/^- "\(.*\)"$/\1/p' "$doc")
+
+  # A scan that finds nothing passes vacuously — the trap check_chafe_comments
+  # and check_footprint_manifest both guard against. Insist it read the block.
+  if [ "$found" -lt 3 ]; then
+    bad "starter prompts: found $found quoted prompts in $doc — the scan is broken"
+    return 1
+  fi
+  if [ ${#missing[@]} -gt 0 ]; then
+    bad "starter prompts: listed in the directories but absent from $doc: ${missing[*]}"
+    return 1
+  fi
+  local default
+  default=$(jq -r '.interface.defaultPrompt // ""' "$manifest")
+  if [ -n "$default" ] && ! grep -qF "\"$default\"" "$doc"; then
+    bad "starter prompts: $manifest defaultPrompt is not in $doc verbatim: \"$default\""
+    return 1
+  fi
+  ok "starter prompts: $found in $doc, and the manifest's defaultPrompt is one of them"
+}
+
 # chafe: branch-protection.sh shipped with die() called before its definition
 # and nothing caught it (fixed in the Phase 0 PR). shellcheck catches that whole
 # class. Skipped, loudly, when the tool is absent — a check that quietly does
@@ -1087,6 +1122,7 @@ check_branch_protection_bad_input
 check_kr_grammar
 check_judgment_call_format
 check_plugin_manifests
+check_starter_prompts
 check_headless_install
 check_payload
 check_shell_lint
