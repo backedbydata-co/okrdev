@@ -152,7 +152,8 @@ disk guarantees each word arrives exactly once.
 
 **Placement rule — this matters for okrdev's own health metrics.** Nothing about this rig
 goes into the target repo. The install-footprint red line ("install writes anything beyond
-`okrdev/` + the marked CLAUDE.md block") applies to the install the guest receives; the
+`okrdev/` + the marked block in the host agent's instructions file") applies to the install the
+guest receives; the
 coaching rig is facilitator-side tooling. So: scripts, transcript, and cursor live in
 `~/zoom-coach/`; the session protocol goes in the target repo's `CLAUDE.local.md`
 (auto-loaded, never committed); permission pre-approvals go in

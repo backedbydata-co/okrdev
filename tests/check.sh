@@ -774,7 +774,7 @@ check_footprint_manifest() {
   # block, and .github/ at Level 2. Anything else is a breach by definition.
   while read -r t; do
     [ -n "$t" ] || continue
-    case "$t" in okrdev/* | CLAUDE.md | .github/*) ;; *) outside+=("$t") ;; esac
+    case "$t" in okrdev/* | CLAUDE.md | AGENTS.md | .github/*) ;; *) outside+=("$t") ;; esac
   done < <(sed -n '/^| Level | Destination/,/^$/p' "$manifest" |
     awk -F'|' 'NR > 2 { gsub(/^[ \t]+|[ \t]+$/, "", $3); sub(/ \(marked block only\)$/, "", $3)
                         gsub(/`/, "", $3); if ($3 != "" && $3 != "—") print $3 }' | sort -u)
@@ -792,7 +792,7 @@ check_footprint_manifest() {
     status=1
   fi
   if [ ${#outside[@]} -gt 0 ]; then
-    bad "footprint: destinations outside the red line (okrdev/, CLAUDE.md, .github/): ${outside[*]}"
+    bad "footprint: destinations outside the red line (okrdev/, CLAUDE.md, AGENTS.md, .github/): ${outside[*]}"
     status=1
   fi
   [ $status -eq 0 ] && ok "footprint: $(printf '%s' "$copied" | grep -c .) templates copied by install, $(printf '%s' "$all" | grep -c .) accounted for, every destination inside the red line"
@@ -821,7 +821,7 @@ check_adoption_install_list() {
   # next blank line: Level 2 states its installs as a bulleted list, and a
   # blank-line terminator would silently read only its first sentence.
   # shellcheck disable=SC2016  # backticks are markdown code spans, not a subshell
-  local dest_span='`(okrdev|\.github)/[A-Za-z0-9._<>/-]*`|`CLAUDE\.md`'
+  local dest_span='`(okrdev|\.github)/[A-Za-z0-9._<>/-]*`|`CLAUDE\.md`|`AGENTS\.md`'
   claimed=$(awk '/^\*\*What installs:\*\*/         { inblock = 1; print; next }
                  /^\*\*/ || /^#{2,3} /             { inblock = 0 }
                  inblock' "$doc" |
