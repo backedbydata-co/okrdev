@@ -58,13 +58,15 @@ okrdev is a [Claude Code](https://claude.com/claude-code) plugin plus a set of d
 ```
 
 Prefer no dialogs? The first two steps also work headlessly — from a script, a CI job, or an
-agent bootstrapping a machine. Run this **outside** the repo you're adopting into (the clone
-would land at `okrdev/`, the path the method reserves for your ledger):
+agent bootstrapping a machine. The checkout goes to a temp directory, never a path you might
+already own, and never the repo you're adopting into — a clone landing at `okrdev/` would sit
+exactly where the method reserves space for your ledger:
 
 ```bash
-cd ~ && git clone https://github.com/backedbydata-co/okrdev.git
-./okrdev/install.sh   # registers the marketplace + installs the plugin, no TUI
-rm -rf ~/okrdev       # optional: the marketplace keeps its own copy under ~/.claude
+dir=$(mktemp -d)
+git clone https://github.com/backedbydata-co/okrdev.git "$dir/okrdev"
+"$dir/okrdev/install.sh"   # registers the marketplace + installs the plugin, no TUI
+rm -rf "$dir"              # optional: the marketplace keeps its own copy under ~/.claude
 ```
 
 Details and the by-hand equivalent in [docs/adoption.md](docs/adoption.md#headless-install).
@@ -131,4 +133,6 @@ own anything. Safety is an environment, not a behavior. Numbers you don't act on
 
 ## License
 
-MIT
+MIT. okrdev collects nothing — no telemetry, no analytics, no account, no MCP servers; your
+OKRs are files in your own repo. The specifics, including the one place a link hands you to a
+third party, are in [PRIVACY.md](PRIVACY.md).
