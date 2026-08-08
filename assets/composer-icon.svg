@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="okrdev">
+  <title>okrdev</title>
+  <!-- A separate file from logo.svg on purpose: this renders at composer size
+       (~24px), where logo.svg's underscore cursor would be a sub-pixel smear and
+       its padding would waste most of the box. So: no cursor, tighter margins,
+       larger glyphs. Same palette, same glyphs — it must read as the same mark.
+       If the directory renders SVG poorly, a 512x512 PNG fallback sits far under
+       check_payload's 200KB ceiling. -->
+  <rect width="512" height="512" rx="104" fill="#1d5c38"/>
+  <text x="256" y="336"
+        font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace"
+        font-size="280" font-weight="700" letter-spacing="-10"
+        fill="#e8f5ec" text-anchor="middle">ok</text>
+</svg>

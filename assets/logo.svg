@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="okrdev">
+  <title>okrdev</title>
+  <!-- The wordmark: the full product name, matching the site's nav brand
+       (site/index.html, .brand). No cursor underscore — it was dropped from the
+       identity on 2026-08-08, here and on the site, in the same change.
+       composer-icon.svg carries the "ok" monogram instead, because six glyphs
+       are not legible at composer size (~24px); this file is the one that gets
+       room to spell the name.
+       Colors are the site's accent custom property (#1d5c38 light) and its ink
+       pair. Do not write that CSS variable's name in this comment: a double
+       hyphen is illegal inside an XML comment and silently breaks the whole
+       file. That bug shipped once already and rendered nothing.
+       No width/height attributes: the directory scales this. -->
+  <rect width="512" height="512" rx="112" fill="#1d5c38"/>
+  <text x="256" y="288"
+        font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace"
+        font-size="104" font-weight="700" letter-spacing="-2"
+        fill="#e8f5ec" text-anchor="middle">okrdev</text>
+</svg>
