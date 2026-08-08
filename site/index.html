@@ -1,0 +1,523 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>okrdev — an open-source OKR operating framework with an AI coach</title>
+<meta name="description" content="A free, open-source OKR framework with an AI coach in your repo: it challenges off-KR work, pre-drafts weekly check-ins, and parks distractions. MIT.">
+<meta property="og:title" content="okrdev — Building got cheap. Focus didn't.">
+<meta property="og:description" content="A free, open-source OKR operating framework where an AI coach keeps humans on track. Your OKRs are markdown files in your own repo — delete one directory and okrdev never existed.">
+<meta property="og:type" content="website">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%231d5c38'/%3E%3Ctext x='16' y='22' font-family='monospace' font-size='15' font-weight='bold' fill='%23e8f5ec' text-anchor='middle'%3Eok%3C/text%3E%3C/svg%3E">
+<style>
+  :root {
+    --paper: #faf9f5;
+    --paper-raised: #ffffff;
+    --ink: #21241f;
+    --ink-soft: #5b6157;
+    --line: #e3e1d8;
+    --accent: #1d5c38;
+    --accent-soft: #e7f0e9;
+    --amber: #7d5619;
+    --amber-soft: #f7efdd;
+    --term-bg: #14181a;
+    --term-ink: #cdd6cd;
+    --term-dim: #869388;
+    --term-green: #8fd6a4;
+    --term-amber: #e3c07e;
+    --pine: #16342a;
+    --sage: #dbe7dd;
+    --mono: ui-monospace, "SF Mono", SFMono-Regular, Menlo, Consolas, monospace;
+    --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --paper: #101311;
+      --paper-raised: #171b18;
+      --ink: #e4e6df;
+      --ink-soft: #9aa294;
+      --line: #262b26;
+      --accent: #7cc494;
+      --accent-soft: #1a2b20;
+      --amber: #d9b26a;
+      --amber-soft: #2a2417;
+      --term-bg: #0b0e0c;
+      --pine: #cfe4d5;
+      --sage: #1c2a21;
+    }
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+  body {
+    font-family: var(--sans);
+    background: var(--paper);
+    color: var(--ink);
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+  a { color: var(--accent); text-decoration-thickness: 1px; text-underline-offset: 2px; }
+  .wrap { max-width: 68rem; margin: 0 auto; padding: 0 1.25rem; }
+  code, pre, .mono { font-family: var(--mono); }
+
+  /* ── nav ─────────────────────────────────────── */
+  .nav {
+    position: sticky; top: 0; z-index: 10;
+    background: var(--paper);
+    background: color-mix(in srgb, var(--paper) 88%, transparent);
+    -webkit-backdrop-filter: blur(8px);
+    backdrop-filter: blur(8px);
+    border-bottom: 1px solid var(--line);
+  }
+  .nav .wrap { display: flex; align-items: center; gap: 1.5rem; height: 3.4rem; }
+  .brand { font-family: var(--mono); font-weight: 700; font-size: 1.05rem; color: var(--ink); text-decoration: none; }
+  .brand span { color: var(--accent); }
+  .nav nav { margin-left: auto; display: flex; gap: 1.35rem; font-size: .92rem; }
+  .nav nav a { color: var(--ink-soft); text-decoration: none; }
+  .nav nav a:hover { color: var(--ink); }
+  .nav nav a.gh { color: var(--accent); font-weight: 600; }
+  @media (max-width: 720px) { .nav nav a:not(.gh):not(.keep) { display: none; } }
+  @media (max-width: 400px) { .nav .wrap { gap: .9rem; } .nav nav { gap: .8rem; } }
+
+  /* ── hero ────────────────────────────────────── */
+  .hero { padding: 5rem 0 3.5rem; }
+  .kicker {
+    font-family: var(--mono); font-size: .8rem; letter-spacing: .06em;
+    color: var(--accent); text-transform: uppercase; margin-bottom: 1.2rem;
+  }
+  .kicker .dot { color: var(--ink-soft); padding: 0 .45em; }
+  h1 { font-size: clamp(2.4rem, 6vw, 3.9rem); line-height: 1.06; letter-spacing: -.02em; font-weight: 800; }
+  h1 em { font-style: normal; color: var(--accent); }
+  .lede { font-size: 1.18rem; color: var(--ink-soft); max-width: 44rem; margin: 1.4rem 0 2rem; }
+  .lede strong { color: var(--ink); font-weight: 600; }
+  .cta-row { display: flex; gap: .8rem; flex-wrap: wrap; align-items: center; }
+  .btn {
+    display: inline-block; padding: .72rem 1.25rem; border-radius: .55rem;
+    font-weight: 600; font-size: .98rem; text-decoration: none;
+    border: 1px solid transparent;
+  }
+  .btn-primary { background: var(--accent); color: var(--paper); }
+  .btn-primary:hover { filter: brightness(1.1); }
+  .btn-ghost { border-color: var(--line); color: var(--ink); background: var(--paper-raised); }
+  .btn-ghost:hover { border-color: var(--ink-soft); }
+  .cta-note { font-size: .85rem; color: var(--ink-soft); font-family: var(--mono); }
+
+  /* ── terminal ────────────────────────────────── */
+  .term {
+    margin-top: 3rem; background: var(--term-bg); border-radius: .8rem;
+    border: 1px solid var(--line);
+    font-family: var(--mono); font-size: .88rem; line-height: 1.75;
+    overflow-x: auto; box-shadow: 0 12px 40px -18px rgba(10, 30, 18, .35);
+  }
+  .term-bar {
+    display: flex; align-items: center; gap: .45rem; padding: .6rem .9rem;
+    border-bottom: 1px solid #232a25;
+  }
+  .term-bar i { width: .68rem; height: .68rem; border-radius: 50%; background: #3a453c; }
+  .term-bar b { margin-left: .5rem; color: var(--term-dim); font-weight: 400; font-size: .78rem; }
+  .term-body { padding: 1rem 1.2rem 1.2rem; color: var(--term-ink); white-space: pre; }
+  .term-body .you { color: var(--term-ink); }
+  .term-body .who { color: var(--term-dim); }
+  .term-body .coach { color: var(--term-green); }
+  .term-body .path { color: var(--term-amber); }
+
+  /* ── sections ────────────────────────────────── */
+  section { padding: 4.2rem 0; border-top: 1px solid var(--line); }
+  .sec-label {
+    font-family: var(--mono); font-size: .78rem; letter-spacing: .08em;
+    text-transform: uppercase; color: var(--accent); margin-bottom: .8rem;
+  }
+  h2 { font-size: clamp(1.7rem, 3.6vw, 2.3rem); letter-spacing: -.015em; line-height: 1.15; max-width: 40rem; }
+  .sec-lede { color: var(--ink-soft); max-width: 44rem; margin-top: .9rem; font-size: 1.05rem; }
+
+  /* the deal — three moves */
+  .moves { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin-top: 2.4rem; }
+  @media (max-width: 800px) { .moves { grid-template-columns: 1fr; } }
+  .move {
+    background: var(--paper-raised); border: 1px solid var(--line);
+    border-radius: .8rem; padding: 1.4rem 1.4rem 1.5rem;
+  }
+  .move .n { font-family: var(--mono); color: var(--accent); font-size: .8rem; }
+  .move h3 { margin: .5rem 0 .55rem; font-size: 1.12rem; }
+  .move p { font-size: .94rem; color: var(--ink-soft); }
+  .move p code { font-size: .85em; background: var(--accent-soft); padding: .1em .35em; border-radius: .3em; }
+
+  /* what you get grid */
+  .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin-top: 2.4rem; }
+  @media (max-width: 900px) { .grid { grid-template-columns: repeat(2, 1fr); } }
+  @media (max-width: 640px) { .grid { grid-template-columns: 1fr; } }
+  .cell { border: 1px solid var(--line); border-radius: .8rem; padding: 1.3rem; background: var(--paper-raised); }
+  .cell h3 { font-size: 1.02rem; margin-bottom: .45rem; }
+  .cell p { font-size: .9rem; color: var(--ink-soft); }
+
+  /* ladder */
+  .ladder { margin-top: 2.4rem; display: grid; gap: .8rem; }
+  .rung {
+    display: grid; grid-template-columns: 8.5rem 1fr auto; gap: 1.2rem; align-items: baseline;
+    border: 1px solid var(--line); border-radius: .8rem; padding: 1.15rem 1.3rem;
+    background: var(--paper-raised);
+  }
+  @media (max-width: 720px) { .rung { grid-template-columns: 1fr; gap: .35rem; } }
+  .rung .lvl { font-family: var(--mono); font-weight: 700; color: var(--accent); font-size: .92rem; }
+  .rung .what b { font-weight: 650; }
+  .rung .what p { font-size: .9rem; color: var(--ink-soft); margin-top: .15rem; }
+  .rung .time { font-family: var(--mono); font-size: .82rem; color: var(--amber); white-space: nowrap; }
+  .ladder-note { margin-top: 1.1rem; font-size: .92rem; color: var(--ink-soft); max-width: 44rem; }
+
+  /* install */
+  .install-cols { display: grid; grid-template-columns: 1.15fr .85fr; gap: 2rem; margin-top: 2.4rem; align-items: start; }
+  @media (max-width: 860px) { .install-cols { grid-template-columns: 1fr; } }
+  pre.code {
+    background: var(--term-bg); color: var(--term-ink); border-radius: .7rem;
+    padding: 1.1rem 1.25rem; font-size: .87rem; line-height: 1.8; overflow-x: auto;
+    border: 1px solid var(--line);
+  }
+  pre.code .c { color: var(--term-dim); }
+  pre.code .k { color: var(--term-green); }
+  .install-side h3 { font-size: 1rem; margin-bottom: .5rem; }
+  .install-side p { font-size: .92rem; color: var(--ink-soft); margin-bottom: 1.2rem; }
+  .daily { margin-top: 1.4rem; }
+  .daily li { list-style: none; font-family: var(--mono); font-size: .85rem; padding: .3rem 0; color: var(--ink-soft); }
+  .daily li b { color: var(--accent); font-weight: 600; }
+
+  /* help paths */
+  .paths { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.1rem; margin-top: 2.4rem; align-items: stretch; }
+  @media (max-width: 900px) { .paths { grid-template-columns: 1fr; } }
+  .path-card {
+    display: flex; flex-direction: column;
+    border: 1px solid var(--line); border-radius: .9rem; padding: 1.6rem 1.5rem;
+    background: var(--paper-raised);
+  }
+  .path-card .tag {
+    font-family: var(--mono); font-size: .75rem; letter-spacing: .07em;
+    text-transform: uppercase; color: var(--ink-soft); margin-bottom: .7rem;
+  }
+  .path-card h3 { font-size: 1.28rem; letter-spacing: -.01em; }
+  .path-card .price { font-family: var(--mono); font-size: .88rem; color: var(--amber); margin: .45rem 0 1rem; }
+  .path-card .sub { font-size: .82rem; color: var(--ink-soft); margin: -.4rem 0 .8rem; }
+  .path-card ul { margin: 0 0 1.4rem 1.1rem; }
+  .path-card li { font-size: .92rem; color: var(--ink-soft); padding: .22rem 0; }
+  .path-card li b { color: var(--ink); font-weight: 600; }
+  .path-card .btn { margin-top: auto; text-align: center; }
+  .path-diy { border-top: 3px solid var(--accent); }
+  .path-dwy { border-top: 3px solid var(--amber); }
+  .path-dfy { border-top: 3px solid var(--pine); background: linear-gradient(180deg, var(--sage), var(--paper-raised) 24%); }
+  .paths-footnote { margin-top: 1.4rem; font-size: .9rem; color: var(--ink-soft); max-width: 46rem; }
+
+  /* faq */
+  .faq { margin-top: 2rem; max-width: 48rem; }
+  .faq details { border-bottom: 1px solid var(--line); padding: .9rem 0; }
+  .faq summary { cursor: pointer; font-weight: 600; font-size: 1rem; list-style: none; display: flex; justify-content: space-between; align-items: center; }
+  .faq summary::-webkit-details-marker { display: none; }
+  .faq summary::after { content: "+"; content: "+" / ""; font-family: var(--mono); color: var(--accent); font-size: 1.1rem; }
+  .faq details[open] summary::after { content: "–"; content: "–" / ""; }
+  .faq details p { margin-top: .6rem; font-size: .94rem; color: var(--ink-soft); max-width: 44rem; }
+  .faq details p code { font-size: .85em; background: var(--accent-soft); padding: .1em .35em; border-radius: .3em; }
+
+  /* footer */
+  footer { border-top: 1px solid var(--line); padding: 2.6rem 0 3.2rem; }
+  footer .wrap { display: flex; flex-wrap: wrap; gap: 1rem 2rem; align-items: baseline; }
+  footer p { font-size: .88rem; color: var(--ink-soft); }
+  footer .links { margin-left: auto; display: flex; gap: 1.3rem; font-size: .88rem; }
+</style>
+</head>
+<body>
+
+<header class="nav">
+  <div class="wrap">
+    <a class="brand" href="#top">okrdev<span>_</span></a>
+    <nav aria-label="Primary">
+      <a href="#how">How it works</a>
+      <a href="#ladder">The ladder</a>
+      <a href="#install" class="keep">Install</a>
+      <a href="#help" class="keep">Get help</a>
+      <a class="gh" href="https://github.com/backedbydata-co/okrdev">GitHub&nbsp;→</a>
+    </nav>
+  </div>
+</header>
+
+<main id="top">
+
+  <div class="wrap">
+    <section class="hero" style="border-top:none">
+      <p class="kicker">Open source<span class="dot">·</span>MIT<span class="dot">·</span>Your repo, your files</p>
+      <h1>Building got cheap.<br><em>Focus didn't.</em></h1>
+      <p class="lede">
+        okrdev is a free, open-source <strong>OKR operating framework with an AI coach built
+        in</strong>. It installs into any business or project, knows your key results, challenges
+        work that serves none, pre-drafts your weekly check-ins, and parks every shiny idea
+        before it eats your week.
+      </p>
+      <div class="cta-row">
+        <a class="btn btn-primary" href="#install">Install free</a>
+        <a class="btn btn-ghost" href="https://github.com/backedbydata-co/okrdev/blob/main/MANIFESTO.md">Read the manifesto</a>
+        <span class="cta-note">Level 0 in ten minutes</span>
+      </div>
+
+      <div class="term" role="img" aria-label="A Claude Code session: the coach asks which key result a new idea serves, parks it in the parking lot, then logs an override as a judgment call.">
+        <div class="term-bar"><i></i><i></i><i></i><b>Claude Code — your-project</b></div>
+        <div class="term-body"><span class="who">you   </span><span class="you"> let's add a public leaderboard. this week.</span>
+<span class="who">coach </span><span class="coach"> Which key result does this serve?</span>
+<span class="who">you   </span><span class="you"> …none yet. park it</span>
+<span class="who">coach </span><span class="coach"> Parked in ten seconds → </span><span class="path">okrdev/PARKING_LOT.md</span>
+<span class="coach">        - [2026-08-07] Public leaderboard — @you — energy: high — effort: M</span>
+<span class="coach">        Triage decides Thursday. Back to KR2.1?</span>
+<span class="who">you   </span><span class="you"> actually — override: the client demo is tomorrow.</span>
+<span class="who">coach </span><span class="coach"> Proceeding — logged as a judgment call.</span>
+<span class="coach">        You'll see it at Friday's check-in.</span></div>
+      </div>
+    </section>
+  </div>
+
+  <div class="wrap">
+    <section id="how">
+      <p class="sec-label">The deal</p>
+      <h2>The AI keeps the humans on track. Humans stay sovereign.</h2>
+      <p class="sec-lede">
+        The standard arrangement is humans supervising the AI. okrdev adds the mirror image:
+        a coach that knows your mission and this cycle's objectives, and asks the one question
+        that matters before anything gets built. You can always override it — and every
+        override is written down. Freedom, with a memory.
+      </p>
+      <div class="moves">
+        <div class="move">
+          <span class="n">01</span>
+          <h3>Park, don't chase</h3>
+          <p>Distraction isn't a character flaw — acting on it the moment it arrives is.
+             Capture any idea in ten seconds with <code>/okrdev:park</code>. Weekly triage
+             promotes it, archives it, or sanctions it as a time-boxed side-quest. The good
+             ideas survive triage. The dopamine doesn't.</p>
+        </div>
+        <div class="move">
+          <span class="n">02</span>
+          <h3>The 15-minute check-in</h3>
+          <p>The coach pre-writes your weekly check-in from git history and merged PRs —
+             confidence table, what moved, what drifted. Humans add the parts only they know.
+             Wins first, no guilt trips, and a skipped week earns a two-minute catch-up,
+             not an inquisition.</p>
+        </div>
+        <div class="move">
+          <span class="n">03</span>
+          <h3>Override, on the record</h3>
+          <p>The coach can never block you. It has exactly one power: it writes things down —
+             judgment calls, drift, emergencies that weren't. Accountability without authority.
+             It turns out that's plenty.</p>
+        </div>
+      </div>
+
+      <div class="grid">
+        <div class="cell"><h3>Git-native OKRs</h3><p>Objectives, key results, check-ins, retros — markdown files in your own repo. Versioned, reviewable by PR, greppable by agents. No SaaS, no lock-in: uninstall is <span class="mono">rm -rf okrdev/</span>.</p></div>
+        <div class="cell"><h3>The right amount of teeth</h3><p>The coach classifies work against your KRs, flags drift, and pushes back on vanity metrics and sandbagged targets — at planning, not just at the retro.</p></div>
+        <div class="cell"><h3>Anyone owns anything</h3><p>With AI filling skill gaps, a marketer can ship a migration and an engineer can run a pricing experiment. Every objective gets exactly one human DRI, end to end.</p></div>
+        <div class="cell"><h3>Health metrics</h3><p>Every target you push gets a metric watching what you might break — monitored, not targeted. The Goodhart defense, built in.</p></div>
+        <div class="cell"><h3>Rails, not vigilance</h3><p>Optional collaboration rails — <span class="mono">KR:</span> tags on PRs, a gate that asks which KR, CODEOWNERS, protected branches — so safety is an environment, not a behavior.</p></div>
+        <div class="cell"><h3>An optional stack</h3><p>For greenfield projects: Vercel + Neon + GitHub with per-PR preview environments and CI gates, so non-technical builders ship safely because unsafe paths are hard.</p></div>
+      </div>
+    </section>
+  </div>
+
+  <div class="wrap">
+    <section id="ladder">
+      <p class="sec-label">Adoption</p>
+      <h2>Start at the bottom. Earn your way up.</h2>
+      <p class="sec-lede">
+        Frameworks die of over-installation — ceremony before value gets the whole thing
+        deleted by week three. okrdev installs one rung at a time and never adds a level
+        uninvited. Existing codebase? Keep your stack: the method is fully decoupled from it.
+      </p>
+      <div class="ladder">
+        <div class="rung">
+          <span class="lvl">Level 0</span>
+          <div class="what"><b>Parking lot</b><p>Idea capture + weekly triage. Nothing else. If you only ever install one rung, install this one.</p></div>
+          <span class="time">10 minutes</span>
+        </div>
+        <div class="rung">
+          <span class="lvl">Level 1</span>
+          <div class="what"><b>The method</b><p>Mission, cycle OKRs, weekly check-ins, retros. This is okrdev proper.</p></div>
+          <span class="time">one planning session</span>
+        </div>
+        <div class="rung">
+          <span class="lvl">Level 2</span>
+          <div class="what"><b>Collaboration rails</b><p><span class="mono">KR:</span> tags on PRs, the okr-gate nudge, CODEOWNERS, branch protection — for teams.</p></div>
+          <span class="time">an afternoon</span>
+        </div>
+        <div class="rung">
+          <span class="lvl">Stack</span>
+          <div class="what"><b>Optional stack module</b><p>The full Vercel + Neon AI-first environment. Greenfield projects, or deliberate migrations only.</p></div>
+          <span class="time">a day</span>
+        </div>
+      </div>
+      <p class="ladder-note">
+        The ladder goes both ways: if a level stops earning its minutes, remove its files and
+        drop a rung. A framework you actually run at Level 1 beats one you resent at Level 2.
+      </p>
+    </section>
+  </div>
+
+  <div class="wrap">
+    <section id="install">
+      <p class="sec-label">Quickstart</p>
+      <h2>Three commands to install. One directory to uninstall.</h2>
+      <div class="install-cols">
+        <div>
+<pre class="code"><span class="c"># In the Claude Code app (Mac/Windows), open your</span>
+<span class="c"># project folder and type into the chat:</span>
+<span class="k">/plugin</span> marketplace add backedbydata-co/okrdev
+<span class="k">/plugin</span> install okrdev
+
+<span class="c"># then, with your project still open:</span>
+<span class="k">/okrdev:install</span>   <span class="c"># walks the adoption ladder, starts at Level 0</span>
+<span class="k">/okrdev:plan</span>      <span class="c"># ready for Level 1? draft your first cycle's OKRs</span></pre>
+          <ul class="daily">
+            <li><b>/okrdev:park</b> — "park this idea": 10-second capture, back to work</li>
+            <li><b>/okrdev:triage</b> — weekly at Level 0; from Level 1 it runs inside checkin</li>
+            <li><b>/okrdev:checkin</b> — weekly: pre-drafted, wins first, 15 minutes for real</li>
+            <li><b>/okrdev:coach</b> — anytime: confidence trends, drift, "is this aligned?"</li>
+            <li><b>/okrdev:side-quest</b> — sanction a distraction, with a time-box</li>
+            <li><b>/okrdev:retro</b> — end of cycle: score honestly, extract lessons</li>
+          </ul>
+        </div>
+        <div class="install-side">
+          <h3>New to Claude Code?</h3>
+          <p>It's Anthropic's AI agent, and okrdev installs into it as a plugin. Get the
+             desktop app at <a href="https://claude.com/claude-code">claude.com/claude-code</a> —
+             no terminal required. It also runs as a CLI and in IDEs; okrdev works in all of
+             them, including a headless install
+             (<span class="mono">./okrdev/install.sh</span>) for scripts and CI.</p>
+          <h3>What it touches</h3>
+          <p>One <span class="mono">okrdev/</span> directory and one marked, removable block in
+             your <span class="mono">CLAUDE.md</span>. Level 2 optionally adds a few files under
+             <span class="mono">.github/</span>. Your build system, deploy pipeline, and framework
+             choices: untouched.</p>
+          <h3>No Claude Code?</h3>
+          <p>The skills are plain markdown — copy them into your repo and hand any capable
+             agent the docs. The format is the framework.</p>
+          <h3>Not a software business?</h3>
+          <p>The method runs fine in a repo that contains nothing but the
+             <span class="mono">okrdev/</span> directory. OKRs, check-ins, and the parking lot
+             don't care what you sell.</p>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <div class="wrap">
+    <section id="help">
+      <p class="sec-label">Get help</p>
+      <h2>The framework is free. The help is optional.</h2>
+      <p class="sec-lede">
+        okrdev is complete on its own — the paid paths buy help and accountability,
+        not features. There is no locked tier.
+      </p>
+      <div class="paths">
+        <div class="path-card path-diy">
+          <p class="tag">DIY — do it yourself</p>
+          <h3>Self-serve</h3>
+          <p class="price">Free · MIT-licensed</p>
+          <ul>
+            <li>The <b>full framework</b>: coach, parking lot, check-ins, retros</li>
+            <li>Docs written for non-technical DRIs too</li>
+            <li>A complete worked example — a full fictional cycle, warts included</li>
+            <li>Level 0 in about ten minutes</li>
+          </ul>
+          <a class="btn btn-ghost" href="#install">Install it now</a>
+        </div>
+        <div class="path-card path-dwy">
+          <p class="tag">DWY — done with you</p>
+          <h3>Coached group</h3>
+          <p class="price">Small cohort · led by Alex Chisholm, okrdev's author</p>
+          <p class="sub">For when the method sticks but the discipline doesn't.</p>
+          <ul>
+            <li>Install together and <b>plan your first cycle live</b></li>
+            <li>Your OKRs pressure-tested — sandbagging and vanity metrics called out before the cycle starts</li>
+            <li>A weekly group check-in alongside other teams running the same method</li>
+            <li>Direct line to Alex between sessions</li>
+          </ul>
+          <a class="btn btn-ghost" href="mailto:backedbydata@gmail.com?subject=okrdev%20coached%20group">Ask about the next group</a>
+        </div>
+        <div class="path-card path-dfy">
+          <p class="tag">DFY — done for you</p>
+          <h3>Foundation + Duty of Care</h3>
+          <p class="sub">Delivered by Tech Guys on Demand — a division of Tech Guys Who Get Marketing.</p>
+          <p class="price">Fixed-scope audit, then monthly care · priced on a call</p>
+          <ul>
+            <li>We install okrdev <b>and the engineering foundation under it</b>: automated checks on every change, a preview link to click before anything ships, one-way-only production deploys (nobody edits production by hand)</li>
+            <li>Then <b>Duty of Care</b>: a named engineer with a written response-time guarantee, who reviews every change before it ships, watches the checks guarding your production, and runs your monthly OKR review</li>
+            <li>Starts with a one-week Foundation Audit — 100% credited if you proceed</li>
+            <li>Architected by Alex Chisholm — okrdev's author and CTO of Tech Guys Who Get Marketing — and delivered by your named engineer, so care never waits on the author's calendar</li>
+          </ul>
+          <a class="btn btn-primary" href="mailto:backedbydata@gmail.com?subject=Foundation%20Audit%20inquiry%20(okrdev)">Book a Foundation Audit</a>
+        </div>
+      </div>
+      <p class="paths-footnote">
+        Not sure which? Install it yourself first — it's free and takes ten minutes. You can
+        add help later; the framework doesn't change underneath you.
+      </p>
+    </section>
+  </div>
+
+  <div class="wrap">
+    <section id="faq">
+      <p class="sec-label">Questions</p>
+      <h2>The honest fine print.</h2>
+      <div class="faq">
+        <details>
+          <summary>Is it actually free?</summary>
+          <p>Yes. MIT license, no feature gates, no telemetry, no account. Your OKRs are
+             markdown files in your own repo — delete the <code>okrdev/</code> directory and
+             okrdev never existed. The paid paths above buy human help, not software.</p>
+        </details>
+        <details>
+          <summary>Will the coach block my work?</summary>
+          <p>Never. Blocking is how tools get uninstalled — usually mid-crisis, usually
+             forever. Overrides always work, and every one leaves a line in the week's
+             check-in. Accountability without authority.</p>
+        </details>
+        <details>
+          <summary>Do I need Claude Code?</summary>
+          <p>It's the smoothest path — okrdev ships as a plugin for
+             <a href="https://claude.com/claude-code">Claude Code</a>, easiest in the desktop
+             app (Mac/Windows), no terminal required. But the skills are plain markdown: copy
+             them into your repo and hand any capable agent the docs.</p>
+        </details>
+        <details>
+          <summary>We already have a stack. Do we have to migrate?</summary>
+          <p>No. The method is fully decoupled from the stack: Levels 0–2 don't care whether
+             you deploy to Vercel or a VPS, use Postgres or a spreadsheet, or even write code.
+             The opinionated stack module is for greenfield projects and deliberate migrations
+             only — it's never a prerequisite.</p>
+        </details>
+        <details>
+          <summary>What does okrdev refuse?</summary>
+          <p>Cascade theater (no trees of aligned sub-OKRs), set-and-forget plans, metric
+             tyranny (every pushed target gets a health metric watching what it might break),
+             and ceremony — a three-line check-in is valid, and a skipped week gets a
+             two-minute catch-up.</p>
+        </details>
+        <details>
+          <summary>Who's behind it?</summary>
+          <p>okrdev is built in the open by <a href="https://github.com/backed-by-data">Alex
+             Chisholm</a>, and it runs on itself — this cycle's OKRs, check-ins, and parking
+             lot are in the repo for anyone to read. This page lives there too, under
+             <code>site/</code>.</p>
+        </details>
+      </div>
+    </section>
+  </div>
+
+</main>
+
+<footer>
+  <div class="wrap">
+    <p>© 2026 Alex Chisholm · MIT · Objectives before code. Catalog, don't chase.</p>
+    <nav class="links" aria-label="Footer">
+      <a href="https://github.com/backedbydata-co/okrdev">GitHub</a>
+      <a href="https://github.com/backedbydata-co/okrdev/blob/main/MANIFESTO.md">Manifesto</a>
+      <a href="https://github.com/backedbydata-co/okrdev/tree/main/docs">Docs</a>
+      <a href="https://github.com/backedbydata-co/okrdev/tree/main/examples/acme-fitness">Worked example</a>
+    </nav>
+  </div>
+</footer>
+
+</body>
+</html>
