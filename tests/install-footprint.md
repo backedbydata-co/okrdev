@@ -3,8 +3,13 @@
 This is the machine-readable half of the 2026-Q3 cycle's **Install footprint** health metric
 (`okrdev/okrs/2026-Q3.md`), whose red line is:
 
-> install writes anything beyond `okrdev/` + the marked CLAUDE.md block (+ opt-in `.github/`
-> at L2)
+> install writes anything beyond `okrdev/` + the marked block in the host agent's instructions
+> file (`CLAUDE.md` for Claude Code, `AGENTS.md` for Codex) (+ opt-in `.github/` at L2)
+
+The destination is one file per install, chosen by host — never both. Claude Code reads
+`CLAUDE.md` and does not read `AGENTS.md`; Codex reads `AGENTS.md`. The block, its markers and
+its source template are identical either way, so the two rows per level below are one write
+seen from two hosts, not two writes.
 
 `tests/check.sh`'s `check_footprint_manifest` reads this file. It fails if
 `skills/install/SKILL.md` names a template this manifest doesn't list, if this manifest lists
@@ -31,19 +36,22 @@ other path is relative to the target repo root.
 |---|---|---|---|
 | 0 | `okrdev/config.md` | `templates/okrdev/config.md` | `level: 0`; backstop asked |
 | 0 | `okrdev/PARKING_LOT.md` | `templates/okrdev/PARKING_LOT.md` | |
-| 0 | `CLAUDE.md` (marked block only) | text embedded in `skills/install/SKILL.md` | minimal L0 block |
+| 0 | `CLAUDE.md` (marked block only) | text embedded in `skills/install/SKILL.md` | minimal L0 block; Claude Code host |
+| 0 | `AGENTS.md` (marked block only) | text embedded in `skills/install/SKILL.md` | same block, Codex host — one or the other, never both |
 | 1 | `okrdev/MISSION.md` | `templates/okrdev/MISSION.md` | drafted with the human, not left as placeholder |
 | 1 | `okrdev/LESSONS.md` | `templates/okrdev/LESSONS.md` | starts empty; retros append |
-| 1 | `CLAUDE.md` (marked block only) | `templates/CLAUDE-okrdev.md` | replaces L0's block verbatim |
+| 1 | `CLAUDE.md` (marked block only) | `templates/CLAUDE-okrdev.md` | replaces L0's block verbatim; Claude Code host |
+| 1 | `AGENTS.md` (marked block only) | `templates/CLAUDE-okrdev.md` | same, Codex host — the template carries no platform tokens |
 | 1 | `okrdev/config.md` | — | edited, not created: `level: 1`, `cycle_length` |
 | 2 | `.github/pull_request_template.md` | `templates/github/pull_request_template.md` | separate opt-in |
 | 2 | `.github/workflows/okr-gate.yml` | `templates/github/workflows/okr-gate.yml` | separate opt-in |
 | 2 | `.github/CODEOWNERS` | `templates/github/CODEOWNERS` | separate opt-in; placeholders replaced |
 | 2 | `okrdev/config.md` | — | edited, not created: `level: 2`, `strict_gate` |
 
-Eight distinct destination paths. `okrdev/config.md` and `CLAUDE.md` appear more than once
-because later levels edit what earlier ones wrote — that is the ladder working, and it is why
-uninstall is a deletion rather than an archaeology project.
+Nine distinct destination paths. `okrdev/config.md`, `CLAUDE.md` and `AGENTS.md` appear more
+than once because later levels edit what earlier ones wrote — that is the ladder working, and
+it is why uninstall is a deletion rather than an archaeology project. `CLAUDE.md` and
+`AGENTS.md` are two paths but one write: an install picks the file its host reads.
 
 ### Templates that exist but install never copies
 
