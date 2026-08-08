@@ -7,6 +7,30 @@ minor bumps may change doctrine, not just add to it.
 
 ## Unreleased
 
+## 0.6.0 — 2026-08-08
+
+**okrdev runs on Codex as well as Claude Code.** The coach block now installs
+into whichever file the host agent reads — `CLAUDE.md` or `AGENTS.md` — and
+nothing else about the install forks. `templates/CLAUDE-okrdev.md` carries no
+platform tokens, so the block itself is unchanged; only its destination is a
+parameter. Verified end-to-end against the real `codex` CLI, not against docs:
+`codex plugin marketplace add` + `codex plugin add` installs and enables all
+eight skills. Notes in `docs/codex.md`.
+
+- The install skill resolves the instructions file, with existing markers
+  winning over the host default, and refuses to write both files
+- The install-footprint health metric names its destination by role rather than
+  by filename (`okrdev/okrs/2026-Q3.md`, amended with a `Revised:` block)
+- `.codex-plugin/plugin.json` — the Codex/OpenAI directory manifest, sharing
+  the `skills/` tree and identity with the Claude manifest
+- `assets/logo.svg` and `assets/composer-icon.svg`; the cursor underscore is
+  dropped from the brand
+- Directory-listing metadata on the Claude manifest: license, repository,
+  homepage, keywords (the plugin was submitted to the Claude plugin directory
+  on 2026-08-08)
+- The plugin payload no longer ships a 6 MB generated PDF: 6.5 MB → 0.64 MB
+- `PRIVACY.md`; the quickstart clones to `mktemp -d` rather than a fixed path
+  in `$HOME` it then `rm -rf`s
 - Headless install path: `install.sh` registers the marketplace and installs
   the plugin with no `/plugin` dialog (#18)
 - The adopter prescription's fifth item: run the checks locally, with its
