@@ -45,19 +45,35 @@ Details in [docs/adoption.md](docs/adoption.md).
 
 ## Quickstart
 
-okrdev is a [Claude Code](https://claude.com/claude-code) plugin plus a set of documents.
+okrdev is a plugin for [Claude Code](https://claude.com/claude-code) and
+[Codex](https://developers.openai.com/codex), plus a set of documents. One install, either
+agent — see [docs/codex.md](docs/codex.md) for what differs.
+
+In **Claude Code**, add the marketplace and install the plugin:
 
 ```bash
-# Add this repo as a plugin marketplace, then install the plugin
 /plugin marketplace add backedbydata-co/okrdev
 /plugin install okrdev
+```
 
-# In the repo where you want okrdev to live:
+In **Codex**, the same two steps are shell commands:
+
+```bash
+codex plugin marketplace add backedbydata-co/okrdev
+codex plugin add okrdev@okrdev
+```
+
+Then, in the repo where you want okrdev to live:
+
+```bash
 /okrdev:install     # walks the adoption ladder, starts at Level 0
 /okrdev:plan        # when you're ready for Level 1: draft your first cycle's OKRs
 ```
 
-Prefer no dialogs? The first two steps also work headlessly — from a script, a CI job, or an
+Skills are written `/okrdev:<name>` throughout these docs, which is how Claude Code invokes
+them. **On Codex, type `@` and pick the skill** — same skills, same files, different keystroke.
+
+Prefer no dialogs? The Claude Code steps also work headlessly — from a script, a CI job, or an
 agent bootstrapping a machine. The checkout goes to a temp directory, never a path you might
 already own, and never the repo you're adopting into — a clone landing at `okrdev/` would sit
 exactly where the method reserves space for your ledger:
@@ -82,8 +98,8 @@ Then live in it:
 /okrdev:retro       # end of cycle: score honestly, extract lessons
 ```
 
-No Claude Code? The skills are plain markdown — copy `skills/*` into your repo's
-`.claude/skills/` along with `templates/*` (the skills create files from them; they resolve
+Neither agent? The skills are plain markdown — copy `skills/*` into wherever your agent looks
+for skills, along with `templates/*` (the skills create files from them; they resolve
 `templates/` relative to where you copied it), or hand any capable agent the docs. The format
 is the framework.
 
@@ -99,6 +115,7 @@ your-repo/
 │   ├── okrs/2026-Q3.md               # this cycle: objectives, KRs, health metrics
 │   └── checkins/2026-Q3/2026-W29.md  # one file per week, mostly written by the coach
 ├── CLAUDE.md                         # + the coach block (marked, removable)
+│                                     #   AGENTS.md instead, on Codex — one or the other
 └── .github/                          # Level 2: PR template, okr-gate, CODEOWNERS
 ```
 
@@ -121,6 +138,7 @@ weeks and the recovery — in [examples/acme-fitness](examples/acme-fitness/).
 | [docs/dri-onboarding.md](docs/dri-onboarding.md) | Zero to first shipped change, for non-technical DRIs |
 | [docs/shipping-explained.md](docs/shipping-explained.md) | PRs, CI, previews — in plain language, with a glossary |
 | [docs/stack.md](docs/stack.md) | The optional stack module and why each piece |
+| [docs/codex.md](docs/codex.md) | Running okrdev on Codex: what differs from Claude Code, and what was verified |
 | [install.sh](install.sh) | Headless plugin install — the Quickstart without the `/plugin` dialog |
 | [skills/](skills/) | The eight coach skills (install, plan, checkin, park, triage, side-quest, retro, coach) |
 | [templates/](templates/) | Everything `install` copies: okrdev/ files, coach block, GitHub rails, stack setup |

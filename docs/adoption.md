@@ -11,7 +11,7 @@ appetite for a migration. That's the common case, not the exception.
 
 So the method is fully decoupled from the stack. Nothing in Levels 0–2 cares whether you deploy
 to Vercel or a VPS, whether you use Postgres or a spreadsheet, whether you even write code. The
-install adds one directory (`okrdev/`), one marked block in `CLAUDE.md`, and — only if you opt
+install adds one directory (`okrdev/`), one marked block in your agent's instructions file, and — only if you opt
 in at Level 2 — a few files under `.github/`. Your build system, your deploy pipeline, your
 framework choices: untouched.
 
@@ -49,7 +49,7 @@ in it. A framework you actually run at Level 1 beats one you resent at Level 2.
 ### Level 0 — Parking lot
 
 **What installs:** `okrdev/PARKING_LOT.md`, `okrdev/config.md`, and a minimal version of the
-coach block in `CLAUDE.md` (between `<!-- okrdev:start -->` / `<!-- okrdev:end -->` markers) —
+coach block in `CLAUDE.md` or `AGENTS.md` (between `<!-- okrdev:start -->` / `<!-- okrdev:end -->` markers) —
 just the parking rules: capture ideas in ten seconds, never work on anything in Captured, triage
 weekly.
 
@@ -360,7 +360,7 @@ Either way: new sessions load the plugin, running sessions need `/reload-plugins
 First thing every brownfield adoption hits: the files okrdev wants to touch already exist.
 `/okrdev:install` handles each case the same way — never overwrite, always show, always ask:
 
-- **Existing `CLAUDE.md`:** the coach block is appended between `<!-- okrdev:start -->` and
+- **Existing instructions file:** the coach block is appended between `<!-- okrdev:start -->` and
   `<!-- okrdev:end -->` markers. Your content is untouched; the markers make the block
   findable, upgradeable, and removable forever after. If the markers are already present,
   that's an upgrade — the block is replaced in place, between the markers only.
@@ -446,8 +446,10 @@ example of an adopter who hasn't upgraded is worth more than one that is magical
 
 1. **Delete the `okrdev/` directory.** That's the method gone. Your OKR history survives in git
    history if you ever want it back — one argument for having committed it all along.
-2. **Remove the marked block from `CLAUDE.md`** — everything from `<!-- okrdev:start -->`
-   through `<!-- okrdev:end -->`, inclusive. The rest of your `CLAUDE.md` is untouched.
+2. **Remove the marked block from your instructions file** — everything from
+   `<!-- okrdev:start -->` through `<!-- okrdev:end -->`, inclusive. Check both `CLAUDE.md` and
+   `AGENTS.md`: whichever agent you are uninstalling from, the install may have been done from
+   the other one. The rest of the file is untouched.
 3. **Delete the `okrdev:parked` label and close any stragglers** — if you used the issue
    capture path: `gh label delete okrdev:parked`, and triage or close whatever parked issues
    are still open, so the inbox doesn't outlive the method.
