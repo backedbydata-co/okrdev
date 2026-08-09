@@ -7,6 +7,25 @@ minor bumps may change doctrine, not just add to it.
 
 ## Unreleased
 
+## 0.7.0 — 2026-08-08
+
+**Every shipped change now bumps the version.** The old rule exempted docs-only
+changes and `install.sh`, on the correct reasoning that neither has an installed
+copy in an adopter's repo that could fall behind. What changed is that the
+version acquired a second consumer: listed in a plugin directory, it is the
+distribution cache key, and the only signal that there is anything new to fetch.
+Seven of the eight skills read `docs/` at runtime, so a docs fix is a behaviour
+fix. Measured rather than assumed — a docs-only change at an unchanged version
+is still retrievable by an explicit re-install, but nothing tells anyone to run
+one.
+
+- The empty-upgrade-prompt problem the old rule avoided is now solved in the
+  upgrade path instead of in the version: `/okrdev:install` reports "this
+  release changed no scaffolding, nothing to apply" rather than presenting an
+  empty diff
+- `docs/adoption.md` keeps the original rule and its reasoning verbatim, so the
+  next reader sees what changed and why rather than only the conclusion
+
 ## 0.6.0 — 2026-08-08
 
 **okrdev runs on Codex as well as Claude Code.** The coach block now installs

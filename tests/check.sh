@@ -912,9 +912,13 @@ check_adoption_install_list() {
 # verbatim and never sets the version, so a skew here makes every adopter
 # record a version they don't have, silently. Handoff issue #11, item (c).
 check_version_sync() {
-  # Deliberately NOT asserted: okrdev/config.md (0.1.0) and the acme example.
-  # Those record what was installed, not what ships — see the versioning policy
-  # in docs/adoption.md § Upgrading. Asserting them would freeze a lie.
+  # Deliberately NOT asserted here: examples/acme-fitness, which records what a
+  # fictional adopter installed rather than what ships, and is left on an older
+  # marker on purpose. okrdev's OWN okrdev/config.md is asserted — by
+  # check_dogfood_current, not by this check — because a release is not done
+  # until okrdev has upgraded itself. This comment previously claimed that file
+  # was unasserted and pinned it at 0.1.0; both halves were wrong, and stale
+  # comments about what is checked are how a suite starts lying about itself.
   local tmpl_version plugin_version
   tmpl_version=$(sed -n 's/^okrdev_version:[[:space:]]*\([0-9.]*\).*/\1/p' templates/okrdev/config.md | head -1)
   plugin_version=$(jq -r '.version' .claude-plugin/plugin.json)

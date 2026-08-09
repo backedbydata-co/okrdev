@@ -228,15 +228,21 @@ Two rules govern everything below:
 
 1. Read `okrdev_version` from `okrdev/config.md` frontmatter and compare it with this
    plugin's version in `.claude-plugin/plugin.json`.
-2. Diff **only template-derived content**: the coach block between the markers in the
-   instructions file,
-   any `.github/` files okrdev installed, and `okrdev/config.md` frontmatter keys (new keys
-   get proposed with their defaults). New capabilities get offered the same folded-in way —
-   e.g. the `okrdev:parked` capture label (step 4) when the repo is on GitHub and the label
-   doesn't exist yet.
-3. Never touch user data: `MISSION.md` content, cycle files in `okrdev/okrs/`, check-ins,
+2. **If nothing template-derived changed between those two versions, say so and stop.** Since
+   2026-08-08 every shipped change bumps the version, including docs-only ones — so a release
+   with no scaffolding in it is now normal, not a mistake. Report it in one line ("0.7.0 is
+   out; it changed docs only, nothing to apply here") and offer to move the marker. Do **not**
+   present an empty diff and do not walk the file list to prove there was nothing: an upgrade
+   prompt that is usually empty is a prompt people stop reading, which is precisely why the
+   old rule exempted docs and why dropping that exemption had to come with this behaviour.
+3. Diff **only template-derived content**: the coach block between the markers in the
+   instructions file, any `.github/` files okrdev installed, and `okrdev/config.md` frontmatter
+   keys (new keys get proposed with their defaults). New capabilities get offered the same
+   folded-in way — e.g. the `okrdev:parked` capture label (step 4) when the repo is on GitHub
+   and the label doesn't exist yet.
+4. Never touch user data: `MISSION.md` content, cycle files in `okrdev/okrs/`, check-ins,
    `PARKING_LOT.md` entries, `LESSONS.md`. Those are the team's records, not okrdev's.
-4. Show the proposed diffs, apply what's approved, bump `okrdev_version`.
+5. Show the proposed diffs, apply what's approved, bump `okrdev_version`.
 
 ## Uninstall (if asked)
 
