@@ -3,7 +3,7 @@
 One good path from idea to production, built so anyone on the team — technical or not, human or
 AI — can ship safely. Next.js on Vercel. Neon Postgres with a database branch per preview. Drizzle
 migrations. Neon Auth. Vitest and Playwright. GitHub Actions. A protected `main` where merging a
-PR *is* the deploy.
+PR *is* the deploy. Feature flags as code in the repo.
 
 **You do not need any of this to run okrdev.** The method — parking lot, cycles, check-ins,
 retros, the coach — installs on any stack, or on no stack at all. Existing codebase? Keep it;
@@ -216,6 +216,80 @@ and remain opt-in ([adoption.md](adoption.md)). The stack simply arrives with ev
 need already in place. Note the plan requirements: branch rulesets are free on public repos;
 private repos need GitHub Pro (personal) or Team (organization).
 
+### Feature flags: the Flags SDK, one opt-in brake
+
+**What.** Every feature flag is a typed function declared in `flags.ts` with Vercel's
+open-source, provider-agnostic Flags SDK, its default value committed beside it. Flags are
+created, changed, and deleted only by PR — the same path as every other change. Percentage
+rollouts are committed values too: ramping 5% → 50% is a diff, and deploy = merge makes that
+diff live in minutes — provided the percentage hashes a stable identity (the signed-in user
+id, or a cookie for anonymous traffic), or the same visitor flips variants on every request.
+No flag provider, no dashboard, nothing in the day-one setup — the first flag is one package
+and one file. Two rules ride along, and they are yours to wire — a comment convention and a
+grep, not a shipped template: every declaration carries a removal criterion a check can
+actually read (a date, or "at 100% rollout"), and a CI step you write warns on any flag past
+it. Agents mint flags cheaply, and a stale flag is a permanent conditional branch wearing a
+temporary one's name.
+
+**Why.** A flag decides what production does — the same authority a migration carries — so
+it rides the code's rails or it becomes a second path to production. A vendor dashboard's
+flag flip is exactly the mutation the migration runbook bans `drizzle-kit push` for: no
+committed artifact, no review, no replay, no audit trail. In `flags.ts` the flip is a diff —
+CI runs, review lands, squash merges, and one clean revert is the kill switch, the same one
+the stack trusts for every other defect. Previews inherit isolation for free: the flag state
+a preview exhibits is the flag state its PR proposes, because it is versioned with the
+branch — never a shared vendor environment where another PR's toggle silently changes what
+the DRI is click-testing. And the whole surface — every flag, default, call site, and
+removal criterion — is text an agent can grep, because there is no dashboard for anything to
+live in instead. The brake below adds the one out-of-band store, kill-only, and its whole
+discipline exists to keep this paragraph true.
+
+**The brake — opt-in, dormant, kill-only.** The routine kill is a revert: minutes, fully
+gated. Where minutes are too many — payments, auth, anything where a bad variant does damage
+while CI runs — the one sanctioned escape hatch is a Vercel Global Config (formerly Edge
+Config) kill list read at the top of the decide path. Kill-only is the load-bearing
+property: an entry can only force a flag to its committed safe value, retreating to behavior
+that already shipped through review — it cannot invent behavior that never did. Writes
+propagate globally within about ten seconds (Vercel's documented bound), no redeploy. This
+is out-of-band state, named as such — the one bounded exception to the loop's "no change
+follows any other path," and everything that follows exists to close it. The same shape as
+[branch-protection.sh](../templates/stack/branch-protection.sh)'s opt-in bypass, but held to
+a stricter discipline: every write is an emergency, logged the moment it happens as a
+judgment-call line in the week's check-in file ([ai-coach.md](ai-coach.md)) — or, running
+the stack without the method, a dated line in whatever log you keep; a reconciling PR
+(change the default, or delete the flag) follows same-day; and a scheduled check you wire
+when you arm the brake — the same shape as
+[neon-cleanup.yml](../templates/github/workflows/neon-cleanup.yml)'s orphan sweep, because a
+PR-triggered check is silent in exactly the quiet week that forgets — fails while the kill
+list has been non-empty for more than a day, so "temporarily killed" cannot become a silent,
+permanent fork between repo truth and production truth. Install it with your first risky
+path, use it never, log it once when you finally do. One operational note: the flip is
+instant on dynamically rendered paths and middleware, but statically cached pages hold the
+old value until revalidated — put revalidation in the kill runbook, or keep killable flags
+off static pages.
+
+**Split tests — deliberately not wired.** This row prescribes no experimentation engine, on
+purpose. Below a traffic floor — on the order of hundreds of the KR's *own* conversion events
+per week — the power arithmetic refuses everyone equally: detecting anything subtler than a
+near-doubling takes more weeks than the cycle has, whichever engine draws the bar, and a
+probability bar over a hundred users is [evidence.md](evidence.md)'s rung-1 warning
+(measurement dishonesty) rendered as a chart that recruits belief. Below the floor, the
+honest instrument is the one the stack already has: ship to everyone, and watch the KR's own
+number move week over week through a committed SQL query against your own Postgres. When a KR
+clears the floor and a real decision hangs on a test, buy the verdict arithmetic through a
+Flags SDK provider adapter — call sites untouched; PostHog is the boring default — because
+the statistics that decide whether a KR moved sit beside password handling on this stack's
+never-hand-roll list.
+
+**Exit.** Downward there is nothing to exit: flags are code you delete. Sideways, if the SDK
+stagnates or folds into a metered product, the prescription survives as the pattern — a typed
+flag function over committed defaults is an afternoon to re-implement with zero call-site
+changes, and the brake is one KV lookup behind your own code, swappable for any store (or
+deleted) in a `flags.ts`-only change. Upward, the same adapter seam is the on-ramp: any
+provider, adopted without touching a call site — priced honestly: an adapter hands that
+flag's state back to a dashboard, so scope it to the experiment's flags and keep every other
+default committed, or this row's argument leaves with it.
+
 ## Previews are for humans
 
 The preview link is the one verification tool a non-technical DRI has. If it hits a login wall,
@@ -240,6 +314,9 @@ Budget a day. The full walkthrough — create-next-app through a verified end-to
   [okr-gate.yml](../templates/github/workflows/okr-gate.yml),
   [neon-cleanup.yml](../templates/github/workflows/neon-cleanup.yml))
 - branch protection via [branch-protection.sh](../templates/stack/branch-protection.sh)
+
+Feature flags are absent from this list on purpose: flags are code, and the first one
+installs itself — one package, one file, no setup step.
 
 Greenfield installs reach it through `/okrdev:install`, which offers the stack module last —
 after the method is in place, because the method is the product and the stack is a module.
