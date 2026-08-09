@@ -1,6 +1,6 @@
 {
   "name": "okrdev",
-  "version": "0.7.0",
+  "version": "0.8.0",
   "description": "OKRs as markdown files in your own repo, with an AI coach that checks new work against your key results, pre-drafts weekly check-ins, and parks distractions.",
   "author": {
     "name": "Alex Chisholm",
