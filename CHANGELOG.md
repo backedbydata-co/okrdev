@@ -7,6 +7,19 @@ minor bumps may change doctrine, not just add to it.
 
 ## Unreleased
 
+## 0.8.0 — 2026-08-09
+
+**The stack module gains its feature-flags row.** `docs/stack.md` prescribes
+flags as code: every flag a typed function in `flags.ts` (Vercel's open-source,
+provider-agnostic Flags SDK) with its default committed beside it, created,
+changed, and deleted only by PR — plus one opt-in, dormant, kill-only brake (a
+Vercel Global Config kill list) for blast-radius paths, held to a same-day
+reconcile-by-PR discipline. Split testing is deliberately not wired below a
+printed traffic floor; the row names the buy-the-stats-engine upgrade (a Flags
+SDK provider adapter) instead of hand-rolling verdict arithmetic. Shipped in
+#15 one commit after 0.7.0 cut the every-change-bumps rule; this release is
+that rule applied to its first straggler.
+
 ## 0.7.0 — 2026-08-08
 
 **Every shipped change now bumps the version.** The old rule exempted docs-only
