@@ -5,7 +5,7 @@ cycle_length: quarterly       # quarterly | six-week
 checkin_cadence: weekly
 side_quest_box_hours_per_week: 4
 strict_gate: false            # record of the Level 2 strict-mode decision. The gate itself is controlled by the OKRDEV_STRICT_GATE repo variable (gh variable set OKRDEV_STRICT_GATE --body true) — flip both together
-backstop: alex                # the human to call when DRI + coach are both stuck
+backstop: <TBD>               # the human to call when DRI + coach are both stuck — see "Backstop" below
 ---
 
 # okrdev config
@@ -14,10 +14,32 @@ okrdev runs on itself. This repo *is* the okrdev framework, and it uses okrdev t
 development — the first and most honest test of whether the method survives contact with real
 work.
 
-- Solo project: Alex is the sole DRI and, being the whole company, his own backstop. When the
-  coach and Alex are both stuck, the escalation is "sleep on it, decide tomorrow."
+- Solo project: Alex is the sole DRI on every objective and every KR here.
 - Level 1 (method only). No Level 2 rails yet — that's itself a candidate for an early KR.
 - Check-ins are async/solo: Alex runs `/okrdev:checkin` whenever the week's work is done.
+
+## Backstop
+
+**Pending — needs a name before it does any work.** The frontmatter reads `<TBD>` on purpose:
+an unnamed backstop is a visible gap, and "alex" was an invisible one.
+
+The old line said Alex was "being the whole company, his own backstop," with the escalation
+"sleep on it, decide tomorrow." That was never a backstop — it is the DRI and the coach stuck
+together with extra steps, which is the exact condition a backstop exists to break. It was also
+the one piece of advice this repo gives adopters and did not take itself:
+[adoption.md § Solo-founder mode](../docs/adoption.md#solo-founder-mode) says *"The backstop
+still gets named. Solo doesn't exempt you — it's exactly when you need a name written down."*
+
+Three constraints on who it can be:
+
+1. **External and neutral.** Not anyone holding a competing claim on the DRI's own attention —
+   a partner in another venture the DRI also works in, most of all. Solo stuckness is
+   overwhelmingly prioritization-shaped, and prioritization is the one kind of stuck a rival
+   claimant cannot arbitrate.
+2. **A response, not ownership.** Backstop duty is to answer and unblock. The backstop never
+   takes the number ([roles.md § The Backstop](../docs/roles.md#the-backstop)).
+3. **Asked first.** A technical friend, a former colleague, or an advisor — who has agreed,
+   rather than been nominated in a file they have never read.
 
 ## Stack module — mapped, not installed
 
