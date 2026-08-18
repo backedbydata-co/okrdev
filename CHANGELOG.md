@@ -7,6 +7,43 @@ minor bumps may change doctrine, not just add to it.
 
 ## Unreleased
 
+## 0.8.7 — 2026-08-18
+
+**The Claude Code install instructions did not work in the Claude Code desktop app.**
+Reported from a real session: typing the documented `/plugin marketplace add` into the
+desktop app answers `/plugin isn't available in this environment`. `/plugin` opens an
+interactive panel that exists only in the terminal CLI. The Quickstart had said "In the
+desktop app (Mac/Windows), open your project folder and type into the chat" directly above
+it, and the landing page promised "no terminal required" — so the one path an adopter was
+steered to was the one that could not work.
+
+- `README.md` and `site/index.html` now lead Claude Code with the shell pair,
+  `claude plugin marketplace add backedbydata-co/okrdev` and
+  `claude plugin install okrdev@okrdev`, which work from any terminal and leave okrdev
+  available in every session including the desktop app. The `/plugin` form is kept, named
+  as the terminal-CLI-only equivalent, with the exact error quoted
+- The "no terminal required" promise is retired for Claude Code and kept for ChatGPT, where
+  it is true. Registering a third-party marketplace is a shell command wherever you run it:
+  the desktop plugin browser lists plugins from marketplaces *already configured* and does
+  not add new ones
+
+**A second claim expired quietly, and nothing noticed.** `docs/adoption.md` and
+`install.sh` both stated that marketplace registration "has no shell equivalent — it exists
+only inside the `/plugin` dialog." True when written; false as of `claude 2.1.226`, which
+ships `claude plugin marketplace add`. Both now say so.
+
+- `install.sh` needed **no behaviour change**: it has always probed for the shell subcommand
+  and preferred it over writing state itself, so the day the subcommand shipped it started
+  taking the official path. The speculative branch was right. Only its comments were stale
+- `install.sh` is still worth running — one command instead of two, idempotent, re-points a
+  local checkout at the canonical repo — but it is no longer the *only* headless route, and
+  `docs/adoption.md` no longer implies it is
+
+Verified against `claude 2.1.226`: `claude plugin marketplace add --help` and
+`claude plugin install --help` both resolve, and okrdev shows as `okrdev@okrdev`, user scope,
+enabled, with its skills live in a desktop session and no `.claude/` in the repo to explain
+it — which is the evidence that a shell-side install reaches the desktop app.
+
 ## 0.8.6 — 2026-08-18
 
 **The acquisition path leads with the button it now has.** The ChatGPT listing went live

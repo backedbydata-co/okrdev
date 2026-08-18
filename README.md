@@ -58,14 +58,22 @@ Press **Install plugin**, then in your project type `@okrdev` and ask it to
 `install okrdev in this repo`. That is the whole install — okrdev ships as skills only, so there
 is no MCP server to authorize, no account, and no keys.
 
-Prefer the command line? In **Claude Code**, add the marketplace and install the plugin:
+In **Claude Code**, register the marketplace once from a terminal. okrdev is then available in
+every Claude Code session, desktop app included:
 
 ```bash
-/plugin marketplace add backedbydata-co/okrdev
-/plugin install okrdev
+claude plugin marketplace add backedbydata-co/okrdev
+claude plugin install okrdev@okrdev
 ```
 
-In the **Codex CLI**, the same two steps are shell commands:
+Inside a terminal `claude` session, `/plugin marketplace add backedbydata-co/okrdev` and
+`/plugin install okrdev` do the same thing through an interactive panel. **That panel is
+terminal-CLI only** — in the desktop app, `/plugin` answers *"isn't available in this
+environment."* The desktop plugin browser (**+** → **Plugins**) lists plugins from marketplaces
+you have already configured and does not add third-party ones, so the shell commands above are
+the path that works everywhere.
+
+In the **Codex CLI**, the equivalent pair is:
 
 ```bash
 codex plugin marketplace add backedbydata-co/okrdev
@@ -161,7 +169,7 @@ weeks and the recovery — in [examples/acme-fitness](examples/acme-fitness/).
 | [docs/stack.md](docs/stack.md) | The optional stack module and why each piece |
 | [docs/codex.md](docs/codex.md) | Running okrdev on Codex: what differs from Claude Code, and what was verified |
 | [docs/codex-submission.md](docs/codex-submission.md) | Directory-listing materials: test cases, starter prompts, release notes |
-| [install.sh](install.sh) | Headless plugin install — the Quickstart without the `/plugin` dialog |
+| [install.sh](install.sh) | Headless plugin install — the Quickstart's two commands as one, idempotent |
 | [skills/](skills/) | The eight coach skills (install, plan, checkin, park, triage, side-quest, retro, coach) |
 | [templates/](templates/) | Everything `install` copies: okrdev/ files, coach block, GitHub rails, stack setup |
 | [examples/acme-fitness/](examples/acme-fitness/) | A full fictional cycle, warts included |

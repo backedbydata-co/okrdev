@@ -185,6 +185,11 @@
   .ipath .act pre.code { margin: 0; font-size: .82rem; line-height: 1.75; }
   .ipath .then { margin-top: .8rem; font-size: .88rem; }
   .ipath .then code { font-size: .85em; background: var(--accent-soft); padding: .1em .35em; border-radius: .3em; }
+  .installs-note {
+    margin-top: 1.3rem; font-size: .92rem; color: var(--ink-soft); max-width: 46rem;
+    border-left: 2px solid var(--amber); padding-left: .9rem;
+  }
+  .installs-note .mono { font-size: .88em; }
   .install-cols { display: grid; grid-template-columns: 1.15fr .85fr; gap: 2rem; margin-top: 2.4rem; align-items: start; }
   @media (max-width: 860px) { .install-cols { grid-template-columns: 1fr; } }
   pre.code {
@@ -404,11 +409,12 @@
         <div class="ipath">
           <p class="tag">Two commands</p>
           <h3>Claude Code</h3>
-          <p>In the desktop app (Mac/Windows), open your project folder and type into the chat:</p>
+          <p>Register the marketplace once from a terminal. okrdev is then in every Claude
+             Code session, desktop app included:</p>
           <div class="act">
-<pre class="code"><span class="k">/plugin</span> marketplace add
+<pre class="code"><span class="k">claude</span> plugin marketplace add
     backedbydata-co/okrdev
-<span class="k">/plugin</span> install okrdev</pre>
+<span class="k">claude</span> plugin install okrdev@okrdev</pre>
             <p class="then">Then <code>/okrdev:install</code></p>
           </div>
         </div>
@@ -425,6 +431,15 @@
           </div>
         </div>
       </div>
+
+      <p class="installs-note">
+        <b>Why not <span class="mono">/plugin</span>?</b> That opens an interactive panel in the
+        terminal CLI. In the desktop app it answers
+        <span class="mono">/plugin isn't available in this environment</span>. The desktop plugin
+        browser (<b>+</b> → <b>Plugins</b>) lists plugins from marketplaces you have already
+        configured, and adding a third-party one isn't something it does — so Claude Code costs
+        you one terminal command. ChatGPT costs you none.
+      </p>
 
       <div class="install-cols">
         <div>
@@ -448,12 +463,13 @@
              an <span class="mono">@</span> mention, Claude Code as
              <span class="mono">/okrdev:park</span>. Plain language works in both.</p>
           <h3>New to either?</h3>
-          <p>If you already use ChatGPT, the directory button above is the whole setup. Claude
-             Code is Anthropic's agent — get the desktop app at
-             <a href="https://claude.com/claude-code">claude.com/claude-code</a>, no terminal
-             required. It also runs as a CLI and in IDEs; okrdev works in all of them, including
-             a headless install (<span class="mono">./okrdev/install.sh</span>) for scripts and
-             CI.</p>
+          <p>If you already use ChatGPT, the directory button above is the whole setup — no
+             terminal at any point. Claude Code is Anthropic's agent; get the desktop app at
+             <a href="https://claude.com/claude-code">claude.com/claude-code</a>. It also runs as
+             a CLI and in IDEs, and okrdev works in all of them — but registering the marketplace
+             is a shell command wherever you run it, and
+             <span class="mono">./okrdev/install.sh</span> does the whole thing in one for
+             scripts and CI.</p>
           <h3>What it touches</h3>
           <p>One <span class="mono">okrdev/</span> directory and one marked, removable block in
              your agent's instructions file — <span class="mono">CLAUDE.md</span> on Claude Code,
@@ -550,9 +566,10 @@
              <a href="https://chatgpt.com/plugins/plugins_6a7a2f9e3968819187e30eaee8da1435">plugin
              directory</a>, so it's one button and you're installed — then <code>@okrdev</code>
              in ChatGPT or Codex. <a href="https://claude.com/claude-code">Claude Code</a> takes
-             two commands, easiest in the desktop app (Mac/Windows), no terminal required.
-             Neither? The skills are plain markdown: copy them into your repo and hand any
-             capable agent the docs.</p>
+             two shell commands — <span class="mono">claude plugin marketplace add</span> then
+             <span class="mono">claude plugin install</span> — after which okrdev is in every
+             session including the desktop app. Neither? The skills are plain markdown: copy them
+             into your repo and hand any capable agent the docs.</p>
         </details>
         <details>
           <summary>What does the plugin get access to?</summary>
