@@ -9,20 +9,40 @@ minor bumps may change doctrine, not just add to it.
 
 ## 0.8.5 — 2026-08-18
 
-**0.8.1 through 0.8.4 are deliberately skipped.** Each exists as a zip uploaded to
-the OpenAI submission portal during one long submission session, and each was
+**The submission materials, corrected against the portal that rejected them.**
+`docs/codex-submission.md` documented a Repository field and a path-within-repository
+field that do not exist on the skills-only path. It is a **zip upload**, and the
+listing is a snapshot of the artifact you upload rather than a mirror of `main` — so
+unlike the Claude directory, every update is a fresh upload rather than a push. The
+doc also claimed the portal substitutes its own developer name when the manifest
+disagrees with the verified identity. It does not: it ships what the manifest gives
+it, which is why a mismatch survives upload and surfaces at human review instead.
+
+- The doc now records what the portal validates at upload — the 30-character
+  `shortDescription` ceiling, the required square `logo` and `composerIcon`, the
+  strict frontmatter parse — and that validation runs *before* the skill scan and
+  names the offending file and line
+- It also records that a full skill scan can take **hours**. One skill sat pending
+  long enough to look broken across four uploads and three plugin records, and was
+  fine. Three controlled probes went looking for a defect that did not exist; the
+  note exists so the next submission waits instead of bisecting
+- Every date in this release and the last was written as 2026-08-10 and is now
+  2026-08-18, the day the work actually happened
+
+## 0.8.4 — 2026-08-18
+
+**Listed on the OpenAI plugin directory.** Submitted and approved — okrdev now has a
+second directory listing, and `KR2.2`'s argument for the Codex port is realised. This
+is the artifact that shipped.
+
+**0.8.1 through 0.8.3 are deliberately skipped.** Each went to the portal and was
 superseded by what the portal taught us on arrival: that the developer name must
 match the verified legal identity, that `shortDescription` has a 30-character
 ceiling, and that `interface.logo` and `interface.composerIcon` are required and
-must be square. Re-issuing *different* bytes under a version the portal has already
-ingested is precisely the lie the every-change-bumps rule exists to prevent, so the
-numbers are burned on purpose rather than quietly reused.
-
-None of the four was ever published to anyone, so if these gaps read as noise
-instead of history, collapsing them into a single release before merge is a
-defensible call — the rule protects distributed artifacts, and these never
-distributed. The narrative is kept because the *reason* each number burned is the
-useful part.
+must be square. Re-issuing *different* bytes under a version the portal had already
+ingested is precisely the lie the every-change-bumps rule exists to prevent, so those
+three numbers are burned rather than quietly reused. 0.8.4 is the one that shipped,
+and the rule is why you can tell which one that is.
 
 **A colon that a lenient parser forgave.** `skills/triage/SKILL.md` carried
 `to a decision: promote` in its unquoted `description` — a colon-space closes a

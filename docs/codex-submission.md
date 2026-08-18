@@ -4,6 +4,8 @@ Everything the portal asks for that isn't already in `.codex-plugin/plugin.json`
 so a resubmission doesn't start from a blank form. Install mechanics and the platform
 differences are in [codex.md](codex.md).
 
+**Status: listed.** Submitted and approved 2026-08-18 as **0.8.4**, as an individual developer.
+
 ## Listing
 
 The portal takes a **single `.zip`** — Create plugin → **Skills only** → Upload Plugin, whose
@@ -38,6 +40,19 @@ form's own list rather than trusting this row. Productivity is the argued choice
 about deciding what *not* to build, and [dri-onboarding.md](dri-onboarding.md) exists for
 explicitly non-technical owners. "Developer Tools" describes how it is delivered and
 misdescribes what it does.
+
+## The skill scan — slow, not stuck
+
+Validation is instant and specific. The *scan* that follows it is neither: budget **hours**, not
+minutes. On the 0.8.4 submission, seven skills cleared quickly and `side-quest` sat pending long
+enough to look broken — through four uploads and three separate plugin records — then completed
+and was approved with the rest.
+
+Three controlled probes went looking for a defect that was never there. A hyphenated skill name
+scans fine; that skill's exact description and its exact body scan fine separately *and*
+together. Scan time tracks content size, and pending resolves on its own. **Wait it out before
+bisecting** — that is the single most expensive lesson from the first submission, and it cost
+most of an afternoon.
 
 ## Starter prompts
 
