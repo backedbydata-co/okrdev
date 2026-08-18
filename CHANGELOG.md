@@ -18,6 +18,12 @@ plugin**, then `@okrdev` — was reachable only by someone who already knew it e
   paths with the one-click one featured rather than one code block that assumed a terminal
 - `README.md`'s Quickstart opens on the listing link, with Claude Code and the Codex CLI
   kept as the two-command paths under "prefer the command line?"
+- `docs/codex.md` gains the listing as its lead install path, and states the difference the
+  two paths actually have: the listing serves the last uploaded zip and can sit behind `main`,
+  while `marketplace add` fetches the branch. Its "verified, not assumed" claim is rescoped to
+  the CLI — a portal install was never derived from `codex-cli`, and what it writes to
+  `~/.codex/config.toml` is now listed as unverified rather than silently covered by a table
+  that describes a different mechanism
 - The listing URL is recorded in `docs/codex-submission.md`, next to the status line,
   because two files now hard-code an opaque portal id and a re-listing mints a new one.
   Deliberately not a table row: `check_starter_prompts` reads any row whose first cell is
