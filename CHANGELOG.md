@@ -7,6 +7,29 @@ minor bumps may change doctrine, not just add to it.
 
 ## Unreleased
 
+## 0.8.6 — 2026-08-18
+
+**The acquisition path leads with the button it now has.** The ChatGPT listing went live
+in 0.8.4 and nothing pointed at it. `README.md` and `site/index.html` both opened on
+`/plugin marketplace add`, so the shortest install okrdev has ever had — press **Install
+plugin**, then `@okrdev` — was reachable only by someone who already knew it existed.
+
+- The landing page's hero CTA is the directory listing, and the install section is three
+  paths with the one-click one featured rather than one code block that assumed a terminal
+- `README.md`'s Quickstart opens on the listing link, with Claude Code and the Codex CLI
+  kept as the two-command paths under "prefer the command line?"
+- The listing URL is recorded in `docs/codex-submission.md`, next to the status line,
+  because two files now hard-code an opaque portal id and a re-listing mints a new one.
+  Deliberately not a table row: `check_starter_prompts` reads any row whose first cell is
+  a lone backticked span as a starter prompt, so a URL row would have been scanned as one
+- Two fixes to what 0.8.4 and 0.8.5 left behind: the README promised "Five" starter
+  prompts while listing six — the sixth arrived in 0.8.4 and the prose did not follow —
+  and "Neither agent?" no longer reads right in a section that now names three
+
+**No re-submission.** The OpenAI listing is a snapshot of an uploaded zip, not a mirror of
+`main`, so it stays at 0.8.4 until someone uploads again. This bump is for the adopter-facing
+marker, which is what the every-shipped-change rule is about.
+
 ## 0.8.5 — 2026-08-18
 
 **The submission materials, corrected against the portal that rejected them.**

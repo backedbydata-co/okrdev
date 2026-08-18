@@ -45,18 +45,27 @@ Details in [docs/adoption.md](docs/adoption.md).
 
 ## Quickstart
 
-okrdev is a plugin for [Claude Code](https://claude.com/claude-code) and
-[Codex](https://developers.openai.com/codex), plus a set of documents. One install, either
+okrdev is a plugin for [ChatGPT and Codex](https://developers.openai.com/codex) and for
+[Claude Code](https://claude.com/claude-code), plus a set of documents. One install, either
 agent — see [docs/codex.md](docs/codex.md) for what differs.
 
-In **Claude Code**, add the marketplace and install the plugin:
+**The shortest path is a button.** okrdev is listed in the ChatGPT plugin directory, so there is
+no marketplace command to run and nothing to copy:
+
+> **[Install okrdev from the plugin directory →](https://chatgpt.com/plugins/plugins_6a7a2f9e3968819187e30eaee8da1435)**
+
+Press **Install plugin**, then in your project type `@okrdev` and ask it to
+`install okrdev in this repo`. That is the whole install — okrdev ships as skills only, so there
+is no MCP server to authorize, no account, and no keys.
+
+Prefer the command line? In **Claude Code**, add the marketplace and install the plugin:
 
 ```bash
 /plugin marketplace add backedbydata-co/okrdev
 /plugin install okrdev
 ```
 
-In **Codex**, the same two steps are shell commands:
+In the **Codex CLI**, the same two steps are shell commands:
 
 ```bash
 codex plugin marketplace add backedbydata-co/okrdev
@@ -98,7 +107,7 @@ Then live in it:
 /okrdev:retro       # end of cycle: score honestly, extract lessons
 ```
 
-You can also just say what you want — the skills trigger on plain language. Five to start with:
+You can also just say what you want — the skills trigger on plain language. Six to start with:
 
 - "install okrdev in this repo"
 - "park this idea"
@@ -110,7 +119,7 @@ You can also just say what you want — the skills trigger on plain language. Fi
 These are the starter prompts listed in the plugin directories, kept here verbatim so the
 listing and the repo can't disagree — `check_starter_prompts` fails the build if they drift.
 
-Neither agent? The skills are plain markdown — copy `skills/*` into wherever your agent looks
+Some other agent? The skills are plain markdown — copy `skills/*` into wherever your agent looks
 for skills, along with `templates/*` (the skills create files from them; they resolve
 `templates/` relative to where you copied it), or hand any capable agent the docs. The format
 is the framework.
