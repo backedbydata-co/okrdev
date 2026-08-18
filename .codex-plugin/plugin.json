@@ -1,6 +1,6 @@
 {
   "name": "okrdev",
-  "version": "0.8.0",
+  "version": "0.8.5",
   "description": "OKRs as markdown files in your own repo, with an AI coach that checks new work against your key results, pre-drafts weekly check-ins, and parks distractions.",
   "author": {
     "name": "Alex Chisholm",
@@ -26,7 +26,7 @@
     "displayName": "okrdev",
     "shortDescription": "OKRs as files, with a coach",
     "longDescription": "okrdev turns OKRs into markdown files in your own repository and puts an AI coach beside them. The coach checks new work against your key results before it starts, pre-drafts the weekly check-in from git history and merged pull requests, and parks distractions instead of letting them become this week's work.\n\nIt installs on an adoption ladder and never installs a level you did not ask for. Level 0 is a parking lot and takes ten minutes. Level 1 adds a mission, cycle objectives, check-ins and a scored retro. Level 2 adds collaboration rails for teams shipping through pull requests.\n\nThe coach never blocks. It classifies, it argues, and when you overrule it, it logs the judgment call with your reason so the next planning session has a record instead of a memory.\n\nNo MCP servers, no telemetry, no account, no network calls of its own. Everything it produces is a file in your repository, under your git history and your access control. Delete the okrdev directory and the marked block in your agent instructions file, and it never existed.",
-    "developerName": "Alex Chisholm",
+    "developerName": "Alexander Ashley Chisholm",
     "category": "Productivity",
     "capabilities": [
       "skills"

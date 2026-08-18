@@ -7,6 +7,101 @@ minor bumps may change doctrine, not just add to it.
 
 ## Unreleased
 
+## 0.8.5 — 2026-08-18
+
+**The submission materials, corrected against the portal that rejected them.**
+`docs/codex-submission.md` documented a Repository field and a path-within-repository
+field that do not exist on the skills-only path. It is a **zip upload**, and the
+listing is a snapshot of the artifact you upload rather than a mirror of `main` — so
+unlike the Claude directory, every update is a fresh upload rather than a push. The
+doc also claimed the portal substitutes its own developer name when the manifest
+disagrees with the verified identity. It does not: it ships what the manifest gives
+it, which is why a mismatch survives upload and surfaces at human review instead.
+
+- The doc now records what the portal validates at upload — the 30-character
+  `shortDescription` ceiling, the required square `logo` and `composerIcon`, the
+  strict frontmatter parse — and that validation runs *before* the skill scan and
+  names the offending file and line
+- It also records that a full skill scan can take **hours**. One skill sat pending
+  long enough to look broken across four uploads and three plugin records, and was
+  fine. Three controlled probes went looking for a defect that did not exist; the
+  note exists so the next submission waits instead of bisecting
+- Every date in this release and the last was written as 2026-08-10 and is now
+  2026-08-18, the day the work actually happened
+
+## 0.8.4 — 2026-08-18
+
+**Listed on the OpenAI plugin directory.** Submitted and approved — okrdev now has a
+second directory listing, and `KR2.2`'s argument for the Codex port is realised. This
+is the artifact that shipped.
+
+**0.8.1 through 0.8.3 are deliberately skipped.** Each went to the portal and was
+superseded by what the portal taught us on arrival: that the developer name must
+match the verified legal identity, that `shortDescription` has a 30-character
+ceiling, and that `interface.logo` and `interface.composerIcon` are required and
+must be square. Re-issuing *different* bytes under a version the portal had already
+ingested is precisely the lie the every-change-bumps rule exists to prevent, so those
+three numbers are burned rather than quietly reused. 0.8.4 is the one that shipped,
+and the rule is why you can tell which one that is.
+
+**A colon that a lenient parser forgave.** `skills/triage/SKILL.md` carried
+`to a decision: promote` in its unquoted `description` — a colon-space closes a
+plain YAML scalar, so a strict parser reads a nested mapping and fails the file.
+Claude Code's loader accepted it, so it installed cleanly, ran correctly, and
+shipped to the Claude directory without a murmur. OpenAI's submission portal
+rejected the upload outright: *Malformed skill frontmatter YAML,
+`skills/triage/SKILL.md:3`*. The description is reworded, not quoted — the other
+seven are plain scalars and one quoted straggler is the drift this repo keeps
+paying for.
+
+- `check_skill_frontmatter` is the 39th check, and the gap it closes is
+  embarrassing in the useful way: the suite had **no YAML parser anywhere**, and
+  `check_skill_references` only ever asserted that a `SKILL.md` *exists*. Every
+  skill's frontmatter is now validated as a flat mapping of single-line scalars —
+  unquoted values may not contain `": "`, end in `:`, open with a YAML indicator,
+  or hide a ` #` comment; quoted ones must close; `name` must match its directory
+- Deliberately stricter than YAML. There is no parser to lean on (this repo runs
+  on `jq` and `node`, and taking a dependency to validate two keys is the wrong
+  trade), so the validator refuses anything it cannot prove a strict parser will
+  accept. A false alarm costs a pair of quotes; a miss costs a rejected submission
+- Verified red-first against the shipped defect, and cross-checked against a real
+  YAML parser in both directions — it flags exactly the file Psych flags and
+  passes exactly the seven it passes
+- **A sixth starter prompt, and a home for the list.** "what should I work on
+  today?" was typed straight into the portal, where nothing in this repo could see
+  it. It is now in the README block, in `skills/coach/SKILL.md`'s triggers so it
+  routes somewhere instead of nowhere, and in a table in `docs/codex-submission.md`
+  that `check_starter_prompts` diffs against the README
+- **`check_starter_prompts` could never have caught the thing it was written for.**
+  Its `missing` array was declared, tested, and never appended to — the drift
+  branch was unreachable, so the check only ever counted README prompts and
+  validated the lone `defaultPrompt`. The manifest has no field for the other five,
+  which is why the portal's list needed a repo-side source of truth before the
+  branch could mean anything
+- `check_listing_copy` is new: `shortDescription` must be non-empty and ≤30
+  characters, the ceiling the portal enforces and rejected a 39-character subtitle
+  against — mid-submission, by hand, after the manifest had passed every check here
+  and been uploaded twice. Only the limit we have actually observed is encoded;
+  inventing ceilings we have not seen fail is how a check starts lying
+- The same check now requires `logo` and `composerIcon` to be **present** and
+  square. `check_plugin_manifests` validated only assets that were *referenced* —
+  its `// empty` emits nothing for an absent field, so a manifest that dropped one
+  entirely passed green, which is how the field turned out to be mandatory only
+  after an upload was rejected for it
+- Squareness reads the root `<svg>` element, not the file. A line-oriented scan
+  finds the inner `<rect>` first — 512×512 in `assets/logo.svg`, the right answer
+  by coincidence and a wrong one the moment that rect is resized. The root carries
+  no width/height at all (*"the directory scales this"*), so `viewBox` is the real
+  source, and XML comments are stripped before parsing because this file has
+  already broken once on comment handling and says so in its own comment
+- `interface.developerName` is now the verified legal name, "Alexander Ashley
+  Chisholm". The portal's field is explicit — *must match your verified legal name
+  or business name* — and it does **not** substitute its own value when you
+  disagree with it, so a mismatch survives upload and surfaces at human review
+  instead. `author.name` stays "Alex Chisholm": that is the npm-style package
+  author, it sits in the shared-identity projection across both manifests, and the
+  directory's legal-identity requirement has no claim on it
+
 ## 0.8.0 — 2026-08-09
 
 **The stack module gains its feature-flags row.** `docs/stack.md` prescribes

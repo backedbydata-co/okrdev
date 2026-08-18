@@ -1,6 +1,6 @@
 ---
 name: coach
-description: On-demand status and alignment check from the okrdev coach — confidence trends, drift since the last check-in, health metrics, open-PR status in plain language, and side-quest/maintenance/emergency budget usage. Use when someone asks "how are we doing", "where do we stand on the OKRs", "is this aligned?", "should I build this?", "what's drifting", "any red flags this week", or wants a mid-week pulse without running a full check-in.
+description: On-demand status and alignment check from the okrdev coach — confidence trends, drift since the last check-in, health metrics, open-PR status in plain language, and side-quest/maintenance/emergency budget usage. Use when someone asks "how are we doing", "where do we stand on the OKRs", "is this aligned?", "should I build this?", "what should I work on today?", "what's drifting", "any red flags this week", or wants a mid-week pulse without running a full check-in.
 ---
 
 # Coach

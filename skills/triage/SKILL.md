@@ -1,6 +1,6 @@
 ---
 name: triage
-description: Walk every parked idea — open okrdev:parked GitHub issues plus the parking lot's Captured section — to a decision: promote, archive, or side-quest with a time-box; then check the side-quest budget. Use when the user says "triage the parking lot", "triage the parked issues", "go through my parked ideas", "clean up the ideas list", or as the parking-lot step of a weekly check-in.
+description: Walk every parked idea — open okrdev:parked GitHub issues plus the parking lot's Captured section — to a decision (promote, archive, or side-quest with a time-box); then check the side-quest budget. Use when the user says "triage the parking lot", "triage the parked issues", "go through my parked ideas", "clean up the ideas list", or as the parking-lot step of a weekly check-in.
 ---
 
 # Triage

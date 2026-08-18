@@ -411,14 +411,94 @@ check_payload() {
   return $status
 }
 
+# chafe: the OpenAI portal rejected `shortDescription` at 39 characters with a
+# 30-character limit — discovered by a human typing into the form mid-submission,
+# after the manifest had already passed every check here and been uploaded twice.
+# A listing field that fails validation is found at the worst possible moment.
+check_listing_copy() {
+  local manifest=.codex-plugin/plugin.json
+  local short problems=()
+  # Only the limit we have actually observed. The others are unknown, and
+  # inventing ceilings we have not seen fail is how a check starts lying.
+  short=$(jq -r '.interface.shortDescription // ""' "$manifest")
+  if [ -z "$short" ]; then
+    problems+=("shortDescription is empty")
+  elif [ "${#short}" -gt 30 ]; then
+    problems+=("shortDescription is ${#short} chars, over the portal's 30: \"$short\"")
+  fi
+  local field
+  for field in displayName longDescription developerName category; do
+    [ -n "$(jq -r --arg k "$field" '.interface[$k] // ""' "$manifest")" ] ||
+      problems+=("$field is empty")
+  done
+
+  # logo and composerIcon are *required*, and the portal insists each references a
+  # square image. check_plugin_manifests validates only assets that are referenced
+  # — its `// empty` emits nothing for an absent field, so a manifest that dropped
+  # one entirely sailed through. Presence is checked here; squareness with it,
+  # because "the file exists" and "the file is usable" are different claims.
+  local asset path w h vb
+  for field in logo composerIcon; do
+    asset=$(jq -r --arg k "$field" '.interface[$k] // ""' "$manifest")
+    if [ -z "$asset" ]; then
+      problems+=("$field is required and absent")
+      continue
+    fi
+    path=${asset#./}
+    [ -f "$path" ] || { problems+=("$field points at a missing file: $asset"); continue; }
+    case $path in
+      *.svg) ;;
+      *) problems+=("$field is $path — squareness is only verified for SVG, so this check needs extending before shipping it")
+         continue ;;
+    esac
+    # Root element only. A line-oriented scan reads the first width= it finds,
+    # which in assets/logo.svg is the inner <rect> — 512x512 by coincidence, and
+    # a wrong answer the moment that rect is resized. The root here carries no
+    # width/height at all ("the directory scales this"), so viewBox is the real
+    # source. Comments are stripped first: this file already broke once on XML
+    # comment parsing, and it says so in its own comment.
+    vb=$(node -e '
+      const fs = require("fs");
+      const src = fs.readFileSync(process.argv[1], "utf8").replace(/<!--[\s\S]*?-->/g, "");
+      const tag = src.match(/<svg\b[^>]*>/);
+      if (!tag) process.exit(0);
+      const num = v => { const n = parseFloat(v); return Number.isFinite(n) ? n : null; };
+      const mw = tag[0].match(/\swidth="([^"]+)"/), mh = tag[0].match(/\sheight="([^"]+)"/);
+      let w = mw ? num(mw[1]) : null, h = mh ? num(mh[1]) : null;
+      if (w === null || h === null) {
+        const box = tag[0].match(/\sviewBox="\s*[-\d.]+\s+[-\d.]+\s+([\d.]+)\s+([\d.]+)/);
+        if (box) { w = num(box[1]); h = num(box[2]); }
+      }
+      if (w !== null && h !== null) console.log(w + " " + h);
+    ' "$path")
+    w=${vb% *}; h=${vb#* }
+    if [ -z "$vb" ]; then
+      problems+=("$field: could not read dimensions from $path — cannot confirm it is square")
+    elif [ "$w" != "$h" ]; then
+      problems+=("$field is ${w}x${h}, not square: $path")
+    fi
+  done
+  if [ ${#problems[@]} -gt 0 ]; then
+    bad "listing copy: $manifest would be rejected by the portal"
+    printf '        %s\n' "${problems[@]}"
+    return 1
+  fi
+  ok "listing copy: shortDescription is ${#short}/30 chars, required interface fields present, both icons square"
+}
+
 # chafe: the Claude directory submission (2026-08-08) went out with five starter
 # prompts, three of which appeared nowhere in README.md — "verified" by grepping
 # the README *and* skills/ together and reading the hit as a README hit. A
 # listing that promises a phrase the docs never use sends the curious user's
 # first attempt into nothing, which is the exact moment adoption is won or lost.
+# Second chafe, 2026-08-18: this check could never have caught that. `missing`
+# was declared, tested, and never appended to — the drift branch was dead code,
+# and the portal's prompt list had no repo-side source of truth to diff against.
+# A sixth prompt typed straight into the form proved it, passing green.
 check_starter_prompts() {
   local doc=README.md manifest=.codex-plugin/plugin.json
-  local prompt missing=() found=0
+  local listing=docs/codex-submission.md
+  local prompt missing=() found=0 listed=0
   # The README block is the source of truth; the manifest's defaultPrompt must
   # be one of them. Bounded to a named list so this stays a token scan, not a
   # prose parser — same shape as the glossary and threshold checks.
@@ -426,6 +506,25 @@ check_starter_prompts() {
     [ -n "$prompt" ] || continue
     found=$((found + 1))
   done < <(sed -n 's/^- "\(.*\)"$/\1/p' "$doc")
+
+  # What actually gets typed into the portal now lives in $listing, because a
+  # human types it and nothing else in this repo knew what they typed. Every
+  # prompt promised there must exist verbatim in the README.
+  # shellcheck disable=SC2016  # backticks are markdown code spans, not a subshell
+  local row='s/^| `\(.*\)` |.*$/\1/p'
+  while read -r prompt; do
+    [ -n "$prompt" ] || continue
+    listed=$((listed + 1))
+    grep -qF -- "- \"$prompt\"" "$doc" || missing+=("$prompt")
+  done < <(sed -n "$row" "$listing")
+  if [ "$listed" -lt 3 ]; then
+    bad "starter prompts: found $listed prompts in $listing — the listing scan is broken"
+    return 1
+  fi
+  if [ "$listed" -ne "$found" ]; then
+    bad "starter prompts: $listing lists $listed, $doc lists $found — the portal and the repo disagree"
+    return 1
+  fi
 
   # A scan that finds nothing passes vacuously — the trap check_chafe_comments
   # and check_footprint_manifest both guard against. Insist it read the block.
@@ -443,7 +542,7 @@ check_starter_prompts() {
     bad "starter prompts: $manifest defaultPrompt is not in $doc verbatim: \"$default\""
     return 1
   fi
-  ok "starter prompts: $found in $doc, and the manifest's defaultPrompt is one of them"
+  ok "starter prompts: $found in $doc, all $listed in $listing match, defaultPrompt is one of them"
 }
 
 # chafe: branch-protection.sh shipped with die() called before its definition
@@ -594,6 +693,104 @@ check_gate_js_syntax() {
     node --check "$tmp" 2>&1 | sed 's/^/        /'
   fi
   rm -rf "$dir"
+}
+
+# chafe: skills/triage/SKILL.md shipped with `to a decision: promote` — a bare
+# colon-space inside an unquoted scalar, which closes the plain scalar and makes
+# a strict YAML parser read a nested mapping. Claude Code's lenient loader took
+# it, so it reached the Claude directory unnoticed; OpenAI's portal rejected the
+# upload with "Malformed skill frontmatter YAML" and named the line. 38 checks
+# and not one of them had ever opened a SKILL.md's frontmatter with a parser.
+check_skill_frontmatter() {
+  # No YAML parser is available — this repo runs on jq and node, and adding a
+  # dependency to validate two keys is the wrong trade. So this validates the
+  # narrow format okrdev actually ships (a flat mapping of single-line scalars)
+  # and REJECTS anything it cannot prove a strict parser will accept. Stricter
+  # than YAML on purpose: a false alarm costs a quoted string, a miss costs a
+  # rejected submission.
+  local dir tmp
+  dir=$(mktemp -d) || { bad "skill frontmatter: could not create a temp dir"; return 1; }
+  tmp=$dir/frontmatter.js
+  cat > "$tmp" <<'NODE'
+const fs = require('fs'), path = require('path');
+const dirs = fs.readdirSync('skills', {withFileTypes: true})
+  .filter(d => d.isDirectory()).map(d => d.name).sort();
+const problems = [];
+let scanned = 0;
+// A leading YAML indicator makes a plain scalar mean something other than text.
+const INDICATORS = ['[', ']', '{', '}', '&', '*', '!', '|', '>', '%', '@', '`', '#', ',', '?', '-', ':'];
+for (const name of dirs) {
+  const file = path.join('skills', name, 'SKILL.md');
+  if (!fs.existsSync(file)) { problems.push(`${file}: no SKILL.md`); continue; }
+  const lines = fs.readFileSync(file, 'utf8').split('\n');
+  if (lines[0] !== '---') { problems.push(`${file}:1: does not open with ---`); continue; }
+  const end = lines.indexOf('---', 1);
+  if (end === -1) { problems.push(`${file}: frontmatter is never closed`); continue; }
+  const body = lines.slice(1, end);
+  if (body.length === 0) { problems.push(`${file}: frontmatter is empty`); continue; }
+  scanned++;
+  const keys = new Map();
+  body.forEach((line, i) => {
+    const n = i + 2;                       // 1-based, past the opening ---
+    if (line.includes('\t')) problems.push(`${file}:${n}: contains a tab`);
+    const m = line.match(/^([A-Za-z][A-Za-z0-9_-]*): (.*)$/);
+    if (!m) { problems.push(`${file}:${n}: not a flat "key: value" line — ${JSON.stringify(line)}`); return; }
+    const [, key, value] = m;
+    if (keys.has(key)) problems.push(`${file}:${n}: duplicate key "${key}"`);
+    keys.set(key, value);
+    if (value === '') { problems.push(`${file}:${n}: "${key}" has an empty value`); return; }
+    const q = value[0];
+    if (q === '"' || q === "'") {
+      if (value.length < 2 || value[value.length - 1] !== q) {
+        problems.push(`${file}:${n}: "${key}" opens with ${q} and never closes`);
+      }
+      return;                              // a closed quoted scalar may hold anything
+    }
+    // Everything below is why the triage line failed.
+    const colon = value.indexOf(': ');
+    if (colon !== -1) {
+      problems.push(`${file}:${n}: "${key}" is unquoted and contains ": " at column ${colon + key.length + 3}` +
+        ` — a strict parser reads a nested mapping here. Quote the value or reword.`);
+    }
+    if (value.endsWith(':')) problems.push(`${file}:${n}: "${key}" is unquoted and ends with ":"`);
+    if (INDICATORS.includes(value[0])) {
+      problems.push(`${file}:${n}: "${key}" is unquoted and starts with the YAML indicator "${value[0]}"`);
+    }
+    if (value.includes(' #')) problems.push(`${file}:${n}: "${key}" is unquoted and contains " #" — the rest parses as a comment`);
+  });
+  for (const required of ['name', 'description']) {
+    if (!keys.has(required)) problems.push(`${file}: frontmatter has no "${required}"`);
+  }
+  // The directory is the invocation name; frontmatter disagreeing with it is
+  // the same class of two-copies-no-assert drift the manifests check guards.
+  if (keys.has('name') && keys.get('name') !== name) {
+    problems.push(`${file}: frontmatter name "${keys.get('name')}" != directory "${name}"`);
+  }
+}
+console.log(`SCANNED:${scanned}`);
+problems.forEach(p => console.log(`PROBLEM:${p}`));
+NODE
+  local out scanned
+  if ! out=$(node "$tmp" 2>&1); then
+    bad "skill frontmatter: the validator itself failed"
+    printf '%s\n' "$out" | sed 's/^/        /'
+    rm -rf "$dir"
+    return 1
+  fi
+  rm -rf "$dir"
+  scanned=$(printf '%s\n' "$out" | sed -n 's/^SCANNED://p')
+  # A scan that reads nothing passes vacuously — the same trap check_chafe_comments
+  # sets for itself, and the same one `node --check ""` fell into here once.
+  if [ -z "$scanned" ] || [ "$scanned" -lt 2 ]; then
+    bad "skill frontmatter: scanned ${scanned:-0} skills — the scan itself is broken"
+    return 1
+  fi
+  if printf '%s\n' "$out" | grep -q '^PROBLEM:'; then
+    bad "skill frontmatter: malformed YAML would be rejected by a strict parser"
+    printf '%s\n' "$out" | sed -n 's/^PROBLEM:/        /p'
+    return 1
+  fi
+  ok "skill frontmatter: $scanned skills parse as strict flat YAML, names match their directories"
 }
 
 # chafe: none yet — /okrdev:uninstall is documented but unimplemented (parked,
@@ -1126,6 +1323,7 @@ check_branch_protection_bad_input
 check_kr_grammar
 check_judgment_call_format
 check_plugin_manifests
+check_listing_copy
 check_starter_prompts
 check_headless_install
 check_payload
@@ -1136,6 +1334,7 @@ check_embedded_script_portability
 check_gnu_only_syntax
 check_gate_js_syntax
 check_gate_grammar_tests
+check_skill_frontmatter
 check_skill_references
 check_confidence_mirror
 check_footprint_manifest
