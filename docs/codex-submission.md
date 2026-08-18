@@ -5,6 +5,12 @@ so a resubmission doesn't start from a blank form. Install mechanics and the pla
 differences are in [codex.md](codex.md).
 
 **Status: listed.** Submitted and approved 2026-08-18 as **0.8.4**, as an individual developer.
+The public listing is at
+[`chatgpt.com/plugins/plugins_6a7a2f9e…`](https://chatgpt.com/plugins/plugins_6a7a2f9e3968819187e30eaee8da1435).
+Recorded here because three files link it as the primary install path — `README.md`,
+`site/index.html` and `codex.md` — so a re-listing that mints a new id has callers to update,
+not just a bookmark. Deliberately not a table row: `check_starter_prompts` reads every row whose first
+cell is a lone backticked span as a starter prompt.
 
 ## Listing
 

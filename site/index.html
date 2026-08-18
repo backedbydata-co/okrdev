@@ -4,9 +4,9 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>okrdev — an open-source OKR operating framework with an AI coach</title>
-<meta name="description" content="A free, open-source OKR framework with an AI coach in your repo: it challenges off-KR work, pre-drafts weekly check-ins, and parks distractions. MIT.">
+<meta name="description" content="A free, open-source OKR framework with an AI coach in your repo: it challenges off-KR work, pre-drafts weekly check-ins, and parks distractions. One click to install from the ChatGPT plugin directory. MIT.">
 <meta property="og:title" content="okrdev — Building got cheap. Focus didn't.">
-<meta property="og:description" content="A free, open-source OKR operating framework where an AI coach keeps humans on track. Your OKRs are markdown files in your own repo — delete one directory and okrdev never existed.">
+<meta property="og:description" content="A free, open-source OKR operating framework where an AI coach keeps humans on track. One click to install from the ChatGPT plugin directory. Your OKRs are markdown files in your own repo — delete one directory and okrdev never existed.">
 <meta property="og:type" content="website">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%231d5c38'/%3E%3Ctext x='16' y='22' font-family='monospace' font-size='15' font-weight='bold' fill='%23e8f5ec' text-anchor='middle'%3Eok%3C/text%3E%3C/svg%3E">
 <style>
@@ -100,6 +100,7 @@
   .btn-ghost { border-color: var(--line); color: var(--ink); background: var(--paper-raised); }
   .btn-ghost:hover { border-color: var(--ink-soft); }
   .cta-note { font-size: .85rem; color: var(--ink-soft); font-family: var(--mono); }
+  .cta-sub { margin-top: .95rem; font-size: .92rem; color: var(--ink-soft); }
 
   /* ── terminal ────────────────────────────────── */
   .term {
@@ -164,6 +165,26 @@
   .ladder-note { margin-top: 1.1rem; font-size: .92rem; color: var(--ink-soft); max-width: 44rem; }
 
   /* install */
+  .installs { display: grid; grid-template-columns: 1.2fr 1fr 1fr; gap: 1rem; margin-top: 2.4rem; align-items: stretch; }
+  @media (max-width: 900px) { .installs { grid-template-columns: 1fr; } }
+  .ipath {
+    display: flex; flex-direction: column;
+    border: 1px solid var(--line); border-radius: .9rem; padding: 1.4rem 1.4rem 1.5rem;
+    background: var(--paper-raised);
+  }
+  .ipath-featured { border-color: var(--accent); box-shadow: 0 12px 36px -22px rgba(29, 92, 56, .6); }
+  .ipath .tag {
+    font-family: var(--mono); font-size: .75rem; letter-spacing: .07em;
+    text-transform: uppercase; color: var(--ink-soft); margin-bottom: .65rem;
+  }
+  .ipath-featured .tag { color: var(--accent); }
+  .ipath h3 { font-size: 1.14rem; letter-spacing: -.01em; margin-bottom: .5rem; }
+  .ipath p { font-size: .92rem; color: var(--ink-soft); }
+  .ipath .act { margin-top: auto; padding-top: 1.15rem; }
+  .ipath .act .btn { display: block; text-align: center; }
+  .ipath .act pre.code { margin: 0; font-size: .82rem; line-height: 1.75; }
+  .ipath .then { margin-top: .8rem; font-size: .88rem; }
+  .ipath .then code { font-size: .85em; background: var(--accent-soft); padding: .1em .35em; border-radius: .3em; }
   .install-cols { display: grid; grid-template-columns: 1.15fr .85fr; gap: 2rem; margin-top: 2.4rem; align-items: start; }
   @media (max-width: 860px) { .install-cols { grid-template-columns: 1fr; } }
   pre.code {
@@ -248,10 +269,14 @@
         before it eats your week.
       </p>
       <div class="cta-row">
-        <a class="btn btn-primary" href="#install">Install free</a>
-        <a class="btn btn-ghost" href="https://github.com/backedbydata-co/okrdev/blob/main/MANIFESTO.md">Read the manifesto</a>
-        <span class="cta-note">Level 0 in ten minutes</span>
+        <a class="btn btn-primary" href="https://chatgpt.com/plugins/plugins_6a7a2f9e3968819187e30eaee8da1435">Add to ChatGPT — one click</a>
+        <a class="btn btn-ghost" href="#install">Claude Code &amp; Codex CLI</a>
+        <span class="cta-note">Free · MIT · Level 0 in ten minutes</span>
       </div>
+      <p class="cta-sub">
+        Installed from the plugin directory — no terminal, no marketplace command. Or
+        <a href="https://github.com/backedbydata-co/okrdev/blob/main/MANIFESTO.md">read the manifesto</a> first.
+      </p>
 
       <div class="term" role="img" aria-label="A Claude Code session: the coach asks which key result a new idea serves, parks it in the parking lot, then logs an override as a judgment call.">
         <div class="term-bar"><i></i><i></i><i></i><b>Claude Code — your-project</b></div>
@@ -356,19 +381,55 @@
   <div class="wrap">
     <section id="install">
       <p class="sec-label">Quickstart</p>
-      <h2>Two commands to install. One directory to uninstall.</h2>
+      <h2>One click to install. One directory to uninstall.</h2>
+      <p class="sec-lede">
+        okrdev is listed in the ChatGPT plugin directory, so the shortest path is a button —
+        no terminal, no marketplace command, nothing to copy. The command-line paths below do
+        the same thing for the agents that prefer them.
+      </p>
+
+      <div class="installs">
+        <div class="ipath ipath-featured">
+          <p class="tag">Easiest — one click</p>
+          <h3>ChatGPT &amp; Codex</h3>
+          <p>Open the listing and press <b>Install plugin</b>. That's the whole install: okrdev
+             ships as skills only — no MCP server, no account, no keys.</p>
+          <div class="act">
+            <a class="btn btn-primary" href="https://chatgpt.com/plugins/plugins_6a7a2f9e3968819187e30eaee8da1435">Install from the directory&nbsp;→</a>
+            <p class="then">Then in your project: type <code>@okrdev</code> and say
+               <code>install okrdev in this repo</code></p>
+          </div>
+        </div>
+
+        <div class="ipath">
+          <p class="tag">Two commands</p>
+          <h3>Claude Code</h3>
+          <p>In the desktop app (Mac/Windows), open your project folder and type into the chat:</p>
+          <div class="act">
+<pre class="code"><span class="k">/plugin</span> marketplace add
+    backedbydata-co/okrdev
+<span class="k">/plugin</span> install okrdev</pre>
+            <p class="then">Then <code>/okrdev:install</code></p>
+          </div>
+        </div>
+
+        <div class="ipath">
+          <p class="tag">Two commands</p>
+          <h3>Codex CLI</h3>
+          <p>Prefer the terminal to the directory? The same plugin, registered from a shell:</p>
+          <div class="act">
+<pre class="code"><span class="k">codex</span> plugin marketplace add
+    backedbydata-co/okrdev
+<span class="k">codex</span> plugin add okrdev@okrdev</pre>
+            <p class="then">Then <code>@okrdev</code></p>
+          </div>
+        </div>
+      </div>
+
       <div class="install-cols">
         <div>
-<pre class="code"><span class="c"># In the Claude Code app (Mac/Windows), open your</span>
-<span class="c"># project folder and type into the chat:</span>
-<span class="k">/plugin</span> marketplace add backedbydata-co/okrdev
-<span class="k">/plugin</span> install okrdev
-
-<span class="c"># On Codex, the same two steps are shell commands:</span>
-<span class="k">codex</span> plugin marketplace add backedbydata-co/okrdev
-<span class="k">codex</span> plugin add okrdev@okrdev
-
-<span class="c"># then, with your project still open:</span>
+<pre class="code"><span class="c"># However you installed it — with your project open,</span>
+<span class="c"># ask for these by name or in plain language:</span>
 <span class="k">/okrdev:install</span>   <span class="c"># walks the adoption ladder, starts at Level 0</span>
 <span class="k">/okrdev:plan</span>      <span class="c"># ready for Level 1? draft your first cycle's OKRs</span></pre>
           <ul class="daily">
@@ -382,22 +443,24 @@
         </div>
         <div class="install-side">
           <h3>Which agent?</h3>
-          <p>okrdev is a plugin for <b>Claude Code</b> and <b>Codex</b>. Same skills, same files —
-             Claude Code invokes them as <span class="mono">/okrdev:park</span>, Codex with an
-             <span class="mono">@</span> mention.</p>
-          <h3>New to Claude Code?</h3>
-          <p>It's Anthropic's AI agent, and okrdev installs into it as a plugin. Get the
-             desktop app at <a href="https://claude.com/claude-code">claude.com/claude-code</a> —
-             no terminal required. It also runs as a CLI and in IDEs; okrdev works in all of
-             them, including a headless install
-             (<span class="mono">./okrdev/install.sh</span>) for scripts and CI.</p>
+          <p>okrdev is one plugin for <b>ChatGPT/Codex</b> and <b>Claude Code</b> — same skills,
+             same files, same eight commands. Only the keystroke differs: Codex reaches them with
+             an <span class="mono">@</span> mention, Claude Code as
+             <span class="mono">/okrdev:park</span>. Plain language works in both.</p>
+          <h3>New to either?</h3>
+          <p>If you already use ChatGPT, the directory button above is the whole setup. Claude
+             Code is Anthropic's agent — get the desktop app at
+             <a href="https://claude.com/claude-code">claude.com/claude-code</a>, no terminal
+             required. It also runs as a CLI and in IDEs; okrdev works in all of them, including
+             a headless install (<span class="mono">./okrdev/install.sh</span>) for scripts and
+             CI.</p>
           <h3>What it touches</h3>
           <p>One <span class="mono">okrdev/</span> directory and one marked, removable block in
              your agent's instructions file — <span class="mono">CLAUDE.md</span> on Claude Code,
              <span class="mono">AGENTS.md</span> on Codex, never both. Level 2 optionally adds a few files under
              <span class="mono">.github/</span>. Your build system, deploy pipeline, and framework
              choices: untouched.</p>
-          <h3>Neither agent?</h3>
+          <h3>Some other agent?</h3>
           <p>The skills are plain markdown — copy them into your repo and hand any capable
              agent the docs. The format is the framework.</p>
           <h3>Not a software business?</h3>
@@ -482,11 +545,21 @@
              check-in. Accountability without authority.</p>
         </details>
         <details>
-          <summary>Do I need Claude Code?</summary>
-          <p>It's the smoothest path — okrdev ships as a plugin for
-             <a href="https://claude.com/claude-code">Claude Code</a>, easiest in the desktop
-             app (Mac/Windows), no terminal required. But the skills are plain markdown: copy
-             them into your repo and hand any capable agent the docs.</p>
+          <summary>Which agent do I need?</summary>
+          <p>The shortest path is ChatGPT: okrdev is in the
+             <a href="https://chatgpt.com/plugins/plugins_6a7a2f9e3968819187e30eaee8da1435">plugin
+             directory</a>, so it's one button and you're installed — then <code>@okrdev</code>
+             in ChatGPT or Codex. <a href="https://claude.com/claude-code">Claude Code</a> takes
+             two commands, easiest in the desktop app (Mac/Windows), no terminal required.
+             Neither? The skills are plain markdown: copy them into your repo and hand any
+             capable agent the docs.</p>
+        </details>
+        <details>
+          <summary>What does the plugin get access to?</summary>
+          <p>Your files, and nothing else. okrdev ships skills only — no MCP server, no
+             telemetry, no account, no network calls of its own. It reads your repo and writes
+             markdown into it; installing it grants no third party anything, because there is no
+             third party.</p>
         </details>
         <details>
           <summary>We already have a stack. Do we have to migrate?</summary>
