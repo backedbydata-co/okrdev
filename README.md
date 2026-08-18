@@ -103,6 +103,7 @@ You can also just say what you want — the skills trigger on plain language. Fi
 - "install okrdev in this repo"
 - "park this idea"
 - "run our weekly check-in"
+- "what should I work on today?"
 - "is this aligned?"
 - "score the quarter"
 
