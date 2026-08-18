@@ -264,7 +264,7 @@ place that enforces it:
 |----------|-------------------------------|-------------|
 | Customer's words, not the toolchain's | KR quality pushback at planning | [method.md](method.md) quality rule 6; `/okrdev:plan` gauntlet; [rituals.md](rituals.md) planning step 3 |
 | Event-phrased milestone anchors | The anchors-at-planning rule; the retro replay | [method.md](method.md) KR anatomy; `/okrdev:plan` step 5; `/okrdev:retro` step 4 |
-| The evidence ladder | The one-line evidence rule; "what's the actual?" | [method.md](method.md) confidence trigger 2; `/okrdev:checkin` step 11; `/okrdev:retro` step 4; `/okrdev:side-quest` close-out |
+| The evidence ladder | The one-line evidence rule; "what's the actual?" | [method.md](method.md) confidence trigger 2; `/okrdev:checkin` steps 8g/11; `/okrdev:retro` step 4; `/okrdev:side-quest` close-out |
 | The narrative floor | The confidence walk | [method.md](method.md) confidence trigger 4; `/okrdev:checkin` steps 8a/11; `/okrdev:coach` step 6a |
 | Build / box / buy | The three triage verdicts; planning's subtraction step | [parking-lot.md](parking-lot.md) triage; `/okrdev:triage` step 3 |
 | The demo review, named | Rule 10's preview hand-off | [ai-coach.md](ai-coach.md) unblocking duties; [dri-onboarding.md](dri-onboarding.md) review routine |

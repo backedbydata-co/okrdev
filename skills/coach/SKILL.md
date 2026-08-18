@@ -67,6 +67,12 @@ may and may not do — is `docs/ai-coach.md`.
         Judgment calls already carry an evidence re-class line this cycle — the question
         never fires twice on one KR.
 
+      Take a reading where you can, under the same four rules `/okrdev:checkin` step 8g runs
+      on: fetch what the KR's `Notes:` name, put the source beside the number, hand over
+      candidate lists rather than totals when the unit is a judgment, and say "no reading from
+      here" for the rest. Mid-week you are reporting, not filing — the reading is spoken and
+      nothing is written, and you never propose a confidence between check-ins.
+
    b. **Drift check.** Compute from ground truth, best effort for the environment:
       1. `git log --since="<last check-in date>"` on the default branch; add
          `gh pr list --state merged --search "merged:>=<date>"` when `gh` is available.
