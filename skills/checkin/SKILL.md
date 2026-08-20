@@ -93,10 +93,13 @@ costs more than its minutes, it dies — protect the fifteen.
 
    a. **KR confidence table.** One row per KR (skip `Status: dropped` ones). `Prev` = last
       check-in's `Now`; for a KR's first appearance use the cycle file's `Confidence:` value.
-      Leave `Now` blank — that's the human's call, not yours. While you're here, scan the last
-      three check-ins for flat streaks and early-high values, and note any KR whose
-      Evidence/note entries have been narrative-only ("on track," "feels close") for all
-      three — then grep the Judgment calls of every check-in this cycle
+      Leave `Now` blank — that's the human's call, not yours, and the reading you take in (g)
+      doesn't change that: a reading reaches the Evidence/note cell and never this column.
+      While you're here, scan the last three check-ins for flat streaks and early-high values,
+      and note any KR whose Evidence/note entries have been narrative-only ("on track," "feels
+      close") for all three — reading only the DRI's own half of each cell, because a
+      `measured` clause is your sentence and scanning your own writing tells you nothing —
+      then grep the Judgment calls of every check-in this cycle
       (`okrdev/checkins/<cycle>/*.md`) for an evidence re-class line on each such KR ("KR2.1
       moves through negotiation — expected evidence: the signed contract"). The
       `expected evidence:` marker is the grep contract — every re-class line carries it,
@@ -134,6 +137,48 @@ costs more than its minutes, it dies — protect the fifteen.
       see GitHub notifications. Keep only what's actionable: preview ready to click, gate
       warning, review request gone stale, red CI.
 
+   g. **Take a reading on every KR.** Go and look at where each KR actually stands, so the
+      confidence walk argues with a fact instead of a memory. You are not inventing the
+      measurement: milestone anchors and the measurement source already live in the KR's
+      `Notes:` (that's what the field is for), so the work is reading what's written and
+      fetching what it names — the ledger you just built in (b), the check-in history, `git`,
+      `gh`, the filesystem, a dashboard you can open. Four rules make a reading worth having.
+
+      **Name the source beside the number, every time.** "0 of 17 merged PRs in `<repo>` carry
+      `KR: 1.3`" is a sentence that exposes its own blind spot; "4" is not. A wrong number that
+      says where it came from gets corrected in ten seconds; a bare number gets believed. This
+      is the ordinary case, not the edge one — histories move between repos, work lands in a
+      system you can't read, and the query you can run is rarely the question the KR asks.
+
+      **Hand over candidate lists, not totals, wherever the unit is a judgment.** Merged PRs
+      are not improvements and commits are not progress, so a coach that reports "5 of 8" has
+      quietly decided what counts. Show what you found and give the unit question back to the
+      DRI, whose call it is.
+
+      **Say "no reading from here" out loud, and write nothing.** Most KRs worth having measure
+      something no repo can see: a stopwatch, a signed contract, another team's week. Absence
+      belongs in the room and never in the file — a column that reads "—" for the same KRs
+      every week is a scoreboard of what the coach happens to be able to count, and a cycle
+      that watches one long enough starts writing KRs to fill it.
+
+      **Never propose the number.** You may not say "so that's about a 0.5." The reading goes
+      in front of the DRI; the DRI names the confidence.
+
+      A reading rides the existing Evidence/note cell, prefixed `measured <yyyy-mm-dd>:` and
+      sitting ahead of the DRI's own words — the same grep-contract idiom as `expected
+      evidence:` in (a), so everything that reads the human's evidence can tell the two apart.
+      It gets no new column, no new section and no new cycle-file field: that whole class is
+      ruled out in [evidence.md](../../docs/evidence.md), and nothing here is special enough
+      to reopen it. The step only ever *adds* a detection — it retires no question the humans
+      were already asked, which is the standing rule for automating a measurement source in
+      [method.md](../../docs/method.md#amendments--the-mid-cycle-change-protocol).
+
+      One thing you must not do: widen a query until it returns something. If a KR's source
+      can't be reached without guessing, report what you actually ran and what came back, then
+      offer the DRI a one-line measurement source for that KR's `Notes:`. That is an edit to an
+      active KR — it goes through the revision protocol as a PR with a `Revised:` block, never
+      silently, not even to make the coach more useful.
+
 ## Run the ritual
 
 9. **Wins first.** Open by asking each attendee for one win — before status, before numbers.
@@ -147,14 +192,21 @@ costs more than its minutes, it dies — protect the fifteen.
     entirely if nothing is actionable.
 
 11. **Walk the confidence table.** Each DRI sets `Now` for their KRs; you fill `Δ`. New KRs
-    default to 0.5 — a good stretch KR is a coin flip at kickoff. Then enforce the triggers,
-    because a confidence number that changes nothing is theater:
+    default to 0.5 — a good stretch KR is a coin flip at kickoff. Read out (g)'s reading for a
+    KR before its DRI names anything, and name the KRs that had no reading just as plainly.
+    Where the reading and the DRI's instinct disagree you've found the reason this step exists:
+    ask the question and let them answer it ("the ledger has two of six weeks held with the
+    cycle a third gone — what makes 0.8 still right?"). Their reconciliation, in their words,
+    is the evidence line. Then enforce the triggers, because a confidence number that changes
+    nothing is theater:
     - **Below 0.5 two consecutive weeks** → force a named decision, one of: re-scope,
       re-staff, kill, accept-the-miss. Talk it through, then log the decision in Judgment
       calls. Don't let the conversation end with "let's see how next week goes" — that's what
       last week said.
     - **Unchanged 3+ weeks** → the DRI writes one line of evidence in the table's
       Evidence/note column. A flat 0.6 with no evidence isn't confidence, it's a screensaver.
+      Your `measured` clause never satisfies this one, however good it is: the trigger tests
+      whether the DRI is still looking, and a sentence you wrote tests only whether you are.
     - **≥ 0.9 early** (from week one, or the target already hit before 60% of the cycle) →
       raise the early-sandbag flag and propose raising the target. If accepted, that's a
       mid-cycle revision: a PR to the cycle file with a `Revised: <date> — <reason>` block
@@ -227,6 +279,12 @@ costs more than its minutes, it dies — protect the fifteen.
     (The actor bypass in the stack's branch-protection script is an optional convenience, not
     the assumed path.) Narrate what you're doing in plain words for non-technical attendees
     ("saving this to the shared record").
+
+    The pre-draft is a draft, and it stays out of the repo until every `Now` is filled. A file
+    carrying KR rows *is* a held check-in by definition — it's the marker staleness and the
+    confidence mirror both read — so a pre-draft committed with the column blank tells the
+    tripwires this week happened and tells the mirror the cycle's confidences are empty. Hold
+    it in the session and write once, here.
 
 18. Mirror each KR's final `Now` confidence into the cycle file's `Confidence:` field, in the
     same commit or state PR, or a follow-up state write. This is a scribe duty, like writing `Score:` at

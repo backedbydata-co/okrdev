@@ -153,6 +153,11 @@ is absolute: **the coach pre-drafts the entire file before any human engages.**
 5. Pull current values for the **Health metrics** table.
 6. Note anything queued for **Judgment calls** review — in particular, any `emergency` work
    since last week, which is due its post-hoc line.
+7. **Take a reading on every KR it can reach** — the anchors and measurement source are
+   already written in the KR's `Notes:`, so this is fetching what they name, not inventing a
+   metric. Each reading names its source beside its number, lands in the Evidence/note cell
+   prefixed `measured <yyyy-mm-dd>:`, and never fills `Now`. KRs nothing can reach are said
+   aloud in the walk and written nowhere, so the file never grows a column of dashes.
 
 Humans arrive to a file that is 80% written. Their 15 minutes are the 20% that requires
 judgment.

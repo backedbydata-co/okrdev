@@ -7,6 +7,40 @@ minor bumps may change doctrine, not just add to it.
 
 ## Unreleased
 
+## 0.9.0 — 2026-08-18
+
+**The check-in takes a reading before it asks for a number.** Every `Now` in this repo's own
+ledger has been set from memory, and the ledger says so: `2026-W32.md` records "5 of 8 fixes
+merged (DRI's count)" — a number reconstructed during the ritual that a five-second query
+contradicts on set. The coach already did the homework for What moved and the drift check
+and then walked into the confidence table with nothing.
+
+- **`/okrdev:checkin` gains step 8g** — before any human arrives, the coach goes and reads
+  where each KR actually stands, fetching what the KR's `Notes:` already name (milestone
+  anchors, measurement source) from the ledger, `git`, `gh`, the filesystem, a dashboard it
+  can open. Four rules make a reading worth having: the source is named beside the number,
+  a judgment-shaped unit is handed over as a candidate list rather than a total, a KR nothing
+  can reach is said aloud and written nowhere, and the coach never proposes the confidence
+- **The number stays the human's.** A reading rides the existing Evidence/note cell prefixed
+  `measured <yyyy-mm-dd>:` and never fills `Now`. No new column, no new section, no new
+  cycle-file field — that class is ruled out in `docs/evidence.md` and this does not reopen it
+- **A `measured` clause never satisfies a trigger.** The unchanged-3+-weeks rule tests whether
+  the DRI is still looking, so a sentence the coach wrote cannot answer it; the narrative-floor
+  scan reads only the DRI's half of the cell for the same reason
+- **The pre-draft stays out of the repo until every `Now` is filled** (step 17). A file
+  carrying KR rows *is* a held check-in — it is the marker staleness and `check_confidence_mirror`
+  both read — so committing a blank-`Now` pre-draft would tell the tripwires the week happened
+  and tell the mirror the cycle's confidences are empty. This one is not hypothetical: it goes
+  red on the suite
+- **`/okrdev:coach` reads the same ground truth** under the same four rules, spoken and never
+  written, so a Wednesday status isn't strictly poorer than a Friday check-in; `docs/rituals.md`
+  gains the reading as homework item 7 and `docs/evidence.md`'s wiring table names step 8g
+
+**Not automated: the confidence.** Auto-measuring what a KR *is* and auto-setting what the DRI
+*believes* are different features, and only the first one is in this release. Per
+`docs/method.md`, automating a measurement source only ever adds detections — nothing the
+humans were asked before is retired here.
+
 ## 0.8.7 — 2026-08-18
 
 **The Claude Code install instructions did not work in the Claude Code desktop app.**
