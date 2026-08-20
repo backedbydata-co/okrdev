@@ -18,11 +18,17 @@ it — so the one path an adopter was steered to was the one that could not work
 terminal required" promise beside it was never the problem and survives: the fix is a
 command that *does* run in a desktop code session, not a retreat to the terminal.
 
-- `README.md` and `site/index.html` now lead Claude Code with the plugin-CLI pair,
-  `claude plugin marketplace add backedbydata-co/okrdev` and
-  `claude plugin install okrdev@okrdev`, which leave okrdev available in every session
-  including the desktop app. The `/plugin` form is kept, named as the terminal-CLI-only
-  equivalent, with the exact error quoted
+- `README.md` and `site/index.html` now lead Claude Code with **one paste** — a prompt that
+  carries the chained plugin-CLI command,
+  `claude plugin marketplace add backedbydata-co/okrdev && claude plugin install okrdev@okrdev`,
+  and asks the session to run it. Both halves are idempotent and report what is already
+  installed rather than failing, so the paste is safe to re-run. The two commands separately,
+  and the terminal-CLI-only `/plugin` form with its exact error quoted, move into a
+  collapsed section — kept for people who want them, out of the way of people who don't
+- The prompt **carries the literal command rather than describing it.** A pure
+  natural-language ask ("install the okrdev plugin") would depend on the agent knowing the
+  plugin CLI and the `okrdev@okrdev` marketplace-qualified syntax, and an agent that guesses
+  reaches for `/plugin` — the exact path this release exists to fix. One paste, no inference
 - **These are shell commands, but they do not require a terminal.** Pasted into a Claude
   Code session — the desktop app included — the agent runs them for you. The docs say so
   explicitly, because "shell command" reads as "open a terminal" to exactly the adopter
