@@ -50,6 +50,17 @@ command that *does* run in a desktop code session, not a retreat to the terminal
   headline zone, a rule-separated action rail holding the button and its next step, and a
   full-bleed fact strip along the bottom carrying the claims that used to be the tail of a
   sentence
+- **The page no longer scrolls sideways on a phone.** Pre-existing, and not what it looked
+  like: the hero terminal was never the cause — it clips and scrolls correctly. The culprit
+  was `.install-cols`, whose single-column `1fr` track takes its minimum from the items'
+  min-content, so the unbreakable command lines in the code block held the track open at
+  612px and pushed the whole document wider than the screen. `min-width: 0` on the items,
+  scoped to the ≤860px breakpoint, lets the track shrink; the code block's own `overflow-x`
+  then scrolls it instead of the page. The footer's link row got `flex-wrap` for the same
+  class of reason. Document overflow measured at 0 for every viewport from 320px to 885px,
+  where it had been 327px at 320px wide and 272px at 375px. Desktop geometry is byte-identical
+  at 1440/1280/1120/1000/900/875 — same track widths, same page height, same zero internal
+  scroll — because the fix is deliberately confined to the single-column layout
 - **Row 2's alignment is now structural, not lucky.** The old three-column row measured zero
   dead space at 1280px and 62px of it at 1000px: bottom-aligned cards only sit flush when
   their prose happens to wrap to the same line count at that exact width. The two cards now
