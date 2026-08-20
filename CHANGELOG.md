@@ -14,18 +14,24 @@ Reported from a real session: typing the documented `/plugin marketplace add` in
 desktop app answers `/plugin isn't available in this environment`. `/plugin` opens an
 interactive panel that exists only in the terminal CLI. The Quickstart had said "In the
 desktop app (Mac/Windows), open your project folder and type into the chat" directly above
-it, and the landing page promised "no terminal required" — so the one path an adopter was
-steered to was the one that could not work.
+it — so the one path an adopter was steered to was the one that could not work. The "no
+terminal required" promise beside it was never the problem and survives: the fix is a
+command that *does* run in a desktop code session, not a retreat to the terminal.
 
-- `README.md` and `site/index.html` now lead Claude Code with the shell pair,
+- `README.md` and `site/index.html` now lead Claude Code with the plugin-CLI pair,
   `claude plugin marketplace add backedbydata-co/okrdev` and
-  `claude plugin install okrdev@okrdev`, which work from any terminal and leave okrdev
-  available in every session including the desktop app. The `/plugin` form is kept, named
-  as the terminal-CLI-only equivalent, with the exact error quoted
-- The "no terminal required" promise is retired for Claude Code and kept for ChatGPT, where
-  it is true. Registering a third-party marketplace is a shell command wherever you run it:
-  the desktop plugin browser lists plugins from marketplaces *already configured* and does
-  not add new ones
+  `claude plugin install okrdev@okrdev`, which leave okrdev available in every session
+  including the desktop app. The `/plugin` form is kept, named as the terminal-CLI-only
+  equivalent, with the exact error quoted
+- **These are shell commands, but they do not require a terminal.** Pasted into a Claude
+  Code session — the desktop app included — the agent runs them for you. The docs say so
+  explicitly, because "shell command" reads as "open a terminal" to exactly the adopter
+  who was promised they would not have to. The real boundary is *code session vs. chat
+  session*: a Claude chat session has no shell, a Claude Code session has one wherever it
+  runs, and that is the distinction the copy now draws
+- Registering a third-party marketplace is a plugin-CLI command however you invoke it: the
+  desktop plugin browser lists plugins from marketplaces *already configured* and does not
+  add new ones
 
 **A second claim expired quietly, and nothing noticed.** `docs/adoption.md` and
 `install.sh` both stated that marketplace registration "has no shell equivalent — it exists

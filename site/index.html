@@ -409,8 +409,9 @@
         <div class="ipath">
           <p class="tag">Two commands</p>
           <h3>Claude Code</h3>
-          <p>Register the marketplace once from a terminal. okrdev is then in every Claude
-             Code session, desktop app included:</p>
+          <p>Register the marketplace once. Paste these into a Claude Code session — the
+             desktop app counts — or into a terminal; okrdev is then in every Claude Code
+             session on that machine:</p>
           <div class="act">
 <pre class="code"><span class="k">claude</span> plugin marketplace add
     backedbydata-co/okrdev
@@ -437,8 +438,12 @@
         terminal CLI. In the desktop app it answers
         <span class="mono">/plugin isn't available in this environment</span>. The desktop plugin
         browser (<b>+</b> → <b>Plugins</b>) lists plugins from marketplaces you have already
-        configured, and adding a third-party one isn't something it does — so Claude Code costs
-        you one terminal command. ChatGPT costs you none.
+        configured, and adding a third-party one isn't something it does — so the two
+        <span class="mono">claude plugin</span> commands are the path that works everywhere.
+        <b>They are shell commands, but no terminal is required:</b> paste them into a Claude
+        Code session and the agent runs them for you. The line that matters is code session vs.
+        chat session — a Claude <b>chat</b> session has no shell; a Claude <b>Code</b> session
+        has one wherever it runs.
       </p>
 
       <div class="install-cols">
@@ -465,10 +470,10 @@
           <h3>New to either?</h3>
           <p>If you already use ChatGPT, the directory button above is the whole setup — no
              terminal at any point. Claude Code is Anthropic's agent; get the desktop app at
-             <a href="https://claude.com/claude-code">claude.com/claude-code</a>. It also runs as
-             a CLI and in IDEs, and okrdev works in all of them — but registering the marketplace
-             is a shell command wherever you run it, and
-             <span class="mono">./okrdev/install.sh</span> does the whole thing in one for
+             <a href="https://claude.com/claude-code">claude.com/claude-code</a>, and you can
+             stay out of a terminal there too — paste the two commands into a code session and
+             Claude runs them. It also runs as a CLI and in IDEs, and okrdev works in all of
+             them; <span class="mono">./okrdev/install.sh</span> does the whole thing in one for
              scripts and CI.</p>
           <h3>What it touches</h3>
           <p>One <span class="mono">okrdev/</span> directory and one marked, removable block in
@@ -566,10 +571,11 @@
              <a href="https://chatgpt.com/plugins/plugins_6a7a2f9e3968819187e30eaee8da1435">plugin
              directory</a>, so it's one button and you're installed — then <code>@okrdev</code>
              in ChatGPT or Codex. <a href="https://claude.com/claude-code">Claude Code</a> takes
-             two shell commands — <span class="mono">claude plugin marketplace add</span> then
-             <span class="mono">claude plugin install</span> — after which okrdev is in every
-             session including the desktop app. Neither? The skills are plain markdown: copy them
-             into your repo and hand any capable agent the docs.</p>
+             two commands — <span class="mono">claude plugin marketplace add</span> then
+             <span class="mono">claude plugin install</span> — pasted into a Claude Code session
+             or a terminal, after which okrdev is in every session including the desktop app.
+             Neither? The skills are plain markdown: copy them into your repo and hand any
+             capable agent the docs.</p>
         </details>
         <details>
           <summary>What does the plugin get access to?</summary>

@@ -58,19 +58,26 @@ Press **Install plugin**, then in your project type `@okrdev` and ask it to
 `install okrdev in this repo`. That is the whole install — okrdev ships as skills only, so there
 is no MCP server to authorize, no account, and no keys.
 
-In **Claude Code**, register the marketplace once from a terminal. okrdev is then available in
-every Claude Code session, desktop app included:
+In **Claude Code**, register the marketplace once with the plugin CLI:
 
 ```bash
 claude plugin marketplace add backedbydata-co/okrdev
 claude plugin install okrdev@okrdev
 ```
 
+These are shell commands, but **you do not have to open a terminal to run them.** Paste them
+into a Claude Code session — including a code session in the desktop app (Mac/Windows) — and
+Claude runs them for you; approve the command if prompted. A terminal works too. Either way,
+okrdev is then available in every Claude Code session on that machine.
+
+The distinction that matters is *code session*, not *desktop*: a Claude **chat** session has no
+shell and cannot run these. A Claude **Code** session can, wherever it runs.
+
 Inside a terminal `claude` session, `/plugin marketplace add backedbydata-co/okrdev` and
 `/plugin install okrdev` do the same thing through an interactive panel. **That panel is
 terminal-CLI only** — in the desktop app, `/plugin` answers *"isn't available in this
 environment."* The desktop plugin browser (**+** → **Plugins**) lists plugins from marketplaces
-you have already configured and does not add third-party ones, so the shell commands above are
+you have already configured and does not add third-party ones, so the two commands above are
 the path that works everywhere.
 
 In the **Codex CLI**, the equivalent pair is:
