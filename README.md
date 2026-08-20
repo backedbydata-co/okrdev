@@ -74,31 +74,31 @@ shell and cannot run this. A Claude **Code** session can, wherever it runs.
 Then **`/reload-plugins`** — or just open a new session, which loads it automatically — and
 okrdev is available in every Claude Code session on that machine.
 
-<details>
-<summary>The two commands separately, and why not <code>/plugin</code></summary>
+The **Codex CLI** takes the same shape — hand it to a Codex session, or run it in a shell:
 
-The paste above is exactly this, chained:
+> Install the okrdev plugin for me:
+> `codex plugin marketplace add backedbydata-co/okrdev && codex plugin add okrdev@okrdev`
+
+<details>
+<summary>Both pastes, unchained</summary>
+
+Each paste is exactly its two commands joined with `&&`:
 
 ```bash
 claude plugin marketplace add backedbydata-co/okrdev
 claude plugin install okrdev@okrdev
 ```
 
-Inside a terminal `claude` session, `/plugin marketplace add backedbydata-co/okrdev` and
-`/plugin install okrdev` do the same thing through an interactive panel. **That panel is
-terminal-CLI only** — in the desktop app, `/plugin` answers *"isn't available in this
-environment."* The desktop plugin browser (**+** → **Plugins**) lists plugins from marketplaces
-you have already configured and does not add third-party ones, so the plugin CLI is the path
-that works everywhere.
-
-</details>
-
-In the **Codex CLI**, the equivalent pair is:
-
 ```bash
 codex plugin marketplace add backedbydata-co/okrdev
 codex plugin add okrdev@okrdev
 ```
+
+`install.sh` does the Claude Code pair in one shot for scripts and CI, where there is no agent
+to hand a prompt to. See [docs/adoption.md](docs/adoption.md#headless-install), which also
+covers the older interactive `/plugin` route and where it does and does not work.
+
+</details>
 
 Then, in the repo where you want okrdev to live:
 

@@ -165,11 +165,11 @@
   .ladder-note { margin-top: 1.1rem; font-size: .92rem; color: var(--ink-soft); max-width: 44rem; }
 
   /* install */
-  .installs { display: grid; grid-template-columns: 1.2fr 1fr 1fr; gap: 1rem; margin-top: 2.4rem; align-items: stretch; }
+  .installs { display: grid; grid-template-columns: repeat(3, 1fr); gap: .9rem; margin-top: 2.2rem; align-items: stretch; }
   @media (max-width: 900px) { .installs { grid-template-columns: 1fr; } }
   .ipath {
     display: flex; flex-direction: column;
-    border: 1px solid var(--line); border-radius: .9rem; padding: 1.4rem 1.4rem 1.5rem;
+    border: 1px solid var(--line); border-radius: .9rem; padding: 1.25rem 1.2rem 1.3rem;
     background: var(--paper-raised);
   }
   .ipath-featured { border-color: var(--accent); box-shadow: 0 12px 36px -22px rgba(29, 92, 56, .6); }
@@ -178,18 +178,17 @@
     text-transform: uppercase; color: var(--ink-soft); margin-bottom: .65rem;
   }
   .ipath-featured .tag { color: var(--accent); }
-  .ipath h3 { font-size: 1.14rem; letter-spacing: -.01em; margin-bottom: .5rem; }
-  .ipath p { font-size: .92rem; color: var(--ink-soft); }
-  .ipath .act { margin-top: auto; padding-top: 1.15rem; }
+  .ipath h3 { font-size: 1.1rem; letter-spacing: -.01em; margin-bottom: .4rem; }
+  .ipath p { font-size: .89rem; color: var(--ink-soft); line-height: 1.55; }
+  .ipath .act { margin-top: auto; padding-top: .95rem; }
   .ipath .act .btn { display: block; text-align: center; }
-  .ipath .act pre.code { margin: 0; font-size: .82rem; line-height: 1.75; }
-  .ipath .then { margin-top: .8rem; font-size: .88rem; }
-  .ipath .then code { font-size: .85em; background: var(--accent-soft); padding: .1em .35em; border-radius: .3em; }
-  .installs-note {
-    margin-top: 1.3rem; font-size: .92rem; color: var(--ink-soft); max-width: 46rem;
-    border-left: 2px solid var(--amber); padding-left: .9rem;
+  .ipath .act pre.code {
+    margin: 0; font-size: .78rem; line-height: 1.65; padding: .8rem .85rem;
+    white-space: pre-wrap; overflow-wrap: break-word; overflow-x: visible;
   }
-  .installs-note .mono { font-size: .88em; }
+  .ipath .act pre.code .c { display: block; margin-bottom: .3rem; }
+  .ipath .then { margin-top: .7rem; font-size: .84rem; }
+  .ipath .then code { font-size: .88em; background: var(--accent-soft); padding: .1em .35em; border-radius: .3em; }
   .install-cols { display: grid; grid-template-columns: 1.15fr .85fr; gap: 2rem; margin-top: 2.4rem; align-items: start; }
   @media (max-width: 860px) { .install-cols { grid-template-columns: 1fr; } }
   pre.code {
@@ -390,62 +389,44 @@
       <p class="sec-lede">
         okrdev is listed in the ChatGPT plugin directory, so the shortest path is a button —
         no terminal, no marketplace command, nothing to copy. The paths below do the same
-        thing for the agents that prefer them — Claude Code in a single paste.
+        thing for the agents that prefer them — Claude Code and Codex each in a single paste.
       </p>
 
       <div class="installs">
         <div class="ipath ipath-featured">
           <p class="tag">Easiest — one click</p>
           <h3>ChatGPT &amp; Codex</h3>
-          <p>Open the listing and press <b>Install plugin</b>. That's the whole install: okrdev
-             ships as skills only — no MCP server, no account, no keys.</p>
+          <p>Open the listing and press <b>Install plugin</b> — that is the whole install, and
+             it covers the Codex CLI too. okrdev ships as skills only, so there is no MCP
+             server to authorize, no account, no keys, and nothing to copy anywhere.</p>
           <div class="act">
             <a class="btn btn-primary" href="https://chatgpt.com/plugins/plugins_6a7a2f9e3968819187e30eaee8da1435">Install from the directory&nbsp;→</a>
-            <p class="then">Then in your project: type <code>@okrdev</code> and say
-               <code>install okrdev in this repo</code></p>
+            <p class="then">Then <code>@okrdev</code> → <code>install okrdev in this repo</code></p>
           </div>
         </div>
 
         <div class="ipath">
           <p class="tag">One paste</p>
           <h3>Claude Code</h3>
-          <p>Paste this into any Claude Code session — the desktop app counts — and Claude
-             runs it for you. No terminal needed; a terminal works just as well:</p>
+          <p>Hand this to any Claude Code session — the desktop app counts — and it runs it
+             for you. No terminal needed; a terminal works just as well.</p>
           <div class="act">
-<pre class="code"><span class="c">Install the okrdev plugin for me:</span>
-<span class="k">claude</span> plugin marketplace add backedbydata-co/okrdev
-    <span class="k">&amp;&amp;</span> <span class="k">claude</span> plugin install okrdev@okrdev</pre>
+<pre class="code"><span class="c">Install the okrdev plugin for me:</span><span class="k">claude</span> plugin marketplace add backedbydata-co/okrdev &amp;&amp; <span class="k">claude</span> plugin install okrdev@okrdev</pre>
             <p class="then">Then <code>/reload-plugins</code> → <code>/okrdev:install</code></p>
           </div>
         </div>
 
         <div class="ipath">
-          <p class="tag">Two commands</p>
+          <p class="tag">One paste</p>
           <h3>Codex CLI</h3>
-          <p>Prefer the terminal to the directory? The same plugin, registered from a shell:</p>
+          <p>Prefer to stay in the terminal? The same plugin, same shape — hand it to a
+             Codex session, or run it in a shell.</p>
           <div class="act">
-<pre class="code"><span class="k">codex</span> plugin marketplace add
-    backedbydata-co/okrdev
-<span class="k">codex</span> plugin add okrdev@okrdev</pre>
-            <p class="then">Then <code>@okrdev</code></p>
+<pre class="code"><span class="c">Install the okrdev plugin for me:</span><span class="k">codex</span> plugin marketplace add backedbydata-co/okrdev &amp;&amp; <span class="k">codex</span> plugin add okrdev@okrdev</pre>
+            <p class="then">Then <code>@okrdev</code> → <code>install okrdev in this repo</code></p>
           </div>
         </div>
       </div>
-
-      <p class="installs-note">
-        <b>Why not <span class="mono">/plugin</span>?</b> That opens an interactive panel in the
-        terminal CLI. In the desktop app it answers
-        <span class="mono">/plugin isn't available in this environment</span>. The desktop plugin
-        browser (<b>+</b> → <b>Plugins</b>) lists plugins from marketplaces you have already
-        configured, and adding a third-party one isn't something it does — so the
-        <span class="mono">claude plugin</span> CLI is the path that works everywhere.
-        <b>That's a shell command, but no terminal is required:</b> pasted into a Claude Code
-        session, the agent runs it for you, which is why the box above is written as something
-        you say rather than something you type at a prompt. The line that matters is code
-        session vs. chat session — a Claude <b>chat</b> session has no shell; a Claude
-        <b>Code</b> session has one wherever it runs. Re-running it is harmless: both halves
-        report what is already installed instead of failing.
-      </p>
 
       <div class="install-cols">
         <div>

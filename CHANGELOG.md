@@ -22,9 +22,7 @@ command that *does* run in a desktop code session, not a retreat to the terminal
   carries the chained plugin-CLI command,
   `claude plugin marketplace add backedbydata-co/okrdev && claude plugin install okrdev@okrdev`,
   and asks the session to run it. Both halves are idempotent and report what is already
-  installed rather than failing, so the paste is safe to re-run. The two commands separately,
-  and the terminal-CLI-only `/plugin` form with its exact error quoted, move into a
-  collapsed section — kept for people who want them, out of the way of people who don't
+  installed rather than failing, so the paste is safe to re-run
 - The prompt **carries the literal command rather than describing it.** A pure
   natural-language ask ("install the okrdev plugin") would depend on the agent knowing the
   plugin CLI and the `okrdev@okrdev` marketplace-qualified syntax, and an agent that guesses
@@ -35,9 +33,22 @@ command that *does* run in a desktop code session, not a retreat to the terminal
   who was promised they would not have to. The real boundary is *code session vs. chat
   session*: a Claude chat session has no shell, a Claude Code session has one wherever it
   runs, and that is the distinction the copy now draws
-- Registering a third-party marketplace is a plugin-CLI command however you invoke it: the
-  desktop plugin browser lists plugins from marketplaces *already configured* and does not
-  add new ones
+- **Codex gets the same shape**, `codex plugin marketplace add backedbydata-co/okrdev &&
+  codex plugin add okrdev@okrdev`, so the two CLI paths read as one idea rather than two
+  dialects. Every install path on the page is now one action: one click, or one paste
+- **The `/plugin` explanation is off the landing page and out of the Quickstart.** It was a
+  paragraph explaining why we *don't* do something — the most expensive kind of copy on a
+  page whose job is to get someone installed. The route and its exact error string stay in
+  [docs/adoption.md](docs/adoption.md), which is where someone who hit the error goes
+  looking; the README links there. Registering a third-party marketplace is a plugin-CLI
+  command however you invoke it — the desktop plugin browser lists plugins from marketplaces
+  *already configured* and does not add new ones
+- **The three Quickstart cards were redesigned.** They were an uneven `1.2fr 1fr 1fr` grid
+  whose bottom-aligned action blocks opened a gap under the shorter cards, and the CLI
+  commands were hand-wrapped with literal indentation to survive the narrow columns. Now an
+  even three-column grid, prose balanced against each card's action so the cards fill, and
+  code that soft-wraps (`pre-wrap`) instead of being manually broken — which is what makes
+  a single chained command fit a third of the row at all
 
 **A second claim expired quietly, and nothing noticed.** `docs/adoption.md` and
 `install.sh` both stated that marketplace registration "has no shell equivalent — it exists
