@@ -3,13 +3,15 @@
 # okrdev headless install — registers the okrdev marketplace and installs the
 # plugin without the interactive /plugin dialog.
 #
-# Why a script: `claude plugin install` is a documented shell command, but
-# marketplace registration has no shell equivalent — it exists only inside the
-# interactive dialog. This script closes that gap: it writes the same state the
-# dialog writes (a clone under plugins/marketplaces/ plus one entry in
-# known_marketplaces.json), then hands off to the documented CLI. If a future
-# CLI ships a `claude plugin marketplace add` shell command, the script prefers
-# it and touches no state files itself.
+# Why a script: when this was written, `claude plugin install` was a documented
+# shell command but marketplace registration had no shell equivalent — it
+# existed only inside the interactive dialog. This script closed that gap by
+# writing the same state the dialog writes (a clone under plugins/marketplaces/
+# plus one entry in known_marketplaces.json), then handing off to the documented
+# CLI. As of claude 2.1.226 the CLI ships `claude plugin marketplace add`, and
+# the probe below prefers it — so on a current CLI this script writes no state
+# files itself and is simply the one-command form of the documented pair. The
+# fallback stays for older CLIs.
 #
 # Everything written is machine-level, under $CLAUDE_CONFIG_DIR (default
 # ~/.claude) — never the repo this runs from. The install-footprint red line
@@ -87,10 +89,11 @@ else
 fi
 
 # ── Step 1: the official path, the day it exists ───────────────────────────
-# Marketplace registration is interactive-only today. Probe for a shell
-# subcommand anyway: if Claude Code ever ships one, the official writer beats
-# ours. Every claude invocation reads from /dev/null so nothing can sit
-# waiting on a prompt.
+# Prefer the CLI's own marketplace command: the official writer beats ours.
+# This probe predates the subcommand existing and was written speculatively;
+# as of claude 2.1.226 it hits. The hand-written fallback below stays for CLIs
+# older than that. Every claude invocation reads from /dev/null so nothing can
+# sit waiting on a prompt.
 registered=
 if claude plugin marketplace add --help < /dev/null > /dev/null 2>&1; then
   cli_source=$CANONICAL_REPO

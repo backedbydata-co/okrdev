@@ -279,11 +279,18 @@ rail.
 
 ## Headless install
 
-The Quickstart's `/plugin` commands are interactive — fine at a keyboard, a wall for a script,
-a CI job, or an agent bootstrapping a machine. The plugin CLI is halfway to headless:
-`claude plugin install okrdev@okrdev` is a real shell command, but marketplace registration has
-no shell equivalent — it exists only inside the `/plugin` dialog. `install.sh`, at the repo
-root, closes that gap:
+The `/plugin` dialog is interactive — fine at a keyboard, a wall for a script, a CI job, or an
+agent bootstrapping a machine, and unavailable altogether in the desktop app, which answers
+`/plugin isn't available in this environment`.
+
+**This section's premise has partly expired, and that is good news.** It was written when
+`claude plugin install okrdev@okrdev` was a real shell command but marketplace registration had
+no shell equivalent — it existed only inside the dialog. As of `claude 2.1.226`,
+`claude plugin marketplace add <source>` ships, so both halves are scriptable and the Quickstart
+leads with them. `install.sh` still earns its place: it is one command instead of two, it is
+idempotent, it re-points a local checkout at the canonical repo, and — because it has always
+probed for the shell subcommand and preferred it — it needed no change when that subcommand
+arrived. What it no longer is, is the *only* headless route.
 
 ```bash
 dir=$(mktemp -d)

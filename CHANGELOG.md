@@ -7,6 +7,85 @@ minor bumps may change doctrine, not just add to it.
 
 ## Unreleased
 
+## 0.8.7 — 2026-08-18
+
+**The Claude Code install instructions did not work in the Claude Code desktop app.**
+Reported from a real session: typing the documented `/plugin marketplace add` into the
+desktop app answers `/plugin isn't available in this environment`. `/plugin` opens an
+interactive panel that exists only in the terminal CLI. The Quickstart had said "In the
+desktop app (Mac/Windows), open your project folder and type into the chat" directly above
+it — so the one path an adopter was steered to was the one that could not work. The "no
+terminal required" promise beside it was never the problem and survives: the fix is a
+command that *does* run in a desktop code session, not a retreat to the terminal.
+
+- `README.md` and `site/index.html` now lead Claude Code with **one paste** — a prompt that
+  carries the chained plugin-CLI command,
+  `claude plugin marketplace add backedbydata-co/okrdev && claude plugin install okrdev@okrdev`,
+  and asks the session to run it. Both halves are idempotent and report what is already
+  installed rather than failing, so the paste is safe to re-run
+- The prompt **carries the literal command rather than describing it.** A pure
+  natural-language ask ("install the okrdev plugin") would depend on the agent knowing the
+  plugin CLI and the `okrdev@okrdev` marketplace-qualified syntax, and an agent that guesses
+  reaches for `/plugin` — the exact path this release exists to fix. One paste, no inference
+- **These are shell commands, but they do not require a terminal.** Pasted into a Claude
+  Code session — the desktop app included — the agent runs them for you. The docs say so
+  explicitly, because "shell command" reads as "open a terminal" to exactly the adopter
+  who was promised they would not have to. The real boundary is *code session vs. chat
+  session*: a Claude chat session has no shell, a Claude Code session has one wherever it
+  runs, and that is the distinction the copy now draws
+- **Codex gets the same shape**, `codex plugin marketplace add backedbydata-co/okrdev &&
+  codex plugin add okrdev@okrdev`, so the two CLI paths read as one idea rather than two
+  dialects. Every install path on the page is now one action: one click, or one paste
+- **The `/plugin` explanation is off the landing page and out of the Quickstart.** It was a
+  paragraph explaining why we *don't* do something — the most expensive kind of copy on a
+  page whose job is to get someone installed. The route and its exact error string stay in
+  [docs/adoption.md](docs/adoption.md), which is where someone who hit the error goes
+  looking; the README links there. Registering a third-party marketplace is a plugin-CLI
+  command however you invoke it — the desktop plugin browser lists plugins from marketplaces
+  *already configured* and does not add new ones
+- **The Quickstart is now a banner over two cards.** The one-click path runs full width
+  across the top; Claude Code and Codex sit below at half width each. The featured path is
+  not a card stretched to fit — a card has one content column, and one column at 1048px is a
+  thin line of prose beside a lonely button. It is a banner with its own internal grid: a
+  headline zone, a rule-separated action rail holding the button and its next step, and a
+  full-bleed fact strip along the bottom carrying the claims that used to be the tail of a
+  sentence
+- **The page no longer scrolls sideways on a phone.** Pre-existing, and not what it looked
+  like: the hero terminal was never the cause — it clips and scrolls correctly. The culprit
+  was `.install-cols`, whose single-column `1fr` track takes its minimum from the items'
+  min-content, so the unbreakable command lines in the code block held the track open at
+  612px and pushed the whole document wider than the screen. `min-width: 0` on the items,
+  scoped to the ≤860px breakpoint, lets the track shrink; the code block's own `overflow-x`
+  then scrolls it instead of the page. The footer's link row got `flex-wrap` for the same
+  class of reason. Document overflow measured at 0 for every viewport from 320px to 885px,
+  where it had been 327px at 320px wide and 272px at 375px. Desktop geometry is byte-identical
+  at 1440/1280/1120/1000/900/875 — same track widths, same page height, same zero internal
+  scroll — because the fix is deliberately confined to the single-column layout
+- **Row 2's alignment is now structural, not lucky.** The old three-column row measured zero
+  dead space at 1280px and 62px of it at 1000px: bottom-aligned cards only sit flush when
+  their prose happens to wrap to the same line count at that exact width. The two cards now
+  ride the parent grid's row tracks via `grid-template-rows: subgrid`, so the code blocks
+  start on the same line whatever the prose above them does — including after the next copy
+  edit. Verified 0px prose-to-action gap at all of 1440/1280/1200/1100/1060/1041/1040/1000/
+  960/930/911/905/901/900/880/768/600/375, with a `@supports` fallback to the old behaviour
+
+**A second claim expired quietly, and nothing noticed.** `docs/adoption.md` and
+`install.sh` both stated that marketplace registration "has no shell equivalent — it exists
+only inside the `/plugin` dialog." True when written; false as of `claude 2.1.226`, which
+ships `claude plugin marketplace add`. Both now say so.
+
+- `install.sh` needed **no behaviour change**: it has always probed for the shell subcommand
+  and preferred it over writing state itself, so the day the subcommand shipped it started
+  taking the official path. The speculative branch was right. Only its comments were stale
+- `install.sh` is still worth running — one command instead of two, idempotent, re-points a
+  local checkout at the canonical repo — but it is no longer the *only* headless route, and
+  `docs/adoption.md` no longer implies it is
+
+Verified against `claude 2.1.226`: `claude plugin marketplace add --help` and
+`claude plugin install --help` both resolve, and okrdev shows as `okrdev@okrdev`, user scope,
+enabled, with its skills live in a desktop session and no `.claude/` in the repo to explain
+it — which is the evidence that a shell-side install reaches the desktop app.
+
 ## 0.8.6 — 2026-08-18
 
 **The acquisition path leads with the button it now has.** The ChatGPT listing went live

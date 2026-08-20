@@ -165,11 +165,22 @@
   .ladder-note { margin-top: 1.1rem; font-size: .92rem; color: var(--ink-soft); max-width: 44rem; }
 
   /* install */
-  .installs { display: grid; grid-template-columns: 1.2fr 1fr 1fr; gap: 1rem; margin-top: 2.4rem; align-items: stretch; }
-  @media (max-width: 900px) { .installs { grid-template-columns: 1fr; } }
+  .installs { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .9rem; margin-top: 2.2rem; align-items: stretch; }
+  /* row 2 rides the parent's row tracks, so both cards' code blocks start on the
+     same line no matter how the prose above them happens to wrap */
+  .installs > .ipath:not(.ipath-banner) { grid-row: span 4; grid-template-rows: subgrid; row-gap: 0; }
+  @supports (grid-template-rows: subgrid) {
+    .installs > .ipath:not(.ipath-banner) { display: grid; }
+    .installs > .ipath:not(.ipath-banner) .act { margin-top: 0; }
+  }
+  @media (max-width: 900px) {
+    .installs { grid-template-columns: 1fr; }
+    .installs > .ipath:not(.ipath-banner) { grid-row: auto; display: flex; }
+    .installs > .ipath:not(.ipath-banner) .act { margin-top: auto; }
+  }
   .ipath {
     display: flex; flex-direction: column;
-    border: 1px solid var(--line); border-radius: .9rem; padding: 1.4rem 1.4rem 1.5rem;
+    border: 1px solid var(--line); border-radius: .9rem; padding: 1.25rem 1.2rem 1.3rem;
     background: var(--paper-raised);
   }
   .ipath-featured { border-color: var(--accent); box-shadow: 0 12px 36px -22px rgba(29, 92, 56, .6); }
@@ -178,15 +189,78 @@
     text-transform: uppercase; color: var(--ink-soft); margin-bottom: .65rem;
   }
   .ipath-featured .tag { color: var(--accent); }
-  .ipath h3 { font-size: 1.14rem; letter-spacing: -.01em; margin-bottom: .5rem; }
-  .ipath p { font-size: .92rem; color: var(--ink-soft); }
-  .ipath .act { margin-top: auto; padding-top: 1.15rem; }
+  .ipath h3 { font-size: 1.1rem; letter-spacing: -.01em; margin-bottom: .4rem; }
+  .ipath p { font-size: .89rem; color: var(--ink-soft); line-height: 1.55; }
+  .ipath .act { margin-top: auto; padding-top: .95rem; }
   .ipath .act .btn { display: block; text-align: center; }
-  .ipath .act pre.code { margin: 0; font-size: .82rem; line-height: 1.75; }
-  .ipath .then { margin-top: .8rem; font-size: .88rem; }
-  .ipath .then code { font-size: .85em; background: var(--accent-soft); padding: .1em .35em; border-radius: .3em; }
+  .ipath .act pre.code {
+    margin: 0; font-size: .78rem; line-height: 1.65; padding: .8rem .85rem;
+    white-space: pre-wrap; overflow-wrap: break-word; overflow-x: visible;
+  }
+  .ipath .act pre.code .c { display: block; margin-bottom: .3rem; }
+  .ipath .then { margin-top: .7rem; font-size: .84rem; }
+  .ipath .then code { font-size: .88em; background: var(--accent-soft); padding: .1em .35em; border-radius: .3em; white-space: nowrap; }
+
+  /* the recommended path is a banner across the top, not a card stretched to fit */
+  .ipath-banner {
+    grid-column: 1 / -1;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) clamp(17.5rem, 26vw, 21rem);
+    grid-template-areas: "main act" "facts facts";
+    align-items: start; column-gap: 2rem;
+    padding: 1.5rem 1.7rem 1.35rem;
+  }
+  .ib-main { grid-area: main; }
+  .ipath-banner h3 { font-size: clamp(1.3rem, 2.2vw, 1.65rem); line-height: 1.15; letter-spacing: -.022em; margin-bottom: .45rem; }
+  .ipath-banner .ib-lede { font-size: 1rem; line-height: 1.55; max-width: 38rem; }
+  .ipath-banner .ib-lede b { color: var(--ink); font-weight: 650; }
+  .ipath-banner .act {
+    grid-area: act; align-self: stretch;
+    display: flex; flex-direction: column; justify-content: center;
+    margin: 0; padding: .1rem 0 .1rem 1.9rem; border-left: 1px solid var(--line);
+  }
+  .ipath-banner .act .btn {
+    display: inline-flex; align-items: center; justify-content: center;
+    align-self: start; max-width: 100%; padding: .78rem 1.25rem;
+    white-space: nowrap;
+  }
+  .ipath-banner .then { margin-top: .85rem; padding-top: .75rem; border-top: 1px solid var(--line); }
+  .ib-facts {
+    grid-area: facts; list-style: none;
+    margin-top: 1.1rem; padding-top: .9rem; border-top: 1px solid var(--line);
+    display: flex; flex-wrap: wrap; gap: .45rem 1.9rem;
+  }
+  .ib-facts li {
+    display: flex; align-items: center; gap: .5rem;
+    font-family: var(--mono); font-size: .76rem; color: var(--ink-soft);
+  }
+  .ib-facts li::before {
+    content: ""; flex: none; width: .36rem; height: .36rem;
+    border-radius: 50%; background: var(--accent);
+  }
+  @media (max-width: 900px) {
+    .ipath-banner {
+      grid-template-columns: 1fr;
+      grid-template-areas: "main" "act" "facts";
+      padding: 1.35rem 1.2rem 1.3rem;
+    }
+    .ipath-banner .act {
+      justify-content: flex-start;
+      padding: 1.05rem 0 0; margin-top: 1.05rem;
+      border-left: 0; border-top: 1px solid var(--line);
+    }
+    .ipath-banner .act .btn { align-self: stretch; max-width: 26rem; }
+  }
   .install-cols { display: grid; grid-template-columns: 1.15fr .85fr; gap: 2rem; margin-top: 2.4rem; align-items: start; }
-  @media (max-width: 860px) { .install-cols { grid-template-columns: 1fr; } }
+  @media (max-width: 860px) {
+    /* One column, and it must be allowed to be narrower than its contents. A bare
+       `1fr` takes its minimum from the items' min-content, so the unbreakable
+       command lines in the code block held the track open at 612px and pushed the
+       whole page sideways on any phone. min-width:0 lets the track shrink; the
+       code block's own overflow-x then scrolls it instead of the document. */
+    .install-cols { grid-template-columns: minmax(0, 1fr); }
+    .install-cols > * { min-width: 0; }
+  }
   pre.code {
     background: var(--term-bg); color: var(--term-ink); border-radius: .7rem;
     padding: 1.1rem 1.25rem; font-size: .87rem; line-height: 1.8; overflow-x: auto;
@@ -238,7 +312,7 @@
   footer { border-top: 1px solid var(--line); padding: 2.6rem 0 3.2rem; }
   footer .wrap { display: flex; flex-wrap: wrap; gap: 1rem 2rem; align-items: baseline; }
   footer p { font-size: .88rem; color: var(--ink-soft); }
-  footer .links { margin-left: auto; display: flex; gap: 1.3rem; font-size: .88rem; }
+  footer .links { margin-left: auto; display: flex; flex-wrap: wrap; gap: .5rem 1.3rem; font-size: .88rem; }
 </style>
 </head>
 <body>
@@ -384,44 +458,49 @@
       <h2>One click to install. One directory to uninstall.</h2>
       <p class="sec-lede">
         okrdev is listed in the ChatGPT plugin directory, so the shortest path is a button —
-        no terminal, no marketplace command, nothing to copy. The command-line paths below do
-        the same thing for the agents that prefer them.
+        no terminal, no marketplace command, nothing to copy. The paths below do the same
+        thing for the agents that prefer them — Claude Code and Codex each in a single paste.
       </p>
 
       <div class="installs">
-        <div class="ipath ipath-featured">
-          <p class="tag">Easiest — one click</p>
-          <h3>ChatGPT &amp; Codex</h3>
-          <p>Open the listing and press <b>Install plugin</b>. That's the whole install: okrdev
-             ships as skills only — no MCP server, no account, no keys.</p>
+        <div class="ipath ipath-featured ipath-banner">
+          <div class="ib-main">
+            <p class="tag">Easiest — one click, no terminal</p>
+            <h3>ChatGPT &amp; Codex</h3>
+            <p class="ib-lede">Open the listing and press <b>Install plugin</b>. That is the
+               whole install — and the same button covers the Codex CLI.</p>
+          </div>
           <div class="act">
             <a class="btn btn-primary" href="https://chatgpt.com/plugins/plugins_6a7a2f9e3968819187e30eaee8da1435">Install from the directory&nbsp;→</a>
-            <p class="then">Then in your project: type <code>@okrdev</code> and say
-               <code>install okrdev in this repo</code></p>
+            <p class="then">Then <code>@okrdev</code> and ask it to install okrdev in this repo.</p>
           </div>
+          <ul class="ib-facts">
+            <li>no MCP server to authorize</li>
+            <li>no account, no keys</li>
+            <li>nothing to copy or paste</li>
+            <li>uninstall is one directory</li>
+          </ul>
         </div>
 
         <div class="ipath">
-          <p class="tag">Two commands</p>
+          <p class="tag">One paste</p>
           <h3>Claude Code</h3>
-          <p>In the desktop app (Mac/Windows), open your project folder and type into the chat:</p>
+          <p>Hand it to any Claude Code session — the desktop app counts — and it runs for
+             you. A terminal works just as well.</p>
           <div class="act">
-<pre class="code"><span class="k">/plugin</span> marketplace add
-    backedbydata-co/okrdev
-<span class="k">/plugin</span> install okrdev</pre>
-            <p class="then">Then <code>/okrdev:install</code></p>
+<pre class="code"><span class="c">Install the okrdev plugin for me:</span><span class="k">claude</span> plugin marketplace add backedbydata-co/okrdev &amp;&amp; <span class="k">claude</span> plugin install okrdev@okrdev</pre>
+            <p class="then">Then <code>/reload-plugins</code> → <code>/okrdev:install</code></p>
           </div>
         </div>
 
         <div class="ipath">
-          <p class="tag">Two commands</p>
+          <p class="tag">One paste</p>
           <h3>Codex CLI</h3>
-          <p>Prefer the terminal to the directory? The same plugin, registered from a shell:</p>
+          <p>Prefer to stay in the terminal? Same plugin, same shape — hand it to a Codex
+             session, or run it in a shell.</p>
           <div class="act">
-<pre class="code"><span class="k">codex</span> plugin marketplace add
-    backedbydata-co/okrdev
-<span class="k">codex</span> plugin add okrdev@okrdev</pre>
-            <p class="then">Then <code>@okrdev</code></p>
+<pre class="code"><span class="c">Install the okrdev plugin for me:</span><span class="k">codex</span> plugin marketplace add backedbydata-co/okrdev &amp;&amp; <span class="k">codex</span> plugin add okrdev@okrdev</pre>
+            <p class="then">Then <code>@okrdev</code> → <code>install okrdev in this repo</code></p>
           </div>
         </div>
       </div>
@@ -448,12 +527,13 @@
              an <span class="mono">@</span> mention, Claude Code as
              <span class="mono">/okrdev:park</span>. Plain language works in both.</p>
           <h3>New to either?</h3>
-          <p>If you already use ChatGPT, the directory button above is the whole setup. Claude
-             Code is Anthropic's agent — get the desktop app at
-             <a href="https://claude.com/claude-code">claude.com/claude-code</a>, no terminal
-             required. It also runs as a CLI and in IDEs; okrdev works in all of them, including
-             a headless install (<span class="mono">./okrdev/install.sh</span>) for scripts and
-             CI.</p>
+          <p>If you already use ChatGPT, the directory button above is the whole setup — no
+             terminal at any point. Claude Code is Anthropic's agent; get the desktop app at
+             <a href="https://claude.com/claude-code">claude.com/claude-code</a>, and you can
+             stay out of a terminal there too — hand the paste above to a code session and
+             Claude runs it. It also runs as a CLI and in IDEs, and okrdev works in all of
+             them; <span class="mono">./okrdev/install.sh</span> does the whole thing in one for
+             scripts and CI, where there is no agent to ask.</p>
           <h3>What it touches</h3>
           <p>One <span class="mono">okrdev/</span> directory and one marked, removable block in
              your agent's instructions file — <span class="mono">CLAUDE.md</span> on Claude Code,
@@ -550,9 +630,11 @@
              <a href="https://chatgpt.com/plugins/plugins_6a7a2f9e3968819187e30eaee8da1435">plugin
              directory</a>, so it's one button and you're installed — then <code>@okrdev</code>
              in ChatGPT or Codex. <a href="https://claude.com/claude-code">Claude Code</a> takes
-             two commands, easiest in the desktop app (Mac/Windows), no terminal required.
-             Neither? The skills are plain markdown: copy them into your repo and hand any
-             capable agent the docs.</p>
+             one paste — ask any Claude Code session to run
+             <span class="mono">claude plugin marketplace add backedbydata-co/okrdev &amp;&amp;
+             claude plugin install okrdev@okrdev</span> — after which okrdev is in every session
+             including the desktop app. Neither? The skills are plain markdown: copy them into
+             your repo and hand any capable agent the docs.</p>
         </details>
         <details>
           <summary>What does the plugin get access to?</summary>
