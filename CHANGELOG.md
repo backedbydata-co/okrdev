@@ -43,12 +43,20 @@ command that *does* run in a desktop code session, not a retreat to the terminal
   looking; the README links there. Registering a third-party marketplace is a plugin-CLI
   command however you invoke it — the desktop plugin browser lists plugins from marketplaces
   *already configured* and does not add new ones
-- **The three Quickstart cards were redesigned.** They were an uneven `1.2fr 1fr 1fr` grid
-  whose bottom-aligned action blocks opened a gap under the shorter cards, and the CLI
-  commands were hand-wrapped with literal indentation to survive the narrow columns. Now an
-  even three-column grid, prose balanced against each card's action so the cards fill, and
-  code that soft-wraps (`pre-wrap`) instead of being manually broken — which is what makes
-  a single chained command fit a third of the row at all
+- **The Quickstart is now a banner over two cards.** The one-click path runs full width
+  across the top; Claude Code and Codex sit below at half width each. The featured path is
+  not a card stretched to fit — a card has one content column, and one column at 1048px is a
+  thin line of prose beside a lonely button. It is a banner with its own internal grid: a
+  headline zone, a rule-separated action rail holding the button and its next step, and a
+  full-bleed fact strip along the bottom carrying the claims that used to be the tail of a
+  sentence
+- **Row 2's alignment is now structural, not lucky.** The old three-column row measured zero
+  dead space at 1280px and 62px of it at 1000px: bottom-aligned cards only sit flush when
+  their prose happens to wrap to the same line count at that exact width. The two cards now
+  ride the parent grid's row tracks via `grid-template-rows: subgrid`, so the code blocks
+  start on the same line whatever the prose above them does — including after the next copy
+  edit. Verified 0px prose-to-action gap at all of 1440/1280/1200/1100/1060/1041/1040/1000/
+  960/930/911/905/901/900/880/768/600/375, with a `@supports` fallback to the old behaviour
 
 **A second claim expired quietly, and nothing noticed.** `docs/adoption.md` and
 `install.sh` both stated that marketplace registration "has no shell equivalent — it exists
