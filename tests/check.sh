@@ -1266,10 +1266,11 @@ check_threshold_tokens() {
 # grep can see, which is worse than no check at all.
 #
 # Assert 1 landed red on the live leak. Assert 2 was green on arrival, so it is
-# mutation-tested rather than assumed, per docs/testing.md: fifteen mutations,
-# eight that must fire and seven that must stay quiet, listed in that file. The
-# one worth naming here is the one that failed the first draft — a substring
-# allowlist let `<slug>-archive` and `<slug>-private` straight through.
+# mutation-tested rather than assumed, per docs/testing.md: seventeen mutations,
+# nine that must fire, seven that must stay quiet and one that empties the ledger,
+# listed in that file. The one worth naming here is the one that failed the first
+# draft — a substring allowlist let `<slug>-archive` and `<slug>-private` straight
+# through, and this repo's own history was split into exactly such a sibling.
 check_ledger_partition() {
   # The ledger is what the coach drafts weekly out of a working context holding
   # more than one business, and it is the one corpus with no reason to name a
@@ -1284,10 +1285,18 @@ check_ledger_partition() {
   # fiction, templates/ lands in adopter repos where another repo's number would
   # be the adopter's own business, site/ is marketing copy.
   local public=(okrdev docs README.md CHANGELOG.md)
-  local status=0 scanned hits slug filter
+  local status=0 scanned walked hits slug filter
 
   # A scan that finds nothing passes vacuously — the same trap check_payload and
-  # check_chafe_comments both guard. Insist the walk found a corpus first.
+  # check_chafe_comments both guard. EACH corpus gets its own floor, because the
+  # two asserts walk different trees: a shared count over the wider corpus would
+  # have let an emptied ledger ride on docs/ still being there, and covering a
+  # vacuous pass by arithmetic coincidence is not covering it.
+  walked=$(find "${ledger[@]}" -type f 2> /dev/null | wc -l | tr -d ' ')
+  if [ "$walked" -lt 5 ]; then
+    bad "ledger partition: walked $walked ledger files — the scan itself is broken"
+    return 1
+  fi
   scanned=$(find "${public[@]}" -type f 2> /dev/null | wc -l | tr -d ' ')
   if [ "$scanned" -lt 20 ]; then
     bad "ledger partition: walked $scanned public-bound files — the scan itself is broken"
@@ -1300,7 +1309,7 @@ check_ledger_partition() {
   hits=$(grep -rnoE '(^|[^A-Za-z0-9_./-])(~|/Users|/home|/Volumes)/[A-Za-z0-9._-]+' \
     "${ledger[@]}" 2> /dev/null)
   if [ -z "$hits" ]; then
-    ok "ledger paths: no path outside this repo, in $(find "${ledger[@]}" -type f | wc -l | tr -d ' ') ledger files"
+    ok "ledger paths: $walked ledger files, none naming a path outside this repo"
   else
     bad "ledger paths: the ledger names a path on somebody's machine"
     printf '%s\n' "$hits" | sed 's/^/        /'
