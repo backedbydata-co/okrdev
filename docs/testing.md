@@ -172,8 +172,11 @@ What it asserts, grown from verified contracts:
   a denylist — the repos you may *name* are public by construction, so the list is safe in a
   public repo, which is the constraint that sank every version of the obvious design. Assert one
   landed red on a live leak in the active cycle file; assert two was green on arrival and is
-  mutation-tested rather than assumed, per the rule two paragraphs down — fifteen mutations,
-  eight that must fire and seven that must stay quiet. **The mutation that earned its keep**
+  mutation-tested rather than assumed, per the rule two paragraphs down — seventeen mutations,
+  nine that must fire, seven that must stay quiet, and one that empties the ledger to prove the
+  scan cannot pass having walked nothing. Each corpus carries its own floor: a shared count over
+  the wider corpus let an emptied ledger ride on `docs/` still being there, which is coverage by
+  arithmetic coincidence rather than by design. **The mutation that earned its keep**
   killed the first draft: the allowlist matched as a substring, so a private repo whose name
   merely *begins* with this one's was silently permitted in both spellings. That is not a
   hypothetical repo — this repo's own pull-request history was split into exactly such a
@@ -182,7 +185,11 @@ What it asserts, grown from verified contracts:
   bare number in order to fix it. The allowlist now matches whole slugs. The seven that must
   stay quiet are the cry-wolf floor: a home path in a runbook under `docs/`, a markdown anchor
   ending in digits, ordinary prose slashes, a bare hash-number, and this repo's own references
-  in either shape. **State the gap in the same breath as the green line:** the 2026-08-20 entry
+  in either shape. **One narrowing was proposed and rejected on a mutation**: restricting the
+  path shape to home paths beginning with a capital would have dropped seven false positives
+  that do not exist — every one of them lives under `docs/`, which this half never scans — while
+  letting a lowercase project directory through. A narrowing that buys nothing and costs a real
+  catch is how a check quietly stops catching things. **State the gap in the same breath as the green line:** the 2026-08-20 entry
   that motivated the whole rule would still pass. Two of its three disclosures were lowercase
   prose with no token to grep, and the third was a bare hash-number indistinguishable from the
   dozens the ledger legitimately carries. The check is a floor under the one failure mode that
