@@ -215,6 +215,110 @@ non-code column exists precisely so they are never second-class evidence. Any wo
 anywhere in this repo, that would let a founder feel demo-shame for a week of sales calls is
 a reviewer-class defect against the cycle's own coherence health metric. Report it like one.
 
+## The partition
+
+Every other rule in this document pushes a claim toward being checkable by more people. This
+one pushes the other way, and it should say so first. okrdev's ledger lives in the repo where
+the work happens, and this repo is public. The DRI's other work is not. So every evidence line
+here gets written a few keystrokes from things that must never be written, by a coach holding
+all of it in one working context. On 2026-08-20 that produced a check-in entry naming another
+business's cost unit, its pricing model, and a pull-request number in its private repo. A human
+caught it in review, which is the only thing that caught it.
+
+**The rule.** Everything published from this repo — `okrdev/**`, `docs/**`, and the issue and
+pull-request text that travels with them — is public prose about okrdev. Everything else the
+DRI works in is private state: other businesses, client work, private repos, the machine
+itself. The ledger may describe **how okrdev is being used**, anywhere it is being used. It may
+not describe **what the business using it is or does**. The partition runs one way: private
+state cites this repo freely, and this repo cites nothing on the private side.
+
+**The swap test**, because a rule you cannot apply in the second it takes to write a sentence
+is not usable by a human or by an agent. Swap the other business for any other business — does
+the sentence survive? *"Held a check-in with both DRIs present and every row carrying measured
+evidence"* survives; it is a fact about okrdev, true in the same words of any adopter. *"Raised
+its per-seat price and amended the KR that tracks it"* does not: strip the identity and the
+sentence means nothing, which is the proof that its content was the business rather than the
+method. It is the same cut the retired hours row was retired under — *okrdev's health metrics
+monitor okrdev's health, not its DRI's* — applied to prose instead of to metrics.
+
+| Publishable — okrdev's own shape | Withheld — the business |
+|---|---|
+| That an adopter exists, at what level, on what version | Its name, its people's names, its repos' names |
+| Ledger shape: objective and KR counts, DRI count, which rituals were held, whether the revision protocol was used, commits authored to `okrdev/` | Its KR text, its metric names, its targets and baselines |
+| Direction and anonymized readings — "moved substantially", "their cadence is coupled to mine" | Any figure of the business: revenue, price, cost or metric units, headcount, customer counts |
+| okrdev's own dates: weeks held, when a use-clock started | Customers, deals and counterparties — named, numbered, or described closely enough to identify |
+| Decisions, and their consequences for this cycle | Cross-references into private state, below |
+
+**Cross-references are the half that hides.** A bare hash-number in this repo resolves against
+this repo, so a number copied out of a private thread either dangles or lands on an unrelated
+okrdev issue — either way it is a pointer into private state, written in the open, wearing
+local clothes. The same goes for another repo's name or URL, a branch name out of it, and any
+absolute or home-relative path outside this repo: a path under a home directory names a machine
+and usually names a business with it. The ban is on references that locate private working
+state, not on the characters they are made of — the Zoom transcript path in
+[live-coached-sessions.md](live-coached-sessions.md) tells a reader where Zoom writes files,
+names nobody, and stays.
+
+**Mark the gap.** A claim the partition has trimmed says so where it stands. The house forms
+are already in the ledger: `(local read, anonymized)` in an Evidence/note cell, and "details
+stay out of this file by the partition rule" in What moved. A withheld detail that is not
+marked as withheld reads as a detail that never existed, and the retro cannot replay a citation
+whose edges it cannot see. The marker is also the honest accounting of what this rule costs: an
+anonymized reading is rung 1 for the person who took it and rung 5 for everybody else, and the
+marker is what stops the ledger from quietly claiming otherwise.
+
+**Permission is not a partition.** The 2026-08-20 ruling stands as recorded — the co-owner
+would not object to anonymized usage being cited, and the thing he would actually care about is
+details of the business being shared. That answered permission, which is the smaller question.
+A partition is not a courtesy one person can waive: the sentences it stops are also about that
+business's customers, its other DRI and its counterparties, none of whom were asked and none of
+whom can waive anything. Consent widens what may be *cited*; it never widens what may be
+*written*, and the table above is unchanged by a yes.
+
+**A redaction note names the class, never the string.** The amendment protocol preserves
+original text verbatim, because a retro scored against silently-moved goalposts is fiction.
+This is the one place that habit inverts: quoting the original would republish the exact string
+the redaction removed, into a file with a longer memory than the one it left. So the note names
+what class of thing went, and why — *"the location clause redacted under the partition rule;
+the definition of 'outside' is unchanged"* is a complete note. The 2026-08-07 pass already
+worked this way, anonymizing outside-adopter references while leaving substance, dates and
+numbers unchanged — and the numbers that stayed were okrdev's own: levels, versions, week
+counts, never the business's.
+
+**A check catches shape, not meaning**, in the same register [testing.md](testing.md) uses for
+its coherence greps: they catch byte drift, not meaning drift. A cross-reference has a shape.
+A disclosure usually has none — *"their per-seat number moved the wrong way"* holds no token
+any grep can catch, and it is a pricing disclosure. So the mechanical half is a floor under the
+one failure mode that is both patterned and unfixable after the fact; the swap test is the
+rule, and it is held by people. That also settles what the mechanical half may look like:
+**structural only, never a list of terms.** A denylist of sensitive words committed to a public
+repo is a published list of exactly what somebody thought was worth hiding — the check would
+leak the thing the check exists to stop. This repo is also the plugin directory, so it would
+ship that list to every adopter's disk as well.
+
+The floor sits **before the push, not at review**, and the reason is arithmetic rather than
+nerves. Prevention costs milliseconds. Cure, on a public repo, is not fully available:
+rewriting the branch and deleting it from the remote leaves the original commits fetchable by
+SHA through the API, and a closed pull request lists them in its Commits tab indefinitely —
+both verified here, not assumed. Guaranteed removal takes a support ticket, and the content is
+reachable until somebody actions it. Everywhere else in okrdev, a human catching it in review
+is a working rail. Here the reviewer has already lost, because by then it is pushed.
+
+**What an adopter takes from this.** If your ledger is private, the rule is dormant and costs
+you nothing — a partition needs two sides, and a private ledger already shares an access
+boundary with everything it describes. It is still a framework rule rather than this repo's
+housekeeping, for three reasons. okrdev puts the ledger in the repo where the work happens and
+then tells you to protect main, ship previews, and open what you can; a team that takes that
+advice in a public repo is publishing prose about its business every week without ever deciding
+to. The exposure is manufactured by okrdev's own mechanics — the coach pre-drafts the whole
+check-in from whatever the DRI's week contained, and its homework tells it to take a reading on
+every KR it can reach, which is precisely the move that pulls somebody else's detail into the
+drafting context. And anyone running more than one thing meets this in week one: an agency with
+clients, a consultancy, a founder with a portfolio, a contractor whose day job is not this repo.
+It installs at the price this document charges everything else — no new file, no new field, no
+new ritual, no word a DRI has to learn — as one line in the coach's never-list, one line in the
+check-in skill, and one sentence of adopter-facing prose in [adoption.md](adoption.md).
+
 ## Demos over documents, settled
 
 The tension is real, so state it instead of papering over it. A demo answers "is this the
@@ -268,6 +372,7 @@ place that enforces it:
 | The narrative floor | The confidence walk | [method.md](method.md) confidence trigger 4; `/okrdev:checkin` steps 8a/11; `/okrdev:coach` step 6a |
 | Build / box / buy | The three triage verdicts; planning's subtraction step | [parking-lot.md](parking-lot.md) triage; `/okrdev:triage` step 3 |
 | The demo review, named | Rule 10's preview hand-off | [ai-coach.md](ai-coach.md) unblocking duties; [dri-onboarding.md](dri-onboarding.md) review routine |
+| The partition | The anonymization the 2026-08-07 pass did by hand | [ai-coach.md](ai-coach.md) never-list; `/okrdev:checkin` and `/okrdev:coach` never-lists; [adoption.md](adoption.md) multi-team. The structural half is a check, and lands in its own PR — doctrine first, then the test |
 | The fence | The drift check's code-only honesty | [ai-coach.md](ai-coach.md) drift-check mechanics; [rituals.md](rituals.md) retro step 1 |
 
 **Deliberately not wired yet.** An unwired rule is theater by this repo's own doctrine, so
