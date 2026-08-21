@@ -54,7 +54,7 @@ Nothing in Captured gets worked on. Ever. Triage first.
 
 - [2026-08-20] Nothing mechanically stops another business's details reaching this public ledger (#24) → KR1.3 (W34 triage — sequenced behind #19/#16/#13; chafe hit live during the W34 KR1.2 reading)
 - [2026-08-08] Stack module has no name for brownfield mapping (#1) → next-cycle candidate (W34 triage — gated on a second mapping adoption with no Alex ownership; the 08-20 disclosure makes n=1 weaker, not stronger)
-- [2026-08-20] Relocate the non-flagship discretionary hours metric — okrdev keeps an inverted, self-scoped version (a floor on flagship hours, naming no other business); HQ takes the portfolio-allocation version at Level 1 → next-cycle candidate, decide at the Q3 retro (W34 triage — not moved now: the row is mid-breach and its own amendment forbids renegotiating a red line during its own breach, and HQ is Level 0)
+- [2026-08-20] Relocate the non-flagship discretionary hours metric → **decided 2026-08-21, one day after being deferred: the row is retired outright, and okrdev keeps no replacement.** The W34 triage deferred this on the grounds that the row was mid-breach and its destination was Level 0. Both were overtaken: the destination built the stricter replacement the same day, and a retirement *into* a more demanding measurement is not a red line argued down. The inverted self-scoped version is dropped too — an hours floor on the flagship is still the DRI's capacity in a public repo, which is the same problem in miniature. Principle carried to the retro: *okrdev's health metrics monitor okrdev's health, not its DRI's* (PR #27)
 <!-- Ideas that survived triage and became KR work or planning input:
      - [2026-07-13] <idea> → KR2.1 (or: next-cycle candidate) -->
 
