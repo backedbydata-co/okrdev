@@ -7,6 +7,40 @@ minor bumps may change doctrine, not just add to it.
 
 ## Unreleased
 
+## 0.9.1 — 2026-08-21
+
+**The partition rule was cited three times in the live ledger and written down nowhere.** It
+governs what a public ledger may say about work that isn't public, and on 2026-08-20 the gap
+had a cost: a coach-drafted check-in entry named another business's cost unit, its pricing
+model, and a pull-request number in its private repo. A human caught it in review. On a public
+repo that is already too late — a rewritten branch leaves the original commits fetchable by
+SHA and listed in the closed PR's Commits tab, so removal is a support ticket rather than a git
+command. This release writes the rule down.
+
+- **`docs/evidence.md` gains "The partition"** — the one rule in okrdev that deliberately makes
+  a claim *less* checkable, filed where that trade can be priced against the standard it dents.
+  It carries a swap test a human or an agent can apply in the second it takes to write a
+  sentence (swap the other business for any other business; if the sentence stops meaning
+  anything, its content was the business rather than the method), and a table splitting okrdev's
+  own shape from the business's detail
+- **Permission is not a partition.** The 2026-08-20 ruling that anonymized usage may be cited
+  stands as recorded; it answered permission, which is the smaller question. The sentences the
+  rule stops are also about that business's customers, its other DRI and its counterparties,
+  none of whom were asked. Consent widens what may be *cited*, never what may be *written*
+- **A redaction note names the class, never the string** — the one place the amendment
+  protocol's preserve-the-original habit inverts, because quoting the original republishes the
+  exact thing the redaction removed, into a file with a longer memory than the one it left
+- **Three never-lists gain a line** — `docs/ai-coach.md`, `/okrdev:checkin` and `/okrdev:coach`.
+  Not a numbered coach rule: the marked block is byte-identical across three files and lands in
+  every adopter's install, and this fires on a condition most adopters never meet
+- **One sentence for adopters** in `docs/adoption.md` § Multi-team, where two-or-more-repos is
+  already established, because the repos differing in *visibility* is the next clause
+
+**The mechanical half is deliberately not in this release.** A test that decides doctrine is a
+coach that silently edits KRs, so the rule lands first and the check that asserts its structural
+half follows in its own PR — where the failing run it opens on is a real leak in the ledger,
+not a fixture.
+
 ## 0.9.0 — 2026-08-18
 
 **The check-in takes a reading before it asks for a number.** Every `Now` in this repo's own

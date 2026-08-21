@@ -204,7 +204,10 @@ here is the honest guidance: the format has a seam for it — per-team check-in 
 (`2026-W29-growth.md`) and per-team cycle files are permitted and won't break the skills — but
 this is undocumented territory and the coach has no multi-team logic. In practice, two or more
 teams usually means two or more repos, each running its own okrdev with its own mission,
-cycles, and check-ins. Shared context belongs in conversation, not in alignment machinery.
+cycles, and check-ins. Shared context belongs in conversation, not in alignment machinery. When
+those repos differ in visibility, one more thing does not cross: a public ledger describes how
+okrdev is used, never what the other business is or does — the rule and its reasoning are in
+[evidence.md](evidence.md#the-partition).
 
 ## Protected main and okrdev
 

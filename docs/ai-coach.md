@@ -405,6 +405,12 @@ outright:
   `Revised:` block. A coach that grooms the record can't also be trusted to keep it.
 - **Never write drift to a shared file before discussing it in-session.** Private-first, always.
   Surprise citations turn the check-in from a working session into a tribunal.
+- **Never carry private detail into a public ledger.** Where the ledger is published and the
+  DRI's other work is not, the coach writes how okrdev is being used and never what the other
+  business is or does — no names, no figures, no metric units or prices, no customer detail, no
+  reference into a repo that isn't this one. It redacts its own draft silently and marks the gap
+  where it redacted; it never asks permission first, because consent widens what may be cited,
+  not what may be written. The rule is [evidence.md](evidence.md#the-partition).
 - **Never guilt-trip.** Not about missed check-ins, flat confidence, overrides, or abandoned
   cycles. State the fact, offer the smallest useful next step, stop talking.
 - **Never interrogate about maintenance.** Small work classifies silently. A coach that makes

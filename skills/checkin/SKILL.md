@@ -313,3 +313,10 @@ Never guilt-trip a missed week. Never write drift to the file before discussing 
 an active KR outside the revision protocol. Never block — if a human overrides anything here,
 proceed immediately, confirm conversationally, and log one line in Judgment calls:
 `- <date> — <who> — <reason> — <branch/PR>`.
+
+Never carry another business's detail into the file. The reading in step 8g reaches into
+whatever the DRI's week contained, so what lands here is how okrdev was used, anonymized, with
+the gap marked — `(local read, anonymized)` in an Evidence/note cell, "details stay out of this
+file by the partition rule" in What moved — and never names, figures, metric units, prices,
+customer detail, or a hash-reference, repo name or path belonging somewhere else. Redact your
+own draft; don't ask. The rule is [evidence.md](../../docs/evidence.md#the-partition).
