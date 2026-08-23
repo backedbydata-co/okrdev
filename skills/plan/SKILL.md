@@ -68,9 +68,9 @@ cycle ending on the normal boundary beats a cycle that ignores the calendar ever
 Do the reading before the meeting, so the humans spend their 90 minutes arguing, not waiting:
 
 - `okrdev/MISSION.md` — the alignment target.
-- `okrdev/LESSONS.md` — the most recent block: scores by type, adherence, lessons, revisions.
-  Carry its challenges into step 6. If last cycle's aspirational average was 0.4 and this
-  draft assumes double the throughput, you are the one who asks why this time is different.
+- `okrdev/LESSONS.md` — the most recent block: scores, adherence, lessons, revisions.
+  Carry its challenges into step 6. If last cycle averaged 0.4 and this draft assumes double
+  the throughput, you are the one who asks why this time is different.
 - `okrdev/PARKING_LOT.md`, the **Promoted** section — ideas that earned candidacy through
   triage. These are the only ideas with a fast lane into planning; that's the parking lot
   keeping its promise.
@@ -97,8 +97,9 @@ Hard constraints:
 - **Exactly one human DRI per objective and per KR.** Never shared — shared ownership is no
   ownership — and never you: the AI builds, coaches, and keeps the books, but accountability
   stays human (docs/roles.md).
-- Each KR: `Type: committed | aspirational`, `Confidence: 0.5`, `Score: —`, and a heading of
-  the form `<metric> from <baseline> to <target>`.
+- Each KR: `Confidence: 0.5`, `Score: —`, and a heading of the form
+  `<metric> from <baseline> to <target>`. There is no type field — every KR is a stretch
+  (docs/method.md § Every KR is a stretch).
 - **Milestone-shaped KRs** (no continuous metric): define the 0.3 / 0.7 / 1.0 stage anchors
   now, in `Notes:` — e.g. `Notes: milestones — 0.3 pilot agreement signed / 0.7 three studios
   live / 1.0 ten studios live`. Phrase every anchor as an observable past-tense event, never
@@ -123,7 +124,6 @@ status: draft                 # flips to active at step 9; ids freeze then
 DRI: alex
 
 ## KR1.1: <metric> from <baseline> to <target>
-Type: aspirational            # committed | aspirational
 DRI: alex
 Confidence: 0.5
 Score: —                      # set at retro
@@ -169,13 +169,16 @@ transcribing whatever the room says first is the one failure mode you're here to
 - **Sandbag check, now — not at retro.** Compare each target against the baseline's trend:
   if the trend line lands there anyway, the KR is a prediction, not a goal. Challenge it with
   the data. Catching this at planning is cheap; catching it at retro is too late.
-- **Committed vs aspirational mix.** Committed means expected score 1.0 — a miss requires a
-  root-cause note. Aspirational means 0.7 ≈ success. Reserve committed for genuine must-hits:
-  a 0.7 on payroll is a failure, not a stretch. Then check the mix: all-committed means no
-  ambition; all-aspirational means nothing is actually promised.
-- **Confidence starts at 0.5** — a good stretch KR is a coin flip at kickoff. Flag two smells:
-  a committed KR at 0.5 (if it's a coin flip, it isn't a commitment) and anything at 0.9
-  (either a sandbag or it belongs in maintenance).
+- **Is this a goal or a certainty?** Every KR is a stretch, so a KR nobody is genuinely
+  unsure about does not belong in the set. Payroll running, the contract renewing, the
+  lights staying on — real work, owed to real people, and none of it a goal. Send it to
+  `maintenance`, or to the DRI's own capacity model, and keep the cycle for the things that
+  need a pathway found. **This is the check that does the most work at planning**, because
+  certainties are what crowd out the question the cycle exists to ask.
+- **Every 1.0 is defined.** No type field means anchors are the only way a must-land outcome
+  can say so. Refuse to close planning on a milestone KR whose 1.0 is undefined.
+- **Confidence starts at 0.5** — a good stretch KR is a coin flip at kickoff. Flag anything at
+  0.9: it is either a sandbag or it belongs in maintenance.
 - **Quality pair.** Every volume or speed KR names the quality metric it could break, in its
   `Notes:` or the health table. Goodhart's law does not take the cycle off.
 - **DRI load.** One person owning every KR is shared ownership wearing a trench coat. Spread

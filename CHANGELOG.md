@@ -7,6 +7,59 @@ minor bumps may change doctrine, not just add to it.
 
 ## Unreleased
 
+## 0.10.0 — 2026-08-23
+
+**Every KR is a stretch. The `committed` type is gone.**
+
+A committed KR is, by construction, work you already know how to do — the retired wording
+conceded it in as many words: *"all-committed means you're planning only what you already
+know how to do."* That is precisely the work that does not need a goal wrapped around it.
+Payroll runs because payroll runs; scoring it 1.0 at the retro adds ceremony to a certainty
+and spends the scarcest input to planning — attention — on the half of the work that was
+never in doubt.
+
+The argument is not mainly about ceremony. A goal set containing its own certainties lets you
+answer *"how do we hit this?"* with effort, because for part of the set that works. A set of
+nothing but genuine stretches forces the harder question — **what would have to be true?** —
+because no amount of pushing gets you there. Removing the certainties is what makes the few
+real pathways visible.
+
+**Promises did not disappear; they stopped being goals.** Work that must land classifies as
+`maintenance`, or lives in whatever capacity model the DRI keeps outside this framework. A
+floor describes how a person's week is committed, not how the business is doing — the same
+distinction that retired the `non-flagship discretionary hours` health row in 0.9.0.
+
+- `Type:` is removed from the KR block, the cycle template, the planning skill's scaffold and
+  the worked example. Thirteen files referenced the distinction; the two that still say
+  "aspirational" now mean the English word
+- **Confidence carries what the type used to signal to a co-owner.** A live number updated at
+  every check-in beats a binary frozen at planning, when you knew least. The type was already
+  losing this argument: a `committed` KR sitting at 0.5 was a documented smell, and it was the
+  confidence telling the truth
+- **Milestone anchors carry the binary cases and are now enforced rather than encouraged.**
+  Some outcomes are binary in the world — a customer is billed or is not — and that is a
+  property of the metric, not of a promise. `plan` refuses to close on a milestone KR whose
+  1.0 is undefined, because anchors are now the only place a must-land outcome can say so
+- **Sandbag detection's exemption is re-cut on the same axis.** It used to spare committed KRs
+  scoring 1.0; it now spares a KR whose 1.0 anchor was the only passing state. Same cases,
+  stated as a property of the KR rather than of a retired label
+- **Retro reports one list.** Nothing to separate, nothing to average across a boundary that
+  no longer exists. The root-cause note survives, re-anchored: it now fires on a **confidence
+  collapse** — a KR that scored far below what its DRI believed in the final weeks — which is
+  where a broken promise surfaces once no type column announces one
+- `plan` and `rituals` gain the check that replaces the mix check: **goal or certainty?**
+  Anything nobody is genuinely unsure about leaves the set. This is the check that does the
+  most work at planning
+- `retro` gains its mirror: a KR that never dropped below 0.9 and scored 1.0 with no binary
+  anchor was maintenance in a KR costume, named as an input to next planning
+
+**Not in this release: a KR count cap.** The change makes fewer goals more valuable, not
+automatic — a cycle of nine stretches is nine 2x goals in a costume. The cap needs a number,
+and the number wants retro data rather than a guess.
+
+**Live cycles are amended separately**, through the revision protocol, so a cycle scores
+against the rubric it was planned under.
+
 ## 0.9.0 — 2026-08-18
 
 **The check-in takes a reading before it asks for a number.** Every `Now` in this repo's own

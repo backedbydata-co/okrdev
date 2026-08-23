@@ -65,7 +65,6 @@ file looks like this:
 
 ```markdown
 ## KR1.2: Weekly active studios from 46 to 70
-Type: aspirational            # committed | aspirational
 DRI: jordan
 Confidence: 0.5
 Score: —                      # set at retro
@@ -75,8 +74,6 @@ Notes: quality pair — health table row "support ticket volume"
 The heading states the metric, the baseline, and the target in one line. The fields below it
 carry everything the system tracks:
 
-- **Type** — `committed` or `aspirational`. This changes what the score means; see the next
-  section.
 - **DRI** — exactly one human, same rule and same reasoning as objectives. The objective's DRI
   and a KR's DRI can differ.
 - **Confidence** — 0.0–1.0, updated at every check-in. After each check-in the coach mirrors
@@ -99,31 +96,48 @@ KRs come in two shapes:
   "all studios off the old plan" — never as an implementation state ("backend deployed,"
   "integration mostly complete"). An event either happened or it didn't, so the anchor is
   binary at the retro; a state-phrased anchor reopens exactly the negotiation this rule
-  exists to close.
+  exists to close. **A milestone KR without anchors is not a KR yet** — since okrdev dropped
+  the `committed` type, anchors are the only place a must-land outcome can say so, and the
+  coach refuses to close planning on a milestone KR whose 1.0 is undefined.
 
-## Committed vs aspirational
+## Every KR is a stretch
 
-Every KR declares its type, because the same score means opposite things depending on which
-one it is.
+There is one kind of KR. A score around **0.7 is success**; 1.0 every time means the targets
+were never stretches. A good KR is close to a coin flip at kickoff — genuinely uncertain,
+worth reaching for. Scores are reported as one list, because with one type there is nothing to
+keep separate and nothing to average across.
 
-**Committed** KRs are promises. The expected score is 1.0. Payroll runs, the migration
-completes, the contract renews, the compliance deadline is met. A 0.7 on a committed KR is not
-"pretty good" — it is a miss, full stop. You do not get partial credit for mostly making
-payroll. Every committed miss requires a root-cause note at the retro: not blame, but an
-explanation concrete enough that planning can prevent the repeat.
+**Why there is no `committed` type, recorded because okrdev shipped one through 0.9.0.** A
+committed KR is by construction work you already know how to do — the retired wording conceded
+it in as many words: *"all-committed means you're planning only what you already know how to
+do."* That is precisely the work that does not need a goal wrapped around it. Payroll runs
+because payroll runs. Writing it down as a key result and scoring it 1.0 at the retro adds
+ceremony to a certainty and spends the scarcest input to planning — attention — on the half of
+the work that was never in doubt.
 
-**Aspirational** KRs are stretches. A score around 0.7 is success; 1.0 every time means the
-targets were never stretches. A good aspirational KR is a coin flip at kickoff — genuinely
-uncertain, worth reaching for.
+The cost is not only ceremony. A goal set that contains its own certainties lets you answer
+*"how do we hit this?"* with effort, because for some of the set that actually works. A goal
+set of nothing but genuine stretches forces the harder and more useful question — **what would
+have to be true?** — because no amount of pushing gets you there. Removing the certainties is
+what makes the few real pathways visible, and it is the whole reason for the change.
 
-The two types are **reported separately and never averaged together**. An average across types
-is a meaningless number: it lets a heroic stretch result paper over a broken promise, and a
-kept promise inflate a weak stretch quarter. "Committed: 2/2 hit. Aspirational: averaged 0.6"
-tells you something. "Overall: 0.8" tells you nothing.
+**Promises do not disappear. They stop being goals.** Work that must land, that someone is
+owed, that keeps the lights on, is still tracked — as `maintenance` in the work classification
+below, or as a floor in whatever capacity model the DRI keeps outside this framework. A
+commitment is a thing you do, not a thing you aim at, and okrdev deliberately does not model
+it: a floor describes how a person's week is committed, not how the business is doing.
 
-Most cycles want a mix. All-committed means you're planning only what you already know how to
-do. All-aspirational means nothing is actually promised to anyone. The coach checks the mix at
-planning.
+**What carries the load at the two places the type used to be read:**
+
+- **Telling a co-owner what will land — `Confidence:`.** A live number updated at every
+  check-in beats a binary frozen at planning, when you knew least. *"KR1.1 at 0.9, KR1.2 at
+  0.4"* is a more honest promise than a type column, and it stays true as the cycle moves.
+  The type was already losing this argument: a `committed` KR sitting at 0.5 was a documented
+  smell, and it was the confidence telling the truth.
+- **KRs where partial credit is meaningless — milestone anchors.** Some outcomes are binary in
+  the world: a customer is billed or is not, the migration completed or it did not. That is a
+  property of the metric rather than of a promise, and it is carried by writing anchors where
+  only 1.0 passes. This is why the anchor rule above is enforced rather than encouraged.
 
 ## KR quality rules
 
@@ -264,8 +278,10 @@ stated honestly.
 fully reached, and resist the urge to interpolate generously — the anchors exist precisely so
 this isn't a judgment call.
 
-**Reporting** keeps committed and aspirational separate, as above. A committed KR that missed
-gets its root-cause note in the same retro. The scores, notes, and a three-lesson summary land
+**Reporting** is a single list of scores — there are no types to separate. A KR that scored
+far below the confidence it carried into the final weeks gets a root-cause note in the same
+retro: not blame, but an explanation concrete enough that planning can prevent the repeat. The
+scores, notes, and a three-lesson summary land
 in `okrdev/LESSONS.md`, which the next planning session reads first — last cycle's actuals are
 the reality check against next cycle's ambition.
 
@@ -326,9 +342,9 @@ three points, because catching it only at the retro is catching it after the was
 - **At the retro:** a KR that was hit early and rode flat-high confidence the whole way gets
   named, so next cycle's planning calibrates against it.
 
-Two deliberate limits. First, **a committed KR scoring 1.0 never triggers sandbag detection**
-— committed KRs are *supposed* to score 1.0; that's what committed means. Second, the flag is
-a conversation, never an accusation: naive systems that punish every 1.0 teach people to score
+Two deliberate limits. First, **a KR whose 1.0 anchor was the only passing state never
+triggers sandbag detection** — a binary outcome scoring 1.0 is the outcome happening, not a
+soft target. Second, the flag is a conversation, never an accusation: naive systems that punish every 1.0 teach people to score
 0.93, which is worse than the sandbagging — now the data is dirty too.
 
 ## Health metrics
