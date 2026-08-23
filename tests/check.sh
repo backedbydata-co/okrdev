@@ -1219,7 +1219,13 @@ check_threshold_tokens() {
     while read -r f; do
       case " $files $exempt " in *" $f "*) continue ;; esac
       msg+=" also-states-it:$f"
-    done < <(grep -rlE --include='*.md' -- "$anchored" . 2> /dev/null | sed 's|^\./||' | sort)
+    # Tracked files only. `grep -r .` also walks git-excluded directories —
+    # chafe: `.claude/worktrees/` copies of this repo made four thresholds read
+    # as drifted and blocked the pre-push hook, on a tree where nothing had
+    # drifted. Every other check here scopes to explicit directories; this was
+    # the one that globbed the world. `git ls-files` is the source of truth,
+    # same rule the repo-pdf export runs on.
+    done < <(git ls-files -z -- '*.md' | xargs -0 grep -lE -- "$anchored" 2> /dev/null | sort)
     if [ -z "$msg" ]; then
       ok "threshold '$token': stated in all $(printf '%s' "$files" | wc -w | tr -d ' ') files, and nowhere else"
     else
