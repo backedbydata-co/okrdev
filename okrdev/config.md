@@ -1,7 +1,7 @@
 ---
 okrdev_version: 0.10.0         # used by upgrade and uninstall — don't edit by hand
 level: 1                      # 0 parking lot | 1 method | 2 collab rails
-cycle_length: quarterly       # quarterly | six-week
+cycle_length: six-week        # quarterly | six-week
 checkin_cadence: weekly
 side_quest_box_hours_per_week: 4
 strict_gate: false            # record of the Level 2 strict-mode decision. The gate itself is controlled by the OKRDEV_STRICT_GATE repo variable (gh variable set OKRDEV_STRICT_GATE --body true) — flip both together
@@ -9,6 +9,17 @@ backstop: <TBD>               # the human to call when DRI + coach are both stuc
 ---
 
 # okrdev config
+
+**Cadence changed 2026-08-23: quarterly → six-week**, effective from the cycle after `2026-Q3`.
+A quarter is long enough to be wrong three times, and this repo has now been wrong twice inside
+one — a health row added and retired a day apart, and a KR type system removed mid-cycle. Six
+weeks is the length at which those corrections land at a boundary instead of as amendments.
+
+`2026-Q3` runs to **2026-09-30 as planned** and is not retroactively shortened. Its KR1.1 anchors
+on *check-ins held in ≥6 of the cycle's ~10 weeks*, three are held (W31, W32, W34), and only
+W35–W40 remain — a six-week reading of this cycle would end 2026-09-03 and make its own
+completion KR arithmetically unreachable. The next cycle is the first six-week one, and takes the
+id `2026-C1` per `plan`'s naming rule.
 
 okrdev runs on itself. This repo *is* the okrdev framework, and it uses okrdev to plan its own
 development — the first and most honest test of whether the method survives contact with real
