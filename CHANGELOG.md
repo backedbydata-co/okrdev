@@ -7,6 +7,30 @@ minor bumps may change doctrine, not just add to it.
 
 ## Unreleased
 
+**Supported surfaces are a rule now, not a list: coding agents with a git repo.**
+
+`docs/dri-onboarding.md` had offered a new DRI three surfaces since 0.1.0 — claude.ai in the
+browser, Claude Cowork, Claude Code — on the stated grounds that all three "can read and write
+the repo." `skills/install/SKILL.md` meanwhile refuses to proceed outside a git repo and offers
+`git init` instead. Both shipped to main and sat there six weeks, against a cross-file
+coherence red line of one.
+
+The rule that resolves it is narrower than any list of products and outlives them: **a surface
+qualifies when it can read and write a working tree, run `git`, and invoke the skills.** Today
+that is Claude Code and Codex. It is a test to apply, not a roster to maintain.
+
+- New canonical section — `docs/adoption.md` → **Supported surfaces** — which the other docs
+  cite instead of restating
+- Step 2 of the onboarding guide names two surfaces, and states the cost it had been eliding:
+  a non-technical DRI installs a tool before they start
+- That guide's prerequisites and hour budget now admit the install exists. "A computer with a
+  web browser" was true only while the browser path was on the list
+- The non-code-business path stops pointing at "whatever Claude surface you use" and names them
+
+**Skills loading on a surface is not okrdev supporting it.** A plugin installed on your account
+can surface wherever the host chooses to show it; the docs now say so, because the alternative
+is a first run that ends with a parking lot written to nowhere.
+
 ## 0.10.0 — 2026-08-23
 
 **Every KR is a stretch. The `committed` type is gone.**

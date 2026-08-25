@@ -4,6 +4,26 @@ How okrdev gets into your repo, what each level costs, and how it comes back out
 version: start at the bottom of the ladder, move up only when the current level has earned it,
 and keep whatever stack you already have.
 
+## Supported surfaces
+
+okrdev runs on **coding agents with a git repo**: Claude Code and Codex. That is the whole
+list, and it is a rule rather than a snapshot — a surface qualifies when it can read and write
+a working tree, run `git`, and invoke the skills.
+
+The requirement isn't snobbery about terminals. Every skill leans on the repo: `/okrdev:install`
+refuses to proceed without one and offers `git init` instead, and the coach's authority comes
+from reading what actually landed — commits, merged PRs, the diff — rather than from what
+someone typed into a status box. Take the repo away and okrdev degrades into OKRs in markdown,
+which is the one thing it exists not to be (see [MANIFESTO.md](../MANIFESTO.md)).
+
+**Not supported:** Claude Cowork, claude.ai in the browser, and any other surface okrdev has
+not verified against a real repo. Skills may still appear on those surfaces — a plugin
+installed on your account can surface wherever the host chooses to show it — but "the skills
+loaded" is not the same as "the install works," and okrdev makes no promise about the gap.
+
+What differs between the two supported surfaces is one instructions file and one invocation
+style; [codex.md](codex.md) has the table.
+
 ## Brownfield first
 
 okrdev assumes you have an existing business with an existing codebase, existing habits, and no
@@ -154,9 +174,9 @@ A consultancy, an agency, a fitness studio, a newsletter — none of them ship P
 doesn't pretend they do. The check-in's "What moved" section is the canonical ledger for
 non-code KR work (sales calls, campaigns shipped, contracts signed); the drift check, which
 reads commits and PRs, simply has less to read and leans on the conversation instead. Level 2
-is irrelevant to you, and the install will never offer it. Create an empty GitHub repo, connect
-it to whatever Claude surface you use (see [dri-onboarding.md](dri-onboarding.md) for the
-options), run `/okrdev:install`, and you're operating.
+is irrelevant to you, and the install will never offer it. Create an empty GitHub repo, open it
+in Claude Code or Codex (see [Supported surfaces](#supported-surfaces)), run
+`/okrdev:install`, and you're operating.
 
 Why a git repo at all, for a business with no code? Because the alternative is a SaaS tool: an
 account, a subscription, an export problem. Markdown in a repo you own is the least lock-in a
