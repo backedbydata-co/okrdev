@@ -4,7 +4,7 @@ Append-only. `/okrdev:retro` adds one block per cycle. Planning reads this file
 before drafting the next cycle's OKRs — never rewrite or delete old blocks.
 
 <!-- Block format — the retro skill fills this in at the end of each cycle.
-     Committed and aspirational are reported separately, never averaged together.
+     One list of scores: every KR is a stretch, so there is nothing to separate.
 
 ## 2026-Q3 — scored 2026-10-01
 Committed: KR2.1 1.0, KR2.2 0.8 — one miss, root cause in cycle file.

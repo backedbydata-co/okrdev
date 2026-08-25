@@ -83,25 +83,28 @@ While scoring, challenge in both directions:
   the hire started for everything else. The anchors from planning are the demo script.
   Confidence history is your mirror: a KR that sat at 0.9 all cycle and scores 0.4
   (or the reverse) means the check-ins were theater — name it, kindly.
-- **Sandbagging — aspirational KRs only.** The signals: target hit before 60% of the cycle
-  had elapsed, plus confidence ≥0.9 flat from week one. Flag it as an input to next
-  planning's target-setting, not as an accusation. **Never flag a committed KR for scoring
-  1.0** — hitting a commitment is the job, and naive 1.0-flagging just teaches people to
-  score 0.93.
-- **Committed misses.** Any committed KR under 1.0 gets a root-cause note in its `Notes:`
-  before the retro moves on. Root-cause the plan and the system, not the person — policed
-  people game classifications; coached people use them.
+- **Sandbagging.** The signals: target hit before 60% of the cycle had elapsed, plus
+  confidence ≥0.9 flat from week one. Flag it as an input to next planning's target-setting,
+  not as an accusation. **Never flag a KR whose 1.0 anchor was the only passing state** — a
+  binary outcome scoring 1.0 is the outcome happening, and naive 1.0-flagging just teaches
+  people to score 0.93.
+- **Confidence collapses.** Any KR that scored far below the confidence it carried into the
+  final weeks gets a root-cause note in its `Notes:` before the retro moves on. This is where
+  a broken promise now surfaces: not from a type column, but from the gap between what the
+  DRI believed in week ten and what landed. Root-cause the plan and the system, not the
+  person — policed people game classifications; coached people use them.
+- **Certainties that slipped in.** Any KR that never dropped below 0.9 and scored 1.0 without
+  a binary anchor was not a goal — it was maintenance in a KR costume. Name it as an input to
+  next planning, where the "goal or certainty?" check exists to catch it earlier.
 
-## 5. Report the results — separately
+## 5. Report the results
 
-Report committed and aspirational results as two lists, never averaged together. A blended
-number is meaningless: 1.0 is the passing grade for one type and evidence of sandbagging
-risk for the other.
+One list. Every KR is a stretch, so there are no types to separate and nothing to average
+across a boundary that no longer exists.
 
 Calibration to say out loud:
 
-- **Committed** should sit at or near 1.0. Anything under it is the headline of this retro.
-- **Aspirational** lands well around 0.6–0.7. All 1.0s → targets were too soft (see the
+- **A healthy cycle** lands well around 0.6–0.7. All 1.0s → targets were too soft (see the
   sandbag flags). Everything ≤0.3 → the plan was fantasy; next planning should assume less
   throughput, and LESSONS.md is how it will know.
 
@@ -124,7 +127,7 @@ gets read.
 Three, not five — scarcity forces ranking. Lessons are about the system, not people. The
 test for each: would it change what next cycle's planning session does? If not, it's an
 observation, not a lesson. Good ones sound like: "we can't score what we don't instrument —
-baseline KRs first," or "our aspirational average is 0.45; plan for 60% of the throughput
+baseline KRs first," or "our average is 0.45; plan for 60% of the throughput
 we feel like we have."
 
 ## 8. Write it down
@@ -134,8 +137,8 @@ the planning record):
 
 ```markdown
 ## 2026-Q3 — scored 2026-10-01
-Committed: KR2.1 1.0, KR2.2 0.8 — one miss, root cause in cycle file.
-Aspirational: KR1.1 0.7, KR1.2 0.4 — avg 0.55. (KR1.3 dropped W33.)
+Scores: KR1.1 0.7, KR1.2 0.4, KR2.1 1.0, KR2.2 0.8 — avg 0.725. (KR1.3 dropped W33.)
+Confidence collapse: KR1.2 rode 0.8 into W12 and scored 0.4 — root cause in cycle file.
 Check-in adherence: 11/13 weeks.
 Revisions: KR1.1 target raised in W31 (early sandbag flag) — right call.
 Lessons:
@@ -144,8 +147,8 @@ Lessons:
 3. <lesson>
 ```
 
-Then close the cycle file: every `Score:` filled, root-cause notes on committed misses in
-place, and `status: active` → `status: scored`.
+Then close the cycle file: every `Score:` filled, root-cause notes on confidence collapses
+in place, and `status: active` → `status: scored`.
 
 Commit both files. If the repo runs cycle-file changes through PRs (it did at planning),
 open one titled `Retro: <cycle>` — same audit-trail rationale, and it can merge immediately:

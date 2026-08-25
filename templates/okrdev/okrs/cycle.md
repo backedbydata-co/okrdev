@@ -20,14 +20,12 @@ status: draft                 # draft | active | scored | abandoned — KR ids f
 DRI: <name>                   <!-- exactly one human per objective and per KR -->
 
 ## KR1.1: <metric> from <baseline> to <target>
-Type: aspirational            # committed | aspirational — committed means expected score 1.0; a miss requires a root-cause note
 DRI: <name>
-Confidence: 0.5               # a good stretch KR is a coin flip at kickoff
+Confidence: 0.5               # every KR is a stretch — a good one is a coin flip at kickoff
 Score: —                      # set at retro
 Notes: —                      # a volume/speed KR names its quality pair here or in the health table
 
 ## KR1.2: <...>
-Type: committed
 DRI: <name>
 Confidence: 0.5
 Score: —
@@ -37,7 +35,6 @@ Notes: —
 DRI: <name>
 
 ## KR2.1: <...>
-Type: aspirational
 DRI: <name>
 Confidence: 0.5
 Score: —

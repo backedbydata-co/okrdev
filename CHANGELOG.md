@@ -5,9 +5,7 @@ records the version it installed as the `okrdev_version` marker in its
 `okrdev/config.md` — marker semantics are in docs/adoption.md. Pre-1.0:
 minor bumps may change doctrine, not just add to it.
 
-## Unreleased
-
-## 0.9.1 — 2026-08-21
+## 0.10.2 — 2026-08-25
 
 **The partition rule was cited three times in the live ledger and written down nowhere.** It
 governs what a public ledger may say about work that isn't public, and on 2026-08-20 the gap
@@ -40,6 +38,151 @@ command. This release writes the rule down.
 coach that silently edits KRs, so the rule lands first and the check that asserts its structural
 half follows in its own PR — where the failing run it opens on is a real leak in the ledger,
 not a fixture.
+
+## 0.10.1 — 2026-08-25
+
+**Supported surfaces are a rule now, not a list: a code session with a git repo.**
+
+`docs/dri-onboarding.md` had offered a new DRI three surfaces since 0.1.0 — claude.ai in the
+browser, Claude Cowork, Claude Code — on the stated grounds that all three "can read and write
+the repo." `skills/install/SKILL.md` meanwhile refuses to proceed outside a git repo and offers
+`git init` instead. Both shipped to main and sat there six weeks, against a cross-file
+coherence red line of one.
+
+The rule that resolves it is narrower than any list of products and outlives them: **a surface
+qualifies when it can read and write a working tree, run `git`, and invoke the skills.** Today
+that is Claude Code and Codex. It is a test to apply, not a roster to maintain.
+
+**The line is code session vs. chat session, not desktop vs. terminal.** README.md already
+draws that distinction — *"You do not have to open a terminal"* — and the onboarding guide
+never got it, which is how the browser and Cowork ended up on its list in the first place. A
+Claude Code session has a shell and a working copy whether it runs in the desktop app or a
+terminal, and the desktop app is what a non-technical DRI should download.
+
+- New canonical section — `docs/adoption.md` → **Supported surfaces** — which the other docs
+  cite instead of restating
+- Step 2 of the onboarding guide leads with Claude Code in the desktop app, and lists the
+  terminal as the same thing for people already there rather than as the price of entry
+- That guide's prerequisites and hour budget describe an app download, not a browser
+- The non-code-business path stops pointing at "whatever Claude surface you use"
+- **The README Quickstart leads with Claude Code and the desktop app.** It had called okrdev
+  "a plugin for ChatGPT and Codex" — naming a chat product as a host, which is the exact
+  ambiguity this rule exists to kill — and put the ChatGPT directory button ahead of the
+  surface okrdev actually recommends. The button stays, labelled as the Codex route, with the
+  listing distinguished from the session: a directory is where a plugin is listed, not a place
+  you run it
+- **The same shape on both agents.** The desktop app is the recommended path for Claude Code
+  and for Codex alike; each terminal CLI is described as the same session for people already
+  living there, rather than as the default or the price of entry
+
+**Cowork is the subtle exclusion, because it is the same application.** The desktop app's two
+modes share one plugin store, so a plugin installed on your account can have its skills appear
+in Cowork whether or not it works there. "The skills loaded" is not "the install works," and
+okrdev makes no promise about the gap.
+
+**The one paste no longer assumes a `claude` CLI you might not have.** Closes #34.
+
+`README.md` said *"You do not have to open a terminal"* directly above a line that runs `claude`
+as a shell command. That is true of the **user** and false of the **machine**: installing the
+Claude desktop app does not put the `claude` CLI on your PATH, and nothing here said so. The
+first non-author install lost about thirty minutes to it — roughly 30 of its 37 minutes went on
+prerequisites rather than on okrdev.
+
+**The fix is to find a binary, not to install one.** The desktop app does ship a `claude`
+binary; it simply keeps it off PATH. So a terminal user already has one on PATH, a desktop-app
+user already has one on disk, and between them there is no case left that needs a download:
+
+```
+Set up okrdev for me, in this order:
+1. Find a claude binary. Use `claude` from PATH if it is there. If it is not, the Claude
+   desktop app ships one that is deliberately kept off PATH — locate that and use it.
+   Install nothing.
+2. With that binary run: plugin marketplace add backedbydata-co/okrdev
+   then: plugin install okrdev@okrdev
+3. Tell me to restart the session.
+```
+
+- **Nothing is downloaded**, which is what keeps the Quickstart honest against the surface rule
+  above. "Download the desktop app" really is the whole install, and an install path that then
+  curled a second CLI would have said otherwise
+- **The step says *find*, not a path.** The directory is version-numbered and moves on every app
+  update; an agent that searches survives that, a pasted path does not
+- **Where the app keeps it is recorded** in `docs/adoption.md` — verified on macOS against
+  desktop build 2.1.237, with **Windows deliberately not recorded** rather than guessed: the app
+  resolves that location through Electron's per-platform user-data directory, so the layout is
+  expected to differ and has not been checked
+- **`install.sh` still refuses to install anything for you**, and now names the desktop app's
+  binary ahead of the installer. The script is for CI and bare boxes, where there is no app to
+  borrow from, so the installer advice stays — as a better error, not a broader remit
+- **The site's Claude path carries the same block**, since the landing page is where an adopter
+  actually starts. Its code blocks are now click-to-select (`user-select: all`) — CSS, because
+  the page ships no scripts by design and a copy button would have needed one
+- **`/reload-plugins` is gone from the Quickstart**, on the site and in the README. The paste's
+  own last step says to restart the session, and two instructions for one outcome is one too
+  many. It survives in `docs/adoption.md`, where the by-hand install still needs it
+- **The site drops its Codex CLI card.** The directory button already covers the Codex CLI and
+  says so; a third card repeated the same install in a shape the landing page does not need.
+  The install grid is one column now — the two-column subgrid existed only to align two
+  side-by-side code blocks. The hero's second button, which had promised "Claude Code & Codex
+  CLI" and jumped to that section, now reads "Claude Code — one paste". The Codex CLI paste is
+  unchanged in the README
+
+**Not fixed here:** the second unstated prerequisite (#36) and the silent parking-lot fallback
+(#37), both deferred at the W35 check-in pending a decision on whether `gh` is a real
+prerequisite at Level 0 or only for the issue-backed parking lot.
+
+## 0.10.0 — 2026-08-23
+
+**Every KR is a stretch. The `committed` type is gone.**
+
+A committed KR is, by construction, work you already know how to do — the retired wording
+conceded it in as many words: *"all-committed means you're planning only what you already
+know how to do."* That is precisely the work that does not need a goal wrapped around it.
+Payroll runs because payroll runs; scoring it 1.0 at the retro adds ceremony to a certainty
+and spends the scarcest input to planning — attention — on the half of the work that was
+never in doubt.
+
+The argument is not mainly about ceremony. A goal set containing its own certainties lets you
+answer *"how do we hit this?"* with effort, because for part of the set that works. A set of
+nothing but genuine stretches forces the harder question — **what would have to be true?** —
+because no amount of pushing gets you there. Removing the certainties is what makes the few
+real pathways visible.
+
+**Promises did not disappear; they stopped being goals.** Work that must land classifies as
+`maintenance`, or lives in whatever capacity model the DRI keeps outside this framework. A
+floor describes how a person's week is committed, not how the business is doing — the same
+distinction that retired the `non-flagship discretionary hours` health row in 0.9.0.
+
+- `Type:` is removed from the KR block, the cycle template, the planning skill's scaffold and
+  the worked example. Thirteen files referenced the distinction; the two that still say
+  "aspirational" now mean the English word
+- **Confidence carries what the type used to signal to a co-owner.** A live number updated at
+  every check-in beats a binary frozen at planning, when you knew least. The type was already
+  losing this argument: a `committed` KR sitting at 0.5 was a documented smell, and it was the
+  confidence telling the truth
+- **Milestone anchors carry the binary cases and are now enforced rather than encouraged.**
+  Some outcomes are binary in the world — a customer is billed or is not — and that is a
+  property of the metric, not of a promise. `plan` refuses to close on a milestone KR whose
+  1.0 is undefined, because anchors are now the only place a must-land outcome can say so
+- **Sandbag detection's exemption is re-cut on the same axis.** It used to spare committed KRs
+  scoring 1.0; it now spares a KR whose 1.0 anchor was the only passing state. Same cases,
+  stated as a property of the KR rather than of a retired label
+- **Retro reports one list.** Nothing to separate, nothing to average across a boundary that
+  no longer exists. The root-cause note survives, re-anchored: it now fires on a **confidence
+  collapse** — a KR that scored far below what its DRI believed in the final weeks — which is
+  where a broken promise surfaces once no type column announces one
+- `plan` and `rituals` gain the check that replaces the mix check: **goal or certainty?**
+  Anything nobody is genuinely unsure about leaves the set. This is the check that does the
+  most work at planning
+- `retro` gains its mirror: a KR that never dropped below 0.9 and scored 1.0 with no binary
+  anchor was maintenance in a KR costume, named as an input to next planning
+
+**Not in this release: a KR count cap.** The change makes fewer goals more valuable, not
+automatic — a cycle of nine stretches is nine 2x goals in a costume. The cap needs a number,
+and the number wants retro data rather than a guess.
+
+**Live cycles are amended separately**, through the revision protocol, so a cycle scores
+against the rubric it was planned under.
 
 ## 0.9.0 — 2026-08-18
 

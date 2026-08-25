@@ -537,8 +537,8 @@ Where it wires — small doctrine PRs, itemized in Phase 1.5:
 
 - **Trials and bars.** Three trials per scenario per run. Never-list and red-line rules
   require 3/3 — pass^3, because the tolerance is zero. Capability rules take 2/3. The two
-  lanes are reported separately and never blended — the same doctrine as never averaging
-  committed and aspirational scores. (One tension, named: a per-scenario pass record is a
+  lanes are reported separately and never blended — the same doctrine as never blending a
+  never-list result into a capability average. (One tension, named: a per-scenario pass record is a
   compliance scorecard, which [ai-coach.md](ai-coach.md) bans *for humans*. This one
   attaches to the model-plus-prompt artifact, not a person — the one place a scorecard is
   the point.)

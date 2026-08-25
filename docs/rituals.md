@@ -49,7 +49,7 @@ The coach reads, in order:
    stops here until it's fixed. The coach cannot answer "aligned to what?" without it.
 2. **`okrdev/LESSONS.md`** — every prior retro. This is where planning gets its skepticism:
    last cycle's scores, adherence stat, and lessons are the evidence against this cycle's
-   optimism ("last cycle you averaged 0.4 on aspirational KRs; this draft assumes double the
+   optimism ("last cycle you averaged 0.4; this draft assumes double the
    throughput — what changed?").
 3. **The Promoted section of `okrdev/PARKING_LOT.md`** — ideas that survived triage and were
    marked as next-cycle candidates. These earned a hearing; they get one.
@@ -90,10 +90,11 @@ metrics, and suggested DRIs — in the canonical cycle-file format, marked clear
    - **Sandbag check, at the source.** A target barely above the baseline's existing trend gets
      challenged now, not discovered at the retro. Retro-only sandbag detection is too late to
      change anything.
-   - **Type declared.** Each KR is `committed` (expected score 1.0; a miss requires a root-cause
-     note) or `aspirational` (0.7 ≈ success). The coach challenges an all-aspirational cycle —
-     some things, like payroll and uptime, are not stretch goals — and an all-committed one,
-     which usually means nobody's reaching.
+   - **Goal or certainty?** Every KR is a stretch, so anything nobody is genuinely unsure
+     about does not belong in the set. Payroll, uptime, the contract renewing — real work,
+     owed to real people, and none of it a goal. It goes to `maintenance` or to the DRI's own
+     capacity model. This check does the most work at planning: certainties are what crowd out
+     the question the cycle exists to ask.
    - **Milestone KRs get anchors now.** If a KR isn't a metric, define what 0.3, 0.7, and 1.0
      look like during planning — phrased as observable past-tense events ("first paying
      customer migrated"), not implementation states ("backend deployed"). Anchors invented at
@@ -342,19 +343,20 @@ the contested cases.
      what the number feels like.
    - **Milestone KRs:** scored against the 0.3 / 0.7 / 1.0 anchors defined at planning. If the
      anchors are missing, that's this cycle's first lesson.
-   - **Committed and aspirational are reported separately, never averaged together.** A 1.0 on
-     a committed KR and a 0.7 on an aspirational one are both successes; blending them into
-     "0.85" destroys both signals.
-   - **Committed misses get a root-cause note.** Not blame — a sentence on what broke, because
-     a committed KR was a promise and promises that break silently break again.
+   - **Scores are one list.** With one kind of KR there is nothing to keep separate.
+   - **Confidence collapses get a root-cause note.** Any KR that scored far below the
+     confidence it carried into the final weeks earns a sentence on what broke. Not blame —
+     this is where a broken promise surfaces now that no type column announces one, and
+     promises that break silently break again.
    - The coach challenges in both directions. **Inflation:** "0.9 — show me the number." Its
      milestone twin replays the anchors: "0.7 claimed — show the thing in its 0.7 state." The
      anchors written at planning are the demo script, and a non-code KR demos in its own
      medium — the signed contract, the published page, the hire started.
-     **Sandbagging:** an aspirational KR that hit early while confidence sat high and flat from
-     week one gets named as a sandbag candidate — the lesson is about next cycle's targets, not
-     this cycle's score. A committed KR scoring 1.0 is never flagged; committed KRs are
-     *supposed* to score 1.0, and flagging them just teaches people to report 0.93.
+     **Sandbagging:** a KR that hit early while confidence sat high and flat from week one
+     gets named as a sandbag candidate — the lesson is about next cycle's targets, not this
+     cycle's score. A KR whose 1.0 anchor was the only passing state is never flagged; a
+     binary outcome scoring 1.0 is the outcome happening, and flagging it just teaches people
+     to report 0.93.
 2. **Revisions review (10 min).** Walk every `Revised:` block and every `Status: dropped` KR.
    Was each amendment a legitimate response to new information, or a target quietly walking
    toward the actual? Evidence re-class lines from the cycle's Judgment calls get the same
@@ -365,10 +367,10 @@ the contested cases.
    fail because the KRs were wrong — that's a lesson about cadence, and it goes in the file.
 4. **Three lessons (10 min).** Exactly three — fewer means nobody thought, more means nobody
    will read them. Each lesson is a sentence a future planning session can act on ("we can't
-   land more than one committed KR per DRI while doing support rotation"), not a platitude
+   land more than one infrastructure KR per DRI while doing support rotation"), not a platitude
    ("communicate better").
 5. **Write and close (5 min).** The coach appends the dated block to `okrdev/LESSONS.md` —
-   cycle id, scores summary (committed and aspirational separate), the three lessons, the
+   cycle id, the scores summary, the three lessons, the
    adherence stat, the revisions review — and flips the cycle file to `status: scored` via PR.
    Promoted parking-lot items marked `next-cycle candidate` roll forward automatically:
    planning reads them next.

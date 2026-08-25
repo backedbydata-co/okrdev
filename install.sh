@@ -67,7 +67,14 @@ done
 
 command -v git > /dev/null 2>&1 || die "git is required and was not found on PATH"
 command -v claude > /dev/null 2>&1 ||
-  die "the claude CLI is not on PATH — install Claude Code first (https://claude.com/claude-code), or use okrdev without it: README.md, \"Neither agent?\""
+  die "the claude CLI is not on PATH.
+  Installing the Claude desktop app does not put the CLI on PATH — but it does ship one.
+  Put that binary's directory on PATH and re-run: docs/adoption.md, \"The CLI the desktop
+  app already ships\".
+  With no desktop app (CI, a bare box), install one and re-run this script:
+    curl -fsSL https://claude.ai/install.sh | bash
+    export PATH=\"\$HOME/.local/bin:\$PATH\"
+  Or use okrdev without either: README.md, \"Neither agent?\""
 
 config_dir=${CLAUDE_CONFIG_DIR:-$HOME/.claude}
 plugins_dir=$config_dir/plugins

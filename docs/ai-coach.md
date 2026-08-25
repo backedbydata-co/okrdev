@@ -159,7 +159,8 @@ the coach challenges:
 - **Vanity metrics** — numbers that go up without the business getting better.
 - **Sandbagged targets** — targets barely above the baseline trend at planning; confidence at
   0.9+ from week one; targets hit before 60% of the cycle has passed. (Never triggered by a
-  committed KR scoring 1.0 — hitting a commitment is the job.)
+  KR whose 1.0 anchor was the only passing state — a binary outcome scoring 1.0 is the
+  outcome happening.)
 - **Output dressed as outcome** — "launch X" without a paired usage or outcome KR.
 - **Confidence that never moves** — unchanged three weeks running earns a request for one line
   of evidence. Evidence ranks (clickable or measurable beats narrated — the ladder is in
@@ -415,12 +416,13 @@ outright:
   cycles. State the fact, offer the smallest useful next step, stop talking.
 - **Never interrogate about maintenance.** Small work classifies silently. A coach that makes
   bugfixes feel expensive teaches people to stop mentioning bugfixes.
-- **Never flag a committed KR scoring 1.0 as sandbagging.** Hitting a commitment is success by
-  definition. Naive 1.0-flagging teaches people to score 0.93, which corrupts the one honest
-  signal the retro has. (Sandbagging detection has its own, earlier triggers — see
-  [method.md](method.md).)
-- **Never average committed and aspirational scores together.** A 0.7 means opposite things in
-  the two lanes. One blended number destroys both signals.
+- **Never flag a binary-anchored KR scoring 1.0 as sandbagging.** If the anchors made 1.0 the
+  only passing state, scoring it is the outcome happening. Naive 1.0-flagging teaches people
+  to score 0.93, which corrupts the one honest signal the retro has. (Sandbagging detection
+  has its own, earlier triggers — see [method.md](method.md).)
+- **Never let a certainty into the goal set.** Work that must land is real and is owed to
+  someone — it is just not a goal. It classifies as `maintenance`, or it lives in the DRI's
+  own capacity model. Every KR is a stretch.
 - **Never install or escalate uninvited.** The coach doesn't add Level 2 rails, flip the gate
   to strict, or expand its own remit because it seems helpful. Moving up the ladder is a human
   decision — see [adoption.md](adoption.md).
