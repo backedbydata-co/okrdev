@@ -165,6 +165,36 @@ What it asserts, grown from verified contracts:
   the broken version; the happy path, which does need a stub `gh` on PATH, waits for
   Phase 1. `shellcheck` and `actionlint` over `templates/stack/` and
   `templates/github/workflows/`.
+- **The partition check — and the honest size of what it covers.** `check_ledger_partition`
+  asserts the structural half of [evidence.md](evidence.md#the-partition): the ledger names no
+  path outside this repo, and no public-bound file carries an issue or pull-request reference
+  into a repo outside a citation allowlist seeded from the plugin manifest. An allowlist, never
+  a denylist — the repos you may *name* are public by construction, so the list is safe in a
+  public repo, which is the constraint that sank every version of the obvious design. Assert one
+  landed red on a live leak in the active cycle file; assert two was green on arrival and is
+  mutation-tested rather than assumed, per the rule two paragraphs down — seventeen mutations,
+  nine that must fire, seven that must stay quiet, and one that empties the ledger to prove the
+  scan cannot pass having walked nothing. Each corpus carries its own floor: a shared count over
+  the wider corpus let an emptied ledger ride on `docs/` still being there, which is coverage by
+  arithmetic coincidence rather than by design. **The mutation that earned its keep**
+  killed the first draft: the allowlist matched as a substring, so a private repo whose name
+  merely *begins* with this one's was silently permitted in both spellings. That is not a
+  hypothetical repo — this repo's own pull-request history was split into exactly such a
+  sibling, which makes it the most likely foreign reference the ledger will ever carry, and the
+  substring filter failed open on it precisely at the moment somebody qualified an ambiguous
+  bare number in order to fix it. The allowlist now matches whole slugs. The seven that must
+  stay quiet are the cry-wolf floor: a home path in a runbook under `docs/`, a markdown anchor
+  ending in digits, ordinary prose slashes, a bare hash-number, and this repo's own references
+  in either shape. **One narrowing was proposed and rejected on a mutation**: restricting the
+  path shape to home paths beginning with a capital would have dropped seven false positives
+  that do not exist — every one of them lives under `docs/`, which this half never scans — while
+  letting a lowercase project directory through. A narrowing that buys nothing and costs a real
+  catch is how a check quietly stops catching things. **State the gap in the same breath as the green line:** the 2026-08-20 entry
+  that motivated the whole rule would still pass. Two of its three disclosures were lowercase
+  prose with no token to grep, and the third was a bare hash-number indistinguishable from the
+  dozens the ledger legitimately carries. The check is a floor under the one failure mode that
+  is both patterned and unfixable after the fact — not a verdict on the rule, which is held by
+  people and by the swap test.
 - **Referential checks.** Every `/okrdev:<skill>` mention in `docs/`, `skills/`,
   `templates/`, and `README.md` resolves to `skills/<name>/SKILL.md` — with an explicit,
   reasoned exemption list, because two unresolvable names are *correct* today:
@@ -392,6 +422,12 @@ the assert fail, put it back. An assert nobody has ever seen fail is a guess.
 | During a red-first fix | The new scenario + neighbor belt, manually | the fix's definition of done |
 | At the retro | The cycle's accumulated weekly summaries, read — not a fresh run | retro input |
 | On a model bump | Full replay + rebaseline, logged in that week's check-in | baselines never silently carry across models |
+
+The partition check gets no row of its own, and that absence is the point: it has no
+skippable half and no local-only input, so it runs identically on a laptop and on CI. Every
+design that would have given it a row — a terms file only one machine has, a hashed list, an
+environment variable — bought coverage by making a required `check` status go green while
+scanning nothing, which advertises a guarantee it does not have.
 
 **The loop is local; CI is the witness.** The whole of Layer D runs in about a
 second and a half on a laptop, with no network and no secrets, which is the entire
@@ -705,6 +741,7 @@ The single map — every rule fragment above, its attachment point, and nothing 
 | Weekly scenario run | The check-in's existing health-metrics step (~60 seconds: one line from one issue); the coach's existing issue/PR bridge surfaces the failure issue |
 | Adopter prescription | The stack module and Level 2 rails, via Phase 1.5's doctrine PRs — the same opt-in gates as every stack opinion, with the one level-agnostic conduct line gated in its own prose |
 | Retro | Reads the cycle's accumulated weekly summaries — no fresh run |
+| The partition's structural half | `check_ledger_partition`, reached through `tests/hooks/pre-push` before CI ever sees the push — the one rule here where a reviewer catching it has already lost |
 | Suite growth | KR1.3's definition of a countable fix (Loop B, red-first) |
 
 ---

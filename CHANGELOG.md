@@ -5,6 +5,40 @@ records the version it installed as the `okrdev_version` marker in its
 `okrdev/config.md` — marker semantics are in docs/adoption.md. Pre-1.0:
 minor bumps may change doctrine, not just add to it.
 
+## 0.10.3 — 2026-08-25
+
+**The structural half of the partition rule now has a check under it.** Closes part two of #24.
+
+0.10.2 wrote the rule down; `check_ledger_partition` asserts the half a machine can see. The
+ledger names no path outside this repo, and no public-bound file carries an issue or
+pull-request reference into a repo outside a citation allowlist seeded from the plugin manifest.
+
+- **An allowlist, never a denylist.** The repos you may *name* are public by construction, so
+  the list is safe to keep in a public repo — the constraint that sank every version of the
+  obvious design, since a denylist of private repos is itself the disclosure
+- **Assert one landed red on a live leak**, not on a fixture: the active cycle file's KR1.2 note
+  named a directory on the DRI's machine. Red-first, per `docs/testing.md`
+- **Seventeen mutations** — nine that must fire, seven that must stay quiet, and one that empties
+  the ledger to prove the scan cannot pass having walked nothing. Each corpus carries its own
+  floor, because a shared count let an emptied ledger ride on `docs/` still being there: coverage
+  by arithmetic coincidence rather than by design
+- **The mutation that earned its keep** killed the first draft. The allowlist matched as a
+  substring, so a private repo whose name merely *begins* with this one's was silently permitted.
+  Not hypothetical: this repo's own pull-request history was split into exactly such a sibling,
+  which makes it the most likely foreign reference the ledger will ever carry. Whole slugs now
+- **One narrowing was proposed and refused, on a mutation.** Restricting the path shape to home
+  paths beginning with a capital would have dropped seven false positives that do not exist —
+  every one lives under `docs/`, which this half never scans — while letting a lowercase project
+  directory through. A narrowing that buys nothing and costs a real catch is how a check quietly
+  stops catching things
+
+**The gap, stated in the same breath as the green line: the 2026-08-20 entry that motivated the
+whole rule would still pass.** Two of its three disclosures were lowercase prose with no token to
+grep, and the third was a bare hash-number indistinguishable from the dozens the ledger
+legitimately carries. This is a floor under the one failure mode that is both patterned and
+unfixable after the fact — not a verdict on the rule, which is held by people and by the swap
+test.
+
 ## 0.10.2 — 2026-08-25
 
 **The partition rule was cited three times in the live ledger and written down nowhere.** It

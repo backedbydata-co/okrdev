@@ -1252,6 +1252,124 @@ check_threshold_tokens() {
   return $status
 }
 
+# chafe: on 2026-08-20 a coach-drafted check-in entry named another business's
+# cost unit, its pricing model and a pull-request number in that business's
+# PRIVATE repo, into this public repo. A human caught it in review, which is the
+# only thing that caught it — and on a public repo review has already lost: by
+# then it is pushed, the commits stay fetchable by SHA after any rewrite, and
+# the closed PR lists them in its Commits tab until a support ticket removes
+# them. Parked as issue #24, promoted to KR1.3 at the W34 triage. The live red
+# this landed on: the active cycle file named a directory on the DRI's own
+# machine, telling a public reader his other businesses sit as siblings under
+# one named path. The rule is docs/evidence.md § The partition.
+#
+# This asserts the rule's STRUCTURAL half only, and it would NOT have caught the
+# 2026-08-20 entry: two of those three items were lowercase prose with no token
+# to grep, and the third was a bare #N, byte-identical to the ~97 legitimate
+# ones already in the ledger. That is written here, in docs/testing.md and in
+# the doctrine itself on purpose — a green line read as "the partition is
+# enforced" would make the human half of the rule less careful about the half no
+# grep can see, which is worse than no check at all.
+#
+# Assert 1 landed red on the live leak. Assert 2 was green on arrival, so it is
+# mutation-tested rather than assumed, per docs/testing.md: seventeen mutations,
+# nine that must fire, seven that must stay quiet and one that empties the ledger,
+# listed in that file. The one worth naming here is the one that failed the first
+# draft — a substring allowlist let `<slug>-archive` and `<slug>-private` straight
+# through, and this repo's own history was split into exactly such a sibling.
+check_ledger_partition() {
+  # The ledger is what the coach drafts weekly out of a working context holding
+  # more than one business, and it is the one corpus with no reason to name a
+  # path. docs/ is deliberately absent from this half: every `~/` there is a
+  # runbook instruction about the READER's machine, so a prefix allowlist would
+  # need extending on a correct document every few commits. Keeping docs/ out is
+  # also why the Zoom transcript path in live-coached-sessions.md and the three
+  # in adoption.md need no exemption — they are never scanned.
+  local ledger=(okrdev)
+  # The cross-reference half has no such pressure, so it runs over everything
+  # public-bound that gets written out of working context. examples/ is declared
+  # fiction, templates/ lands in adopter repos where another repo's number would
+  # be the adopter's own business, site/ is marketing copy.
+  local public=(okrdev docs README.md CHANGELOG.md)
+  local status=0 scanned walked hits slug filter
+
+  # A scan that finds nothing passes vacuously — the same trap check_payload and
+  # check_chafe_comments both guard. EACH corpus gets its own floor, because the
+  # two asserts walk different trees: a shared count over the wider corpus would
+  # have let an emptied ledger ride on docs/ still being there, and covering a
+  # vacuous pass by arithmetic coincidence is not covering it.
+  walked=$(find "${ledger[@]}" -type f 2> /dev/null | wc -l | tr -d ' ')
+  if [ "$walked" -lt 5 ]; then
+    bad "ledger partition: walked $walked ledger files — the scan itself is broken"
+    return 1
+  fi
+  scanned=$(find "${public[@]}" -type f 2> /dev/null | wc -l | tr -d ' ')
+  if [ "$scanned" -lt 20 ]; then
+    bad "ledger partition: walked $scanned public-bound files — the scan itself is broken"
+    return 1
+  fi
+
+  # (1) Paths that locate a filesystem outside this repo. A home-relative path
+  # names a machine and usually names a business with it. `/` is excluded from
+  # the leading class so a URL host or a repo-relative segment cannot match.
+  hits=$(grep -rnoE '(^|[^A-Za-z0-9_./-])(~|/Users|/home|/Volumes)/[A-Za-z0-9._-]+' \
+    "${ledger[@]}" 2> /dev/null)
+  if [ -z "$hits" ]; then
+    ok "ledger paths: $walked ledger files, none naming a path outside this repo"
+  else
+    bad "ledger paths: the ledger names a path on somebody's machine"
+    printf '%s\n' "$hits" | sed 's/^/        /'
+    printf '        %s\n' 'fix: name what the thing is, not where it sits on disk'
+    status=1
+  fi
+
+  # The slug is read, not hardcoded a fourth time beside install.sh, the
+  # headless-install check and okrdev/config.md — a fourth copy is the drift
+  # liability check_kr_grammar and check_coach_block exist to prevent.
+  # check_plugin_manifests already requires this field, so an empty read is a
+  # broken manifest rather than a missing optional tool: there is no cadence
+  # where it would legitimately be absent, so it fails rather than skips.
+  slug=$(jq -r '.repository // empty' .claude-plugin/plugin.json 2> /dev/null | sed 's|.*github\.com/||')
+  if [ -z "$slug" ]; then
+    bad "citation allowlist: .claude-plugin/plugin.json names no repository — the allowlist cannot be built"
+    return 1
+  fi
+  # Public repos the ledger may cite by number. An ALLOWLIST, never a denylist:
+  # the repos you MAY name are public by construction, so the list is safe in a
+  # public repo — which is the constraint issue #24 said might sink the naive
+  # version. Extend the array to add one; that it costs a reviewed diff is the
+  # friction you want at the moment somebody writes a foreign number down.
+  local cite=("$slug")
+  # Matched on WHOLE slugs, never as a substring. A substring filter allows
+  # `<slug>-archive` and `<slug>-private` through silently, and this repo's own
+  # PR history was split into exactly such a repo — so the most likely foreign
+  # number this ledger will ever carry is the one a substring filter fails open
+  # on, in both spellings, and precisely at the moment somebody qualifies an
+  # ambiguous bare number to remediate it. The left boundary admits `/` so the
+  # URL spelling passes; the right boundary is what the reference itself must
+  # start with, so a longer repo name cannot borrow this one's prefix.
+  filter=$(printf '%s|' "${cite[@]}" | sed 's/|$//; s/\./\\./g')
+  filter="(^|[^A-Za-z0-9_.-])($filter)(#|/(issues|pull|discussions)/)"
+  # (2) Issue/PR references into a repo outside the allowlist, in both shapes:
+  # the owner-qualified shorthand and the full URL. Bare `#N` is deliberately
+  # absent — see the DO_NOT_FREEZE entry. Two tightenings testing forced rather
+  # than reasoning: `/` is excluded from the leading class so a third path
+  # segment disqualifies a match, and `.` is forbidden in the repo half so a
+  # filename cannot pose as a repo name. Both are markdown anchors, not
+  # references, and both fired before the tightenings went in.
+  hits=$(grep -rnoE "(github\.com/[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+/(issues|pull|discussions)/[0-9]+|(^|[^A-Za-z0-9_./-])[A-Za-z0-9_.-]{2,}/[A-Za-z0-9_-]{2,}#[0-9]+)" \
+    "${public[@]}" 2> /dev/null | grep -vE -- "$filter")
+  if [ -z "$hits" ]; then
+    ok "citation allowlist: $scanned files scanned for issue/PR references; every one is ${cite[*]} — shape only, prose is not checked"
+  else
+    bad "citation allowlist: a reference into a repo outside it"
+    printf '%s\n' "$hits" | sed 's/^/        /'
+    printf '        %s\n' 'fix: cite this repo, or add the PUBLIC repo to the allowlist above'
+    status=1
+  fi
+  return $status
+}
+
 # chafe: check_gate_js_syntax used `mktemp --suffix=.js`, which is GNU-only. On
 # macOS mktemp errors, $tmp is empty, the redirect fails, and `node --check ""`
 # exits 0 — so the check printed "ok" having parsed nothing, on every laptop in
@@ -1303,6 +1421,14 @@ DO_NOT_FREEZE=(
   "the emergency ceiling's numeral: 'two' and '2' both live|docs/method.md|more than two a cycle"
   "the flat-confidence window's numeral: 'three' and '3' both live|docs/method.md|three check-ins"
   "4 box-hours means three different things|okrdev/config.md|side_quest_box_hours_per_week"
+  # Bare `#N` is deliberately not asserted. The ledger carries dozens, and the
+  # ones written before 2026-08-08 resolve against the private archive this
+  # repo's PR history was split out of — byte-identical to the ones that resolve
+  # here. A held check-in is a record, not a live document, so the rule could
+  # never be turned green without rewriting one, and rewriting one is the thing
+  # the ledger exists to make impossible. This entry fails if somebody does it
+  # anyway, which is the moment the decision deserves a human.
+  "bare #N in held check-ins may resolve outside this repo|okrdev/checkins/2026-Q3/2026-W32.md|install.sh + README/adoption docs merged (#18)"
 )
 
 # chafe: this suite's other admission rule. A do-not-freeze list written as a
@@ -1347,6 +1473,7 @@ check_footprint_manifest
 check_adoption_install_list
 check_version_sync
 check_dogfood_current
+check_ledger_partition
 check_glossary_promise
 check_threshold_tokens
 check_local_loop
