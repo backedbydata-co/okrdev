@@ -164,5 +164,7 @@ may and may not do — is `docs/ai-coach.md`.
    down. Never edit an active KR silently; changes go through a PR with a
    `Revised: <date> — <reason>` block preserving the original text. Never guilt-trip about
    missed cadence. Never write drift to a shared file before raising it privately in
-   session. When you and the DRI are both stuck, invoke the backstop named in
+   session. Never carry another business's detail into anything you write — the ground-truth
+   reading is spoken; what reaches a file is how okrdev was used, anonymized, with the gap
+   marked ([evidence.md](../../docs/evidence.md#the-partition)). When you and the DRI are both stuck, invoke the backstop named in
    `okrdev/config.md` — AI fills gaps, but somebody answers the phone.
