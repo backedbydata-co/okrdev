@@ -5,50 +5,83 @@ records the version it installed as the `okrdev_version` marker in its
 `okrdev/config.md` — marker semantics are in docs/adoption.md. Pre-1.0:
 minor bumps may change doctrine, not just add to it.
 
-## Unreleased
+## 0.10.1 — 2026-08-25
 
-## 0.10.1 — 2026-08-24
+**Supported surfaces are a rule now, not a list: a code session with a git repo.**
 
-**The one paste now installs the CLI it always assumed you had.** Closes #34.
+`docs/dri-onboarding.md` had offered a new DRI three surfaces since 0.1.0 — claude.ai in the
+browser, Claude Cowork, Claude Code — on the stated grounds that all three "can read and write
+the repo." `skills/install/SKILL.md` meanwhile refuses to proceed outside a git repo and offers
+`git init` instead. Both shipped to main and sat there six weeks, against a cross-file
+coherence red line of one.
 
-`README.md` said *"You do not have to open a terminal"* directly above a line that runs
-`claude` as a shell command. That sentence is true about the **user** and false about the
-**machine**: installing the Claude desktop app does not put the `claude` CLI on your PATH, and
-nothing here said so. The first non-author install lost about thirty minutes to it — roughly
-30 of its 37 minutes went on prerequisites, not on okrdev.
+The rule that resolves it is narrower than any list of products and outlives them: **a surface
+qualifies when it can read and write a working tree, run `git`, and invoke the skills.** Today
+that is Claude Code and Codex. It is a test to apply, not a roster to maintain.
 
-The Claude paste is now three lines instead of one, in a fenced block you can copy whole:
+**The line is code session vs. chat session, not desktop vs. terminal.** README.md already
+draws that distinction — *"You do not have to open a terminal"* — and the onboarding guide
+never got it, which is how the browser and Cowork ended up on its list in the first place. A
+Claude Code session has a shell and a working copy whether it runs in the desktop app or a
+terminal, and the desktop app is what a non-technical DRI should download.
+
+- New canonical section — `docs/adoption.md` → **Supported surfaces** — which the other docs
+  cite instead of restating
+- Step 2 of the onboarding guide leads with Claude Code in the desktop app, and lists the
+  terminal as the same thing for people already there rather than as the price of entry
+- That guide's prerequisites and hour budget describe an app download, not a browser
+- The non-code-business path stops pointing at "whatever Claude surface you use"
+- **The README Quickstart leads with Claude Code and the desktop app.** It had called okrdev
+  "a plugin for ChatGPT and Codex" — naming a chat product as a host, which is the exact
+  ambiguity this rule exists to kill — and put the ChatGPT directory button ahead of the
+  surface okrdev actually recommends. The button stays, labelled as the Codex route, with the
+  listing distinguished from the session: a directory is where a plugin is listed, not a place
+  you run it
+- **The same shape on both agents.** The desktop app is the recommended path for Claude Code
+  and for Codex alike; each terminal CLI is described as the same session for people already
+  living there, rather than as the default or the price of entry
+
+**Cowork is the subtle exclusion, because it is the same application.** The desktop app's two
+modes share one plugin store, so a plugin installed on your account can have its skills appear
+in Cowork whether or not it works there. "The skills loaded" is not "the install works," and
+okrdev makes no promise about the gap.
+
+**The one paste no longer assumes a `claude` CLI you might not have.** Closes #34.
+
+`README.md` said *"You do not have to open a terminal"* directly above a line that runs `claude`
+as a shell command. That is true of the **user** and false of the **machine**: installing the
+Claude desktop app does not put the `claude` CLI on your PATH, and nothing here said so. The
+first non-author install lost about thirty minutes to it — roughly 30 of its 37 minutes went on
+prerequisites rather than on okrdev.
+
+**The fix is to find a binary, not to install one.** The desktop app does ship a `claude`
+binary; it simply keeps it off PATH. So a terminal user already has one on PATH, a desktop-app
+user already has one on disk, and between them there is no case left that needs a download:
 
 ```
-Set up okrdev for me — run these three, in order:
-command -v claude >/dev/null 2>&1 || curl -fsSL https://claude.ai/install.sh | bash
-export PATH="$HOME/.local/bin:$PATH"
-claude plugin marketplace add backedbydata-co/okrdev && claude plugin install okrdev@okrdev
+Set up okrdev for me, in this order:
+1. Find a claude binary. Use `claude` from PATH if it is there. If it is not, the Claude
+   desktop app ships one that is deliberately kept off PATH — locate that and use it.
+   Install nothing.
+2. With that binary run: plugin marketplace add backedbydata-co/okrdev
+   then: plugin install okrdev@okrdev
+3. Tell me to restart the session.
 ```
 
-- **Line 1 installs Anthropic's CLI only if `claude` is missing** — a no-op otherwise, so the
-  block stays safe to re-run for people who already have it
-- **Line 2 is the one that is easy to leave out and fatal to leave out.** The installer appends
-  `~/.local/bin` to your shell profile, which only affects *new* shells; without this line the
-  very next command still fails with `command not found`, which reads as a broken installer
-- **A Windows PowerShell variant** sits beside it with the same three steps
-- **The README now says what each line does.** A block you paste unread is a block you cannot
-  debug, and the failure this fixes was invisible precisely because the one-liner looked atomic
-- **A fenced block, not a blockquote** — it gets a copy button on GitHub and the site, which is
-  the difference between copying the command and copying the command plus the `>` in front of it
-
-**`install.sh` still refuses to install anything for you, and now tells you exactly what to
-run.** A script that silently installs a second tool is a surprise; the fix is a better error,
-not a broader remit. It exits 1 as before — the test that pins that behaviour is unchanged —
-and the message now carries both commands and the sentence that would have saved the thirty
-minutes: *installing the Claude desktop app does not put the CLI on PATH.*
-
-**The site's Claude install path carries the same three lines**, since the landing page is where
-an adopter actually starts.
-
-**Verified rather than assumed:** the `||` short-circuit skips the installer when `claude` is
-present, the fallback branch fires when it is absent, the PATH line is idempotent, and
-`install.sh` exits 1 with the new message when `claude` is off PATH.
+- **Nothing is downloaded**, which is what keeps the Quickstart honest against the surface rule
+  above. "Download the desktop app" really is the whole install, and an install path that then
+  curled a second CLI would have said otherwise
+- **The step says *find*, not a path.** The directory is version-numbered and moves on every app
+  update; an agent that searches survives that, a pasted path does not
+- **Where the app keeps it is recorded** in `docs/adoption.md` — verified on macOS against
+  desktop build 2.1.237, with **Windows deliberately not recorded** rather than guessed: the app
+  resolves that location through Electron's per-platform user-data directory, so the layout is
+  expected to differ and has not been checked
+- **`install.sh` still refuses to install anything for you**, and now names the desktop app's
+  binary ahead of the installer. The script is for CI and bare boxes, where there is no app to
+  borrow from, so the installer advice stays — as a better error, not a broader remit
+- **The site's Claude path carries the same block**, since the landing page is where an adopter
+  actually starts
 
 **Not fixed here:** the second unstated prerequisite (#36) and the silent parking-lot fallback
 (#37), both deferred at the W35 check-in pending a decision on whether `gh` is a real

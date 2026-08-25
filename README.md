@@ -45,60 +45,55 @@ Details in [docs/adoption.md](docs/adoption.md).
 
 ## Quickstart
 
-okrdev is a plugin for [ChatGPT and Codex](https://developers.openai.com/codex) and for
-[Claude Code](https://claude.com/claude-code), plus a set of documents. One install, either
-agent — see [docs/codex.md](docs/codex.md) for what differs.
+okrdev is a plugin for [Claude Code](https://claude.com/claude-code) and for
+[Codex](https://developers.openai.com/codex), plus a set of documents. One install, either
+agent — see [docs/codex.md](docs/codex.md) for what differs, and
+[Supported surfaces](docs/adoption.md#supported-surfaces) for why it is those two and not a
+chat window. okrdev ships as skills only: no MCP server to authorize, no account, no keys.
 
-**The shortest path is a button.** okrdev is listed in the ChatGPT plugin directory, so there is
-no marketplace command to run and nothing to copy:
-
-> **[Install okrdev from the plugin directory →](https://chatgpt.com/plugins/plugins_6a7a2f9e3968819187e30eaee8da1435)**
-
-Press **Install plugin**, then in your project type `@okrdev` and ask it to
-`install okrdev in this repo`. That is the whole install — okrdev ships as skills only, so there
-is no MCP server to authorize, no account, and no keys.
-
-In **Claude Code**, it's one paste — and it installs the CLI too, if you don't already have
-one. Copy the whole block into any Claude Code session, the desktop app (Mac/Windows) included:
+**In Claude Code, it's one paste.** If you are not already a terminal person, download the
+Claude desktop app (Mac/Windows), open your project folder, and paste this into the chat:
 
 ```
-Set up okrdev for me — run these three, in order:
-command -v claude >/dev/null 2>&1 || curl -fsSL https://claude.ai/install.sh | bash
-export PATH="$HOME/.local/bin:$PATH"
-claude plugin marketplace add backedbydata-co/okrdev && claude plugin install okrdev@okrdev
+Set up okrdev for me, in this order:
+1. Find a claude binary. Use `claude` from PATH if it is there. If it is not, the Claude
+   desktop app ships one that is deliberately kept off PATH — locate that and use it.
+   Install nothing.
+2. With that binary run: plugin marketplace add backedbydata-co/okrdev
+   then: plugin install okrdev@okrdev
+3. Tell me to restart the session.
 ```
 
-On **Windows PowerShell**, same three steps:
+**Why step 1 is worded that way:** installing the Claude desktop app does not put the `claude`
+CLI on your PATH — but it *does* put one on your machine. A first non-author install lost about
+thirty minutes to the first half of that sentence, with nothing anywhere saying the second
+half; roughly 30 of its 37 minutes went on prerequisites rather than on okrdev.
 
-```
-Set up okrdev for me — run these three, in order:
-if (-not (Get-Command claude -ErrorAction SilentlyContinue)) { irm https://claude.ai/install.ps1 | iex }
-$env:Path = "$env:USERPROFILE\.local\bin;$env:Path"
-claude plugin marketplace add backedbydata-co/okrdev; claude plugin install okrdev@okrdev
-```
+**Nothing is downloaded here.** A terminal user already has `claude` on PATH; a desktop-app user
+already has one on disk. Between them there is no case that needs an install, which is why the
+step says *find* rather than *install*. Where the desktop app keeps it is recorded in
+[docs/adoption.md](docs/adoption.md#the-cli-the-desktop-app-already-ships).
 
-What each line does, because a block you paste unread is a block you can't debug:
-
-1. **Installs the Claude CLI, only if it's missing** — Anthropic's own installer, skipped
-   entirely if `claude` is already on PATH.
-2. **Puts it on PATH for this shell.** The installer adds `~/.local/bin` to your shell profile,
-   which only takes effect in *new* shells; this line makes the very next command work.
-3. **Registers the marketplace and installs okrdev.**
-
-**Why line 1 exists, and it is the whole reason this block is three lines instead of one:**
-installing the Claude **desktop app** does not put the `claude` CLI on your PATH. A first
-non-author install lost about thirty minutes to exactly that, in a session where the docs said
-*"you do not have to open a terminal"* — true of the person, false of the machine.
-
-**You still don't have to open a terminal**, and the block is safe to re-run: every line is a
-no-op if its work is already done. The distinction that matters is *code session*, not
-*desktop*: a Claude **chat** session has no shell and cannot run this. A Claude **Code** session
-can, wherever it runs.
+**You do not have to open a terminal**, and the block is safe to re-run: both plugin commands
+are idempotent and say so rather than erroring if okrdev is already there. The distinction that
+matters is *code session*, not *desktop*: a Claude **chat** session has no shell and cannot run
+this. A Claude **Code** session can, wherever it runs.
 
 Then **`/reload-plugins`** — or just open a new session, which loads it automatically — and
 okrdev is available in every Claude Code session on that machine.
 
-The **Codex CLI** takes the same shape — hand it to a Codex session, or run it in a shell:
+**On Codex, the shortest path is a button.** okrdev is listed in the ChatGPT plugin directory,
+so there is no marketplace command to run and nothing to copy:
+
+> **[Install okrdev from the plugin directory →](https://chatgpt.com/plugins/plugins_6a7a2f9e3968819187e30eaee8da1435)**
+
+Press **Install plugin**, then open your project in the Codex desktop app, type `@okrdev` and
+ask it to `install okrdev in this repo`. As with Claude, the app is the path to take. And the
+directory is only where the plugin is *listed*, not a place you run it: the session still has to
+be a Codex session with your repo, not a ChatGPT chat.
+
+**The Codex CLI is the same thing for people already in a terminal** — hand it the same prompt,
+or run the commands in a shell:
 
 > Install the okrdev plugin for me:
 > `codex plugin marketplace add backedbydata-co/okrdev && codex plugin add okrdev@okrdev`
@@ -106,8 +101,7 @@ The **Codex CLI** takes the same shape — hand it to a Codex session, or run it
 <details>
 <summary>Both pastes, unchained</summary>
 
-The Claude paste is the CLI check, a PATH line, and the two plugin commands joined with `&&`.
-If you already have the CLI and a PATH that includes it, only the last two matter:
+Each paste is exactly its two commands joined with `&&`:
 
 ```bash
 claude plugin marketplace add backedbydata-co/okrdev
