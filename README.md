@@ -45,21 +45,15 @@ Details in [docs/adoption.md](docs/adoption.md).
 
 ## Quickstart
 
-okrdev is a plugin for [ChatGPT and Codex](https://developers.openai.com/codex) and for
-[Claude Code](https://claude.com/claude-code), plus a set of documents. One install, either
-agent — see [docs/codex.md](docs/codex.md) for what differs.
+okrdev is a plugin for [Claude Code](https://claude.com/claude-code) and for
+[Codex](https://developers.openai.com/codex), plus a set of documents. One install, either
+agent — see [docs/codex.md](docs/codex.md) for what differs, and
+[Supported surfaces](docs/adoption.md#supported-surfaces) for why it is those two and not a
+chat window. okrdev ships as skills only: no MCP server to authorize, no account, no keys.
 
-**The shortest path is a button.** okrdev is listed in the ChatGPT plugin directory, so there is
-no marketplace command to run and nothing to copy:
-
-> **[Install okrdev from the plugin directory →](https://chatgpt.com/plugins/plugins_6a7a2f9e3968819187e30eaee8da1435)**
-
-Press **Install plugin**, then in your project type `@okrdev` and ask it to
-`install okrdev in this repo`. That is the whole install — okrdev ships as skills only, so there
-is no MCP server to authorize, no account, and no keys.
-
-In **Claude Code**, it's one paste. Drop this into any Claude Code session — the desktop app
-(Mac/Windows) included — and Claude runs it for you:
+**In Claude Code, it's one paste.** If you are not already a terminal person, download the
+Claude desktop app (Mac/Windows), open your project folder, and drop this into the chat —
+Claude runs it for you:
 
 > Install the okrdev plugin for me:
 > `claude plugin marketplace add backedbydata-co/okrdev && claude plugin install okrdev@okrdev`
@@ -73,6 +67,15 @@ shell and cannot run this. A Claude **Code** session can, wherever it runs.
 
 Then **`/reload-plugins`** — or just open a new session, which loads it automatically — and
 okrdev is available in every Claude Code session on that machine.
+
+**On Codex, the shortest path is a button.** okrdev is listed in the ChatGPT plugin directory,
+so there is no marketplace command to run and nothing to copy:
+
+> **[Install okrdev from the plugin directory →](https://chatgpt.com/plugins/plugins_6a7a2f9e3968819187e30eaee8da1435)**
+
+Press **Install plugin**, then in your project type `@okrdev` and ask it to
+`install okrdev in this repo`. The directory is only where the plugin is *listed* — the session
+you then use it in still has to be a Codex session with your repo, not a ChatGPT chat.
 
 The **Codex CLI** takes the same shape — hand it to a Codex session, or run it in a shell:
 
