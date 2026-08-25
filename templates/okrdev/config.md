@@ -1,5 +1,5 @@
 ---
-okrdev_version: 0.10.0         # used by upgrade and uninstall — don't edit by hand
+okrdev_version: 0.10.1         # used by upgrade and uninstall — don't edit by hand
 level: 0                      # 0 parking lot | 1 method | 2 collab rails
 cycle_length: quarterly       # quarterly | six-week
 checkin_cadence: weekly

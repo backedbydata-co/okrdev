@@ -486,9 +486,11 @@
           <p class="tag">One paste</p>
           <h3>Claude Code</h3>
           <p>Hand it to any Claude Code session — the desktop app counts — and it runs for
-             you. A terminal works just as well.</p>
+             you. Installs the CLI too if you don't have one. A terminal works just as well.</p>
           <div class="act">
-<pre class="code"><span class="c">Install the okrdev plugin for me:</span><span class="k">claude</span> plugin marketplace add backedbydata-co/okrdev &amp;&amp; <span class="k">claude</span> plugin install okrdev@okrdev</pre>
+<pre class="code"><span class="c">Set up okrdev for me — run these three, in order:</span>command -v <span class="k">claude</span> &gt;/dev/null 2&gt;&amp;1 || curl -fsSL https://claude.ai/install.sh | bash
+export PATH=<span class="k">"$HOME/.local/bin:$PATH"</span>
+<span class="k">claude</span> plugin marketplace add backedbydata-co/okrdev &amp;&amp; <span class="k">claude</span> plugin install okrdev@okrdev</pre>
             <p class="then">Then <code>/reload-plugins</code> → <code>/okrdev:install</code></p>
           </div>
         </div>

@@ -7,6 +7,53 @@ minor bumps may change doctrine, not just add to it.
 
 ## Unreleased
 
+## 0.10.1 — 2026-08-24
+
+**The one paste now installs the CLI it always assumed you had.** Closes #34.
+
+`README.md` said *"You do not have to open a terminal"* directly above a line that runs
+`claude` as a shell command. That sentence is true about the **user** and false about the
+**machine**: installing the Claude desktop app does not put the `claude` CLI on your PATH, and
+nothing here said so. The first non-author install lost about thirty minutes to it — roughly
+30 of its 37 minutes went on prerequisites, not on okrdev.
+
+The Claude paste is now three lines instead of one, in a fenced block you can copy whole:
+
+```
+Set up okrdev for me — run these three, in order:
+command -v claude >/dev/null 2>&1 || curl -fsSL https://claude.ai/install.sh | bash
+export PATH="$HOME/.local/bin:$PATH"
+claude plugin marketplace add backedbydata-co/okrdev && claude plugin install okrdev@okrdev
+```
+
+- **Line 1 installs Anthropic's CLI only if `claude` is missing** — a no-op otherwise, so the
+  block stays safe to re-run for people who already have it
+- **Line 2 is the one that is easy to leave out and fatal to leave out.** The installer appends
+  `~/.local/bin` to your shell profile, which only affects *new* shells; without this line the
+  very next command still fails with `command not found`, which reads as a broken installer
+- **A Windows PowerShell variant** sits beside it with the same three steps
+- **The README now says what each line does.** A block you paste unread is a block you cannot
+  debug, and the failure this fixes was invisible precisely because the one-liner looked atomic
+- **A fenced block, not a blockquote** — it gets a copy button on GitHub and the site, which is
+  the difference between copying the command and copying the command plus the `>` in front of it
+
+**`install.sh` still refuses to install anything for you, and now tells you exactly what to
+run.** A script that silently installs a second tool is a surprise; the fix is a better error,
+not a broader remit. It exits 1 as before — the test that pins that behaviour is unchanged —
+and the message now carries both commands and the sentence that would have saved the thirty
+minutes: *installing the Claude desktop app does not put the CLI on PATH.*
+
+**The site's Claude install path carries the same three lines**, since the landing page is where
+an adopter actually starts.
+
+**Verified rather than assumed:** the `||` short-circuit skips the installer when `claude` is
+present, the fallback branch fires when it is absent, the PATH line is idempotent, and
+`install.sh` exits 1 with the new message when `claude` is off PATH.
+
+**Not fixed here:** the second unstated prerequisite (#36) and the silent parking-lot fallback
+(#37), both deferred at the W35 check-in pending a decision on whether `gh` is a real
+prerequisite at Level 0 or only for the issue-backed parking lot.
+
 ## 0.10.0 — 2026-08-23
 
 **Every KR is a stretch. The `committed` type is gone.**
