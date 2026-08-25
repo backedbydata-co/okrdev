@@ -81,7 +81,15 @@ Set up okrdev for me, in this order:
   binary ahead of the installer. The script is for CI and bare boxes, where there is no app to
   borrow from, so the installer advice stays — as a better error, not a broader remit
 - **The site's Claude path carries the same block**, since the landing page is where an adopter
-  actually starts
+  actually starts. Its code blocks are now click-to-select (`user-select: all`) — CSS, because
+  the page ships no scripts by design and a copy button would have needed one
+- **`/reload-plugins` is gone from the Quickstart**, on the site and in the README. The paste's
+  own last step says to restart the session, and two instructions for one outcome is one too
+  many. It survives in `docs/adoption.md`, where the by-hand install still needs it
+- **The site drops its Codex CLI card.** The directory button already covers the Codex CLI and
+  says so; a third card repeated the same install in a shape the landing page does not need.
+  The install grid is one column now — the two-column subgrid existed only to align two
+  side-by-side code blocks. The Codex CLI paste is unchanged in the README
 
 **Not fixed here:** the second unstated prerequisite (#36) and the silent parking-lot fallback
 (#37), both deferred at the W35 check-in pending a decision on whether `gh` is a real

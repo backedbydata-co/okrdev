@@ -165,19 +165,10 @@
   .ladder-note { margin-top: 1.1rem; font-size: .92rem; color: var(--ink-soft); max-width: 44rem; }
 
   /* install */
-  .installs { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .9rem; margin-top: 2.2rem; align-items: stretch; }
-  /* row 2 rides the parent's row tracks, so both cards' code blocks start on the
-     same line no matter how the prose above them happens to wrap */
-  .installs > .ipath:not(.ipath-banner) { grid-row: span 4; grid-template-rows: subgrid; row-gap: 0; }
-  @supports (grid-template-rows: subgrid) {
-    .installs > .ipath:not(.ipath-banner) { display: grid; }
-    .installs > .ipath:not(.ipath-banner) .act { margin-top: 0; }
-  }
-  @media (max-width: 900px) {
-    .installs { grid-template-columns: 1fr; }
-    .installs > .ipath:not(.ipath-banner) { grid-row: auto; display: flex; }
-    .installs > .ipath:not(.ipath-banner) .act { margin-top: auto; }
-  }
+  /* One column: the directory banner and the single Claude Code card each stack full
+     width. The two-column subgrid this replaced existed only to line up two side-by-side
+     code blocks; with one paste card left there is nothing to align. */
+  .installs { display: grid; grid-template-columns: 1fr; gap: .9rem; margin-top: 2.2rem; align-items: stretch; }
   .ipath {
     display: flex; flex-direction: column;
     border: 1px solid var(--line); border-radius: .9rem; padding: 1.25rem 1.2rem 1.3rem;
@@ -196,6 +187,7 @@
   .ipath .act pre.code {
     margin: 0; font-size: .78rem; line-height: 1.65; padding: .8rem .85rem;
     white-space: pre-wrap; overflow-wrap: break-word; overflow-x: visible;
+    -webkit-user-select: all; user-select: all; cursor: copy;
   }
   .ipath .act pre.code .c { display: block; margin-bottom: .3rem; }
   .ipath .then { margin-top: .7rem; font-size: .84rem; }
@@ -458,8 +450,8 @@
       <h2>One click to install. One directory to uninstall.</h2>
       <p class="sec-lede">
         okrdev is listed in the ChatGPT plugin directory, so the shortest path is a button —
-        no terminal, no marketplace command, nothing to copy. The paths below do the same
-        thing for the agents that prefer them — Claude Code and Codex each in a single paste.
+        no terminal, no marketplace command, nothing to copy — and the same button covers
+        the Codex CLI. Claude Code gets there in a single paste.
       </p>
 
       <div class="installs">
@@ -493,20 +485,10 @@
 2. With it: plugin marketplace add backedbydata-co/okrdev
    then:    plugin install okrdev@okrdev
 3. Tell me to restart the session.</pre>
-            <p class="then">Then <code>/reload-plugins</code> → <code>/okrdev:install</code></p>
+            <p class="then">Click the block to select it all, then copy.</p>
           </div>
         </div>
 
-        <div class="ipath">
-          <p class="tag">One paste</p>
-          <h3>Codex CLI</h3>
-          <p>Prefer to stay in the terminal? Same plugin, same shape — hand it to a Codex
-             session, or run it in a shell.</p>
-          <div class="act">
-<pre class="code"><span class="c">Install the okrdev plugin for me:</span><span class="k">codex</span> plugin marketplace add backedbydata-co/okrdev &amp;&amp; <span class="k">codex</span> plugin add okrdev@okrdev</pre>
-            <p class="then">Then <code>@okrdev</code> → <code>install okrdev in this repo</code></p>
-          </div>
-        </div>
       </div>
 
       <div class="install-cols">

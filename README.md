@@ -79,8 +79,8 @@ are idempotent and say so rather than erroring if okrdev is already there. The d
 matters is *code session*, not *desktop*: a Claude **chat** session has no shell and cannot run
 this. A Claude **Code** session can, wherever it runs.
 
-Then **`/reload-plugins`** — or just open a new session, which loads it automatically — and
-okrdev is available in every Claude Code session on that machine.
+Restarting the session loads it, and from then on okrdev is available in every Claude Code
+session on that machine.
 
 **On Codex, the shortest path is a button.** okrdev is listed in the ChatGPT plugin directory,
 so there is no marketplace command to run and nothing to copy:
