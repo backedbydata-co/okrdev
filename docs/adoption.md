@@ -6,23 +6,30 @@ and keep whatever stack you already have.
 
 ## Supported surfaces
 
-okrdev runs on **coding agents with a git repo**: Claude Code and Codex. That is the whole
-list, and it is a rule rather than a snapshot — a surface qualifies when it can read and write
-a working tree, run `git`, and invoke the skills.
+okrdev runs in a **code session with a git repo**: Claude Code or Codex. That is a rule rather
+than a list of products — a surface qualifies when it can read and write a working tree, run
+`git`, and invoke the skills.
 
-The requirement isn't snobbery about terminals. Every skill leans on the repo: `/okrdev:install`
-refuses to proceed without one and offers `git init` instead, and the coach's authority comes
-from reading what actually landed — commits, merged PRs, the diff — rather than from what
-someone typed into a status box. Take the repo away and okrdev degrades into OKRs in markdown,
-which is the one thing it exists not to be (see [MANIFESTO.md](../MANIFESTO.md)).
+The distinction that matters is *code session*, not *desktop*. A Claude Code session has a
+shell and a working copy whether it runs in the desktop app (Mac/Windows) or in a terminal, so
+**you do not have to open a terminal.** The desktop app is the path to recommend, a
+non-technical DRI included: download it, open the project folder, and you are in a code
+session.
 
-**Not supported:** Claude Cowork, claude.ai in the browser, and any other surface okrdev has
-not verified against a real repo. Skills may still appear on those surfaces — a plugin
-installed on your account can surface wherever the host chooses to show it — but "the skills
-loaded" is not the same as "the install works," and okrdev makes no promise about the gap.
+Why the repo is non-negotiable: every skill leans on it. `/okrdev:install` refuses to proceed
+without one and offers `git init` instead, and the coach's authority comes from reading what
+actually landed — commits, merged PRs, the diff — rather than from what someone typed into a
+status box. Take the repo away and okrdev degrades into OKRs in markdown, which is the one
+thing it exists not to be (see [MANIFESTO.md](../MANIFESTO.md)).
 
-What differs between the two supported surfaces is one instructions file and one invocation
-style; [codex.md](codex.md) has the table.
+**Not supported: Cowork** — the desktop app's *other* mode — along with Claude chat, claude.ai
+in the browser, and any other session without a working tree. Cowork is the subtle one, because
+it is the same application: the two modes share one plugin store, so a plugin installed on your
+account can have its skills appear in Cowork whether or not it works there. "The skills loaded"
+is not "the install works," and okrdev makes no promise about the gap.
+
+What differs between Claude Code and Codex is one instructions file and one invocation style;
+[codex.md](codex.md) has the table.
 
 ## Brownfield first
 
@@ -175,7 +182,7 @@ doesn't pretend they do. The check-in's "What moved" section is the canonical le
 non-code KR work (sales calls, campaigns shipped, contracts signed); the drift check, which
 reads commits and PRs, simply has less to read and leans on the conversation instead. Level 2
 is irrelevant to you, and the install will never offer it. Create an empty GitHub repo, open it
-in Claude Code or Codex (see [Supported surfaces](#supported-surfaces)), run
+in a Claude Code or Codex session (see [Supported surfaces](#supported-surfaces)), run
 `/okrdev:install`, and you're operating.
 
 Why a git repo at all, for a business with no code? Because the alternative is a SaaS tool: an

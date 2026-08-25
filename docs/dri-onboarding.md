@@ -4,7 +4,7 @@ You've been made the DRI for an objective or a key result, and you don't program
 takes you from nothing — no GitHub account, no tools installed — to having shipped a real
 change to the real product, previewed, reviewed, and merged by you.
 
-Budget about an hour. Most of it is waiting for email invitations and one tool install, not
+Budget about an hour. Most of it is waiting for email invitations and one app download, not
 learning.
 
 Unfamiliar words are on purpose kept to ten, and all ten are defined in plain language in
@@ -31,9 +31,8 @@ shows up (or `/okrdev:coach` detects one), offer this walkthrough and then:
 
 ## What you need before starting
 
-- A computer you're allowed to install software on. Step 2 puts Claude Code or Codex on it;
-  a locked-down work laptop may need IT's blessing first, and that's worth finding out now
-  rather than in twenty minutes.
+- A computer you can install the Claude desktop app on — Mac or Windows. A locked-down work
+  laptop may need IT's blessing, which is worth finding out now rather than in twenty minutes.
 - An email address.
 - One teammate with admin access to the project's repo — or the backstop named in
   `okrdev/config.md` — who can invite you. If you're a solo founder, you *are* the admin and
@@ -59,22 +58,22 @@ instead of a "404" page.
 ## Step 2 — Pick where you'll talk to Claude
 
 The coach, the builder, and the scribe are all the same assistant ([roles.md](roles.md)); what
-varies is the surface you talk to it through. The hard requirement: the assistant must be able
-to read and write the repo as a working tree. That narrows the list to two — see
-[Supported surfaces](adoption.md#supported-surfaces) for why.
+varies is the surface you talk to it through. The hard requirement is that it be a **code
+session** — one with a shell and a working copy of the repo — rather than a chat session. See
+[Supported surfaces](adoption.md#supported-surfaces) for the rule.
 
-- **Claude Code.** The terminal tool developers use. The most capable surface, and the one
-  every okrdev skill is verified against. This is the default; pick it unless you have a
-  reason not to.
-- **Codex.** OpenAI's equivalent, and equally supported. Same skills, same repo. What differs
-  is one instructions file and one invocation style — [codex.md](codex.md) has the table.
+- **Claude Code in the desktop app.** Download Claude for Mac or Windows, open your project
+  folder, and you are in a code session. No terminal, no command line. Take this path.
+- **Claude Code in a terminal.** The same thing, for people who already live there. Identical
+  skills, identical repo — pick it only if a terminal is already where you work.
+- **Codex.** OpenAI's equivalent, and equally supported. What differs is one instructions file
+  and one invocation style — [codex.md](codex.md) has the table.
 
-Neither one is a browser tab, and that is this guide's honest cost: **you install a tool before
-you start.** It's the step most likely to want a teammate for ten minutes, so ask for that help
-rather than grinding at it alone. Everything after it is conversation.
+**Not Cowork.** It is the desktop app's other mode, not a code session, and okrdev does not
+support it. If you already see okrdev's skills there, that still is not a supported install —
+[Supported surfaces](adoption.md#supported-surfaces) explains the difference.
 
-Switching between the two later costs nothing — the state all lives in the repo, not in the
-tool.
+Switching later costs nothing — the state all lives in the repo, not in the tool.
 
 **You're done when** you can send Claude a message and it confirms it can see the repo.
 

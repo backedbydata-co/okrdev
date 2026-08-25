@@ -7,7 +7,7 @@ minor bumps may change doctrine, not just add to it.
 
 ## Unreleased
 
-**Supported surfaces are a rule now, not a list: coding agents with a git repo.**
+**Supported surfaces are a rule now, not a list: a code session with a git repo.**
 
 `docs/dri-onboarding.md` had offered a new DRI three surfaces since 0.1.0 — claude.ai in the
 browser, Claude Cowork, Claude Code — on the stated grounds that all three "can read and write
@@ -19,17 +19,23 @@ The rule that resolves it is narrower than any list of products and outlives the
 qualifies when it can read and write a working tree, run `git`, and invoke the skills.** Today
 that is Claude Code and Codex. It is a test to apply, not a roster to maintain.
 
+**The line is code session vs. chat session, not desktop vs. terminal.** README.md already
+draws that distinction — *"You do not have to open a terminal"* — and the onboarding guide
+never got it, which is how the browser and Cowork ended up on its list in the first place. A
+Claude Code session has a shell and a working copy whether it runs in the desktop app or a
+terminal, and the desktop app is what a non-technical DRI should download.
+
 - New canonical section — `docs/adoption.md` → **Supported surfaces** — which the other docs
   cite instead of restating
-- Step 2 of the onboarding guide names two surfaces, and states the cost it had been eliding:
-  a non-technical DRI installs a tool before they start
-- That guide's prerequisites and hour budget now admit the install exists. "A computer with a
-  web browser" was true only while the browser path was on the list
-- The non-code-business path stops pointing at "whatever Claude surface you use" and names them
+- Step 2 of the onboarding guide leads with Claude Code in the desktop app, and lists the
+  terminal as the same thing for people already there rather than as the price of entry
+- That guide's prerequisites and hour budget describe an app download, not a browser
+- The non-code-business path stops pointing at "whatever Claude surface you use"
 
-**Skills loading on a surface is not okrdev supporting it.** A plugin installed on your account
-can surface wherever the host chooses to show it; the docs now say so, because the alternative
-is a first run that ends with a parking lot written to nowhere.
+**Cowork is the subtle exclusion, because it is the same application.** The desktop app's two
+modes share one plugin store, so a plugin installed on your account can have its skills appear
+in Cowork whether or not it works there. "The skills loaded" is not "the install works," and
+okrdev makes no promise about the gap.
 
 ## 0.10.0 — 2026-08-23
 
