@@ -52,21 +52,35 @@ agent — see [docs/codex.md](docs/codex.md) for what differs, and
 chat window. okrdev ships as skills only: no MCP server to authorize, no account, no keys.
 
 **In Claude Code, it's one paste.** If you are not already a terminal person, download the
-Claude desktop app (Mac/Windows), open your project folder, and drop this into the chat —
-Claude runs it for you:
+Claude desktop app (Mac/Windows), open your project folder, and paste this into the chat:
 
-> Install the okrdev plugin for me:
-> `claude plugin marketplace add backedbydata-co/okrdev && claude plugin install okrdev@okrdev`
+```
+Set up okrdev for me, in this order:
+1. Find a claude binary. Use `claude` from PATH if it is there. If it is not, the Claude
+   desktop app ships one that is deliberately kept off PATH — locate that and use it.
+   Install nothing.
+2. With that binary run: plugin marketplace add backedbydata-co/okrdev
+   then: plugin install okrdev@okrdev
+3. Tell me to restart the session.
+```
 
-**You do not have to open a terminal.** The line inside is an ordinary shell command, so a
-terminal works too — same result either way, and it is safe to re-run: both halves are
-idempotent and say so rather than erroring if okrdev is already there.
+**Why step 1 is worded that way:** installing the Claude desktop app does not put the `claude`
+CLI on your PATH — but it *does* put one on your machine. A first non-author install lost about
+thirty minutes to the first half of that sentence, with nothing anywhere saying the second
+half; roughly 30 of its 37 minutes went on prerequisites rather than on okrdev.
 
-The distinction that matters is *code session*, not *desktop*: a Claude **chat** session has no
-shell and cannot run this. A Claude **Code** session can, wherever it runs.
+**Nothing is downloaded here.** A terminal user already has `claude` on PATH; a desktop-app user
+already has one on disk. Between them there is no case that needs an install, which is why the
+step says *find* rather than *install*. Where the desktop app keeps it is recorded in
+[docs/adoption.md](docs/adoption.md#the-cli-the-desktop-app-already-ships).
 
-Then **`/reload-plugins`** — or just open a new session, which loads it automatically — and
-okrdev is available in every Claude Code session on that machine.
+**You do not have to open a terminal**, and the block is safe to re-run: both plugin commands
+are idempotent and say so rather than erroring if okrdev is already there. The distinction that
+matters is *code session*, not *desktop*: a Claude **chat** session has no shell and cannot run
+this. A Claude **Code** session can, wherever it runs.
+
+Restarting the session loads it, and from then on okrdev is available in every Claude Code
+session on that machine.
 
 **On Codex, the shortest path is a button.** okrdev is listed in the ChatGPT plugin directory,
 so there is no marketplace command to run and nothing to copy:

@@ -31,6 +31,28 @@ is not "the install works," and okrdev makes no promise about the gap.
 What differs between Claude Code and Codex is one instructions file and one invocation style;
 [codex.md](codex.md) has the table.
 
+### The CLI the desktop app already ships
+
+The Claude desktop app installs a `claude` binary and deliberately keeps it off your PATH. That
+is why the Quickstart's first step says *find* a binary rather than *install* one: a terminal
+user already has `claude` on PATH, and a desktop-app user already has one on disk. Between them
+there is no case that needs a download.
+
+**Verified on macOS** — 2026-08-25, against desktop app build 2.1.237. The binary lives at:
+
+```
+~/Library/Application Support/Claude/claude-code/<version>/claude.app/Contents/MacOS/claude
+```
+
+Take the highest `<version>`: the directory is version-numbered and moves on every app update,
+so glob it rather than pinning one. `plugin marketplace add` and `plugin install` were both run
+against it and produced a real install — plugin registered, skills resolving, manifest written.
+
+**Windows is deliberately not recorded here.** The app resolves this location through Electron's
+per-platform user-data directory rather than a hardcoded path, so the layout is expected to
+differ and has not been checked on Windows. An agent told to *find* the binary handles either
+platform; a path written down here would be a guess, and this file does not guess.
+
 ## Brownfield first
 
 okrdev assumes you have an existing business with an existing codebase, existing habits, and no

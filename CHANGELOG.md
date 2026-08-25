@@ -5,7 +5,7 @@ records the version it installed as the `okrdev_version` marker in its
 `okrdev/config.md` — marker semantics are in docs/adoption.md. Pre-1.0:
 minor bumps may change doctrine, not just add to it.
 
-## Unreleased
+## 0.10.1 — 2026-08-25
 
 **Supported surfaces are a rule now, not a list: a code session with a git repo.**
 
@@ -45,6 +45,57 @@ terminal, and the desktop app is what a non-technical DRI should download.
 modes share one plugin store, so a plugin installed on your account can have its skills appear
 in Cowork whether or not it works there. "The skills loaded" is not "the install works," and
 okrdev makes no promise about the gap.
+
+**The one paste no longer assumes a `claude` CLI you might not have.** Closes #34.
+
+`README.md` said *"You do not have to open a terminal"* directly above a line that runs `claude`
+as a shell command. That is true of the **user** and false of the **machine**: installing the
+Claude desktop app does not put the `claude` CLI on your PATH, and nothing here said so. The
+first non-author install lost about thirty minutes to it — roughly 30 of its 37 minutes went on
+prerequisites rather than on okrdev.
+
+**The fix is to find a binary, not to install one.** The desktop app does ship a `claude`
+binary; it simply keeps it off PATH. So a terminal user already has one on PATH, a desktop-app
+user already has one on disk, and between them there is no case left that needs a download:
+
+```
+Set up okrdev for me, in this order:
+1. Find a claude binary. Use `claude` from PATH if it is there. If it is not, the Claude
+   desktop app ships one that is deliberately kept off PATH — locate that and use it.
+   Install nothing.
+2. With that binary run: plugin marketplace add backedbydata-co/okrdev
+   then: plugin install okrdev@okrdev
+3. Tell me to restart the session.
+```
+
+- **Nothing is downloaded**, which is what keeps the Quickstart honest against the surface rule
+  above. "Download the desktop app" really is the whole install, and an install path that then
+  curled a second CLI would have said otherwise
+- **The step says *find*, not a path.** The directory is version-numbered and moves on every app
+  update; an agent that searches survives that, a pasted path does not
+- **Where the app keeps it is recorded** in `docs/adoption.md` — verified on macOS against
+  desktop build 2.1.237, with **Windows deliberately not recorded** rather than guessed: the app
+  resolves that location through Electron's per-platform user-data directory, so the layout is
+  expected to differ and has not been checked
+- **`install.sh` still refuses to install anything for you**, and now names the desktop app's
+  binary ahead of the installer. The script is for CI and bare boxes, where there is no app to
+  borrow from, so the installer advice stays — as a better error, not a broader remit
+- **The site's Claude path carries the same block**, since the landing page is where an adopter
+  actually starts. Its code blocks are now click-to-select (`user-select: all`) — CSS, because
+  the page ships no scripts by design and a copy button would have needed one
+- **`/reload-plugins` is gone from the Quickstart**, on the site and in the README. The paste's
+  own last step says to restart the session, and two instructions for one outcome is one too
+  many. It survives in `docs/adoption.md`, where the by-hand install still needs it
+- **The site drops its Codex CLI card.** The directory button already covers the Codex CLI and
+  says so; a third card repeated the same install in a shape the landing page does not need.
+  The install grid is one column now — the two-column subgrid existed only to align two
+  side-by-side code blocks. The hero's second button, which had promised "Claude Code & Codex
+  CLI" and jumped to that section, now reads "Claude Code — one paste". The Codex CLI paste is
+  unchanged in the README
+
+**Not fixed here:** the second unstated prerequisite (#36) and the silent parking-lot fallback
+(#37), both deferred at the W35 check-in pending a decision on whether `gh` is a real
+prerequisite at Level 0 or only for the issue-backed parking lot.
 
 ## 0.10.0 — 2026-08-23
 
