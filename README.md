@@ -73,11 +73,13 @@ so there is no marketplace command to run and nothing to copy:
 
 > **[Install okrdev from the plugin directory →](https://chatgpt.com/plugins/plugins_6a7a2f9e3968819187e30eaee8da1435)**
 
-Press **Install plugin**, then in your project type `@okrdev` and ask it to
-`install okrdev in this repo`. The directory is only where the plugin is *listed* — the session
-you then use it in still has to be a Codex session with your repo, not a ChatGPT chat.
+Press **Install plugin**, then open your project in the Codex desktop app, type `@okrdev` and
+ask it to `install okrdev in this repo`. As with Claude, the app is the path to take. And the
+directory is only where the plugin is *listed*, not a place you run it: the session still has to
+be a Codex session with your repo, not a ChatGPT chat.
 
-The **Codex CLI** takes the same shape — hand it to a Codex session, or run it in a shell:
+**The Codex CLI is the same thing for people already in a terminal** — hand it the same prompt,
+or run the commands in a shell:
 
 > Install the okrdev plugin for me:
 > `codex plugin marketplace add backedbydata-co/okrdev && codex plugin add okrdev@okrdev`

@@ -10,11 +10,11 @@ okrdev runs in a **code session with a git repo**: Claude Code or Codex. That is
 than a list of products — a surface qualifies when it can read and write a working tree, run
 `git`, and invoke the skills.
 
-The distinction that matters is *code session*, not *desktop*. A Claude Code session has a
-shell and a working copy whether it runs in the desktop app (Mac/Windows) or in a terminal, so
-**you do not have to open a terminal.** The desktop app is the path to recommend, a
-non-technical DRI included: download it, open the project folder, and you are in a code
-session.
+The distinction that matters is *code session*, not *desktop*. A code session has a shell and
+a working copy whether it runs in a desktop app or in a terminal, so **you do not have to open
+a terminal.** Claude Code and Codex both ship desktop apps, and the app is the path to
+recommend — a non-technical DRI included: download it, open the project folder, and you are in
+a code session. The terminal CLIs do the same job for people already living there.
 
 Why the repo is non-negotiable: every skill leans on it. `/okrdev:install` refuses to proceed
 without one and offers `git init` instead, and the coach's authority comes from reading what

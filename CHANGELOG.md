@@ -37,6 +37,9 @@ terminal, and the desktop app is what a non-technical DRI should download.
   surface okrdev actually recommends. The button stays, labelled as the Codex route, with the
   listing distinguished from the session: a directory is where a plugin is listed, not a place
   you run it
+- **The same shape on both agents.** The desktop app is the recommended path for Claude Code
+  and for Codex alike; each terminal CLI is described as the same session for people already
+  living there, rather than as the default or the price of entry
 
 **Cowork is the subtle exclusion, because it is the same application.** The desktop app's two
 modes share one plugin store, so a plugin installed on your account can have its skills appear

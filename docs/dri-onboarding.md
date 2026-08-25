@@ -64,10 +64,10 @@ session** — one with a shell and a working copy of the repo — rather than a 
 
 - **Claude Code in the desktop app.** Download Claude for Mac or Windows, open your project
   folder, and you are in a code session. No terminal, no command line. Take this path.
-- **Claude Code in a terminal.** The same thing, for people who already live there. Identical
-  skills, identical repo — pick it only if a terminal is already where you work.
-- **Codex.** OpenAI's equivalent, and equally supported. What differs is one instructions file
-  and one invocation style — [codex.md](codex.md) has the table.
+- **Codex in the desktop app.** OpenAI's equivalent, and equally supported. What differs is one
+  instructions file and one invocation style — [codex.md](codex.md) has the table.
+- **Either one in a terminal.** The same sessions, for people who already live there. Identical
+  skills, identical repo — pick this only if a terminal is already where you work.
 
 **Not Cowork.** It is the desktop app's other mode, not a code session, and okrdev does not
 support it. If you already see okrdev's skills there, that still is not a supported install —
