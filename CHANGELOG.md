@@ -89,7 +89,9 @@ Set up okrdev for me, in this order:
 - **The site drops its Codex CLI card.** The directory button already covers the Codex CLI and
   says so; a third card repeated the same install in a shape the landing page does not need.
   The install grid is one column now — the two-column subgrid existed only to align two
-  side-by-side code blocks. The Codex CLI paste is unchanged in the README
+  side-by-side code blocks. The hero's second button, which had promised "Claude Code & Codex
+  CLI" and jumped to that section, now reads "Claude Code — one paste". The Codex CLI paste is
+  unchanged in the README
 
 **Not fixed here:** the second unstated prerequisite (#36) and the silent parking-lot fallback
 (#37), both deferred at the W35 check-in pending a decision on whether `gh` is a real
