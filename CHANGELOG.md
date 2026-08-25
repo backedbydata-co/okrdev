@@ -7,6 +7,45 @@ minor bumps may change doctrine, not just add to it.
 
 ## Unreleased
 
+**Supported surfaces are a rule now, not a list: a code session with a git repo.**
+
+`docs/dri-onboarding.md` had offered a new DRI three surfaces since 0.1.0 — claude.ai in the
+browser, Claude Cowork, Claude Code — on the stated grounds that all three "can read and write
+the repo." `skills/install/SKILL.md` meanwhile refuses to proceed outside a git repo and offers
+`git init` instead. Both shipped to main and sat there six weeks, against a cross-file
+coherence red line of one.
+
+The rule that resolves it is narrower than any list of products and outlives them: **a surface
+qualifies when it can read and write a working tree, run `git`, and invoke the skills.** Today
+that is Claude Code and Codex. It is a test to apply, not a roster to maintain.
+
+**The line is code session vs. chat session, not desktop vs. terminal.** README.md already
+draws that distinction — *"You do not have to open a terminal"* — and the onboarding guide
+never got it, which is how the browser and Cowork ended up on its list in the first place. A
+Claude Code session has a shell and a working copy whether it runs in the desktop app or a
+terminal, and the desktop app is what a non-technical DRI should download.
+
+- New canonical section — `docs/adoption.md` → **Supported surfaces** — which the other docs
+  cite instead of restating
+- Step 2 of the onboarding guide leads with Claude Code in the desktop app, and lists the
+  terminal as the same thing for people already there rather than as the price of entry
+- That guide's prerequisites and hour budget describe an app download, not a browser
+- The non-code-business path stops pointing at "whatever Claude surface you use"
+- **The README Quickstart leads with Claude Code and the desktop app.** It had called okrdev
+  "a plugin for ChatGPT and Codex" — naming a chat product as a host, which is the exact
+  ambiguity this rule exists to kill — and put the ChatGPT directory button ahead of the
+  surface okrdev actually recommends. The button stays, labelled as the Codex route, with the
+  listing distinguished from the session: a directory is where a plugin is listed, not a place
+  you run it
+- **The same shape on both agents.** The desktop app is the recommended path for Claude Code
+  and for Codex alike; each terminal CLI is described as the same session for people already
+  living there, rather than as the default or the price of entry
+
+**Cowork is the subtle exclusion, because it is the same application.** The desktop app's two
+modes share one plugin store, so a plugin installed on your account can have its skills appear
+in Cowork whether or not it works there. "The skills loaded" is not "the install works," and
+okrdev makes no promise about the gap.
+
 ## 0.10.0 — 2026-08-23
 
 **Every KR is a stretch. The `committed` type is gone.**

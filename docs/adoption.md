@@ -4,6 +4,33 @@ How okrdev gets into your repo, what each level costs, and how it comes back out
 version: start at the bottom of the ladder, move up only when the current level has earned it,
 and keep whatever stack you already have.
 
+## Supported surfaces
+
+okrdev runs in a **code session with a git repo**: Claude Code or Codex. That is a rule rather
+than a list of products — a surface qualifies when it can read and write a working tree, run
+`git`, and invoke the skills.
+
+The distinction that matters is *code session*, not *desktop*. A code session has a shell and
+a working copy whether it runs in a desktop app or in a terminal, so **you do not have to open
+a terminal.** Claude Code and Codex both ship desktop apps, and the app is the path to
+recommend — a non-technical DRI included: download it, open the project folder, and you are in
+a code session. The terminal CLIs do the same job for people already living there.
+
+Why the repo is non-negotiable: every skill leans on it. `/okrdev:install` refuses to proceed
+without one and offers `git init` instead, and the coach's authority comes from reading what
+actually landed — commits, merged PRs, the diff — rather than from what someone typed into a
+status box. Take the repo away and okrdev degrades into OKRs in markdown, which is the one
+thing it exists not to be (see [MANIFESTO.md](../MANIFESTO.md)).
+
+**Not supported: Cowork** — the desktop app's *other* mode — along with Claude chat, claude.ai
+in the browser, and any other session without a working tree. Cowork is the subtle one, because
+it is the same application: the two modes share one plugin store, so a plugin installed on your
+account can have its skills appear in Cowork whether or not it works there. "The skills loaded"
+is not "the install works," and okrdev makes no promise about the gap.
+
+What differs between Claude Code and Codex is one instructions file and one invocation style;
+[codex.md](codex.md) has the table.
+
 ## Brownfield first
 
 okrdev assumes you have an existing business with an existing codebase, existing habits, and no
@@ -154,9 +181,9 @@ A consultancy, an agency, a fitness studio, a newsletter — none of them ship P
 doesn't pretend they do. The check-in's "What moved" section is the canonical ledger for
 non-code KR work (sales calls, campaigns shipped, contracts signed); the drift check, which
 reads commits and PRs, simply has less to read and leans on the conversation instead. Level 2
-is irrelevant to you, and the install will never offer it. Create an empty GitHub repo, connect
-it to whatever Claude surface you use (see [dri-onboarding.md](dri-onboarding.md) for the
-options), run `/okrdev:install`, and you're operating.
+is irrelevant to you, and the install will never offer it. Create an empty GitHub repo, open it
+in a Claude Code or Codex session (see [Supported surfaces](#supported-surfaces)), run
+`/okrdev:install`, and you're operating.
 
 Why a git repo at all, for a business with no code? Because the alternative is a SaaS tool: an
 account, a subscription, an export problem. Markdown in a repo you own is the least lock-in a

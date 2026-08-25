@@ -4,7 +4,8 @@ You've been made the DRI for an objective or a key result, and you don't program
 takes you from nothing — no GitHub account, no tools installed — to having shipped a real
 change to the real product, previewed, reviewed, and merged by you.
 
-Budget about an hour. Most of it is waiting for email invitations, not learning.
+Budget about an hour. Most of it is waiting for email invitations and one app download, not
+learning.
 
 Unfamiliar words are on purpose kept to ten, and all ten are defined in plain language in
 [shipping-explained.md](shipping-explained.md). Read it first — it's short — or just ask your
@@ -30,7 +31,8 @@ shows up (or `/okrdev:coach` detects one), offer this walkthrough and then:
 
 ## What you need before starting
 
-- A computer with a web browser. Any computer.
+- A computer you can install the Claude desktop app on — Mac or Windows. A locked-down work
+  laptop may need IT's blessing, which is worth finding out now rather than in twenty minutes.
 - An email address.
 - One teammate with admin access to the project's repo — or the backstop named in
   `okrdev/config.md` — who can invite you. If you're a solo founder, you *are* the admin and
@@ -56,21 +58,22 @@ instead of a "404" page.
 ## Step 2 — Pick where you'll talk to Claude
 
 The coach, the builder, and the scribe are all the same assistant ([roles.md](roles.md)); what
-varies is the surface you talk to it through. The only hard requirement: the assistant must be
-able to read and write the repo. All three surfaces below can. All three run the same okrdev
-skills.
+varies is the surface you talk to it through. The hard requirement is that it be a **code
+session** — one with a shell and a working copy of the repo — rather than a chat session. See
+[Supported surfaces](adoption.md#supported-surfaces) for the rule.
 
-- **claude.ai with the repo connected.** Runs in your browser, nothing to install. Connect
-  your GitHub account when prompted, point it at the repo, done. The natural starting point
-  for a non-technical DRI.
-- **Claude Cowork.** The desktop app built for non-code work. Also a good fit, if you prefer
-  an app to a browser tab.
-- **Claude Code.** The terminal tool developers use. It's the most capable surface and the
-  least friendly first rung. Pick it if a technical teammate is setting it up with you;
-  otherwise start with one of the first two and graduate later if you want.
+- **Claude Code in the desktop app.** Download Claude for Mac or Windows, open your project
+  folder, and you are in a code session. No terminal, no command line. Take this path.
+- **Codex in the desktop app.** OpenAI's equivalent, and equally supported. What differs is one
+  instructions file and one invocation style — [codex.md](codex.md) has the table.
+- **Either one in a terminal.** The same sessions, for people who already live there. Identical
+  skills, identical repo — pick this only if a terminal is already where you work.
 
-There's no wrong answer, and switching later costs nothing — the state all lives in the repo,
-not in the tool.
+**Not Cowork.** It is the desktop app's other mode, not a code session, and okrdev does not
+support it. If you already see okrdev's skills there, that still is not a supported install —
+[Supported surfaces](adoption.md#supported-surfaces) explains the difference.
+
+Switching later costs nothing — the state all lives in the repo, not in the tool.
 
 **You're done when** you can send Claude a message and it confirms it can see the repo.
 
