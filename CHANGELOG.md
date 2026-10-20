@@ -5,6 +5,32 @@ records the version it installed as the `okrdev_version` marker in its
 `okrdev/config.md` — marker semantics are in docs/adoption.md. Pre-1.0:
 minor bumps may change doctrine, not just add to it.
 
+## 0.10.4 — 2026-10-20
+
+**okrdev is listed in the Claude plugin directory, and the landing page leads with it.**
+
+The submission passed review on 2026-09-16, but "passed review" was all the submissions page
+said — no listing link, nothing findable — so this repo deliberately built no Claude button
+rather than invent a URL. The listing now has a public one:
+[claude.ai/customize/plugins/id/1cf8a8e3…](https://claude.ai/customize/plugins/id/1cf8a8e3-9999-4cf3-8f69-b3fe9d59419c%40anthropic-plugin-directory),
+which renders signed out and shows okrdev at 0.10.3.
+
+- **The hero's primary button is "Add to Claude — one click"**, with ChatGPT beside it. Both
+  surfaces now have a directory button, so the hero no longer has to mix a button with an
+  anchor to a paste
+- **The install section leads with the Claude directory banner.** ChatGPT & Codex becomes its
+  own card, and the one paste stays, relabelled as the Claude Code CLI route — for terminal
+  users, and for anyone who would rather not install through a claude.ai account
+- **The README Quickstart gets the same button** ahead of the paste, with the line the Codex
+  button already carried: a directory is where a plugin is listed, not where you run it. The
+  session still has to be a Claude **Code** session with your repo
+- The meta and Open Graph descriptions, "Which agent?" and the FAQ name both directories
+
+**What was not verified:** that a plugin added from the directory reaches a Claude Code session
+on every surface. The directory install goes through a claude.ai account, and the CLI has no
+directory resolver of its own — which is why the paste stays on the page rather than being
+retired.
+
 ## 0.10.3 — 2026-08-25
 
 **The structural half of the partition rule now has a check under it.** Closes part two of #24.

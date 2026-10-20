@@ -51,8 +51,19 @@ agent — see [docs/codex.md](docs/codex.md) for what differs, and
 [Supported surfaces](docs/adoption.md#supported-surfaces) for why it is those two and not a
 chat window. okrdev ships as skills only: no MCP server to authorize, no account, no keys.
 
-**In Claude Code, it's one paste.** If you are not already a terminal person, download the
-Claude desktop app (Mac/Windows), open your project folder, and paste this into the chat:
+**In Claude, the shortest path is a button.** okrdev is listed in the Claude plugin directory:
+
+> **[Add okrdev to Claude from the plugin directory →](https://claude.ai/customize/plugins/id/1cf8a8e3-9999-4cf3-8f69-b3fe9d59419c%40anthropic-plugin-directory)**
+
+Sign in and add it to your account, then download the Claude desktop app (Mac/Windows) if you
+don't have it, open your project folder in a Claude **Code** session, and ask it to
+`install okrdev in this repo`. The directory is where the plugin is *listed*, not where you run
+it — the session still has to be a code session with your repo, not a chat (see
+[Supported surfaces](docs/adoption.md#supported-surfaces)).
+
+**From the Claude Code CLI, it's one paste** — the same plugin through its marketplace rather
+than the directory, for people already in a terminal or who would rather not go through a
+claude.ai account. Paste this into any Claude Code session, desktop app included:
 
 ```
 Set up okrdev for me, in this order:
@@ -85,7 +96,7 @@ session on that machine.
 **On Codex, the shortest path is a button.** okrdev is listed in the ChatGPT plugin directory,
 so there is no marketplace command to run and nothing to copy:
 
-> **[Install okrdev from the plugin directory →](https://chatgpt.com/plugins/plugins_6a7a2f9e3968819187e30eaee8da1435)**
+> **[Install okrdev from the ChatGPT plugin directory →](https://chatgpt.com/plugins/plugins_6a7a2f9e3968819187e30eaee8da1435)**
 
 Press **Install plugin**, then open your project in the Codex desktop app, type `@okrdev` and
 ask it to `install okrdev in this repo`. As with Claude, the app is the path to take. And the
