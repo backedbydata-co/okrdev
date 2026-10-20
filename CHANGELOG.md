@@ -15,7 +15,7 @@ rather than invent a URL. The listing now has a public one:
 [claude.ai/customize/plugins/id/1cf8a8e3…](https://claude.ai/customize/plugins/id/1cf8a8e3-9999-4cf3-8f69-b3fe9d59419c%40anthropic-plugin-directory),
 which renders signed out and shows okrdev at 0.10.3.
 
-- **The hero's primary button is "Add to Claude — one click"**, with ChatGPT beside it. Both
+- **The hero's primary button is "Add to Claude"**, with ChatGPT beside it. Both
   surfaces now have a directory button, so the hero no longer has to mix a button with an
   anchor to a paste
 - **The install section leads with the Claude directory banner.** ChatGPT & Codex becomes its
