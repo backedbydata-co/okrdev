@@ -883,6 +883,20 @@ check_confidence_mirror() {
     local active
     active=$(grep -l '^status: active' "$root"/okrs/*.md 2> /dev/null)
     if [ -z "$active" ]; then
+      # Between cycles is a real state: /okrdev:retro closes a cycle as scored
+      # or abandoned before /okrdev:plan opens the next, and the 2026-Q3 retro
+      # went red on exactly that. With no live cycle there is nothing to
+      # mirror — but only when the newest cycle file was actually closed. No
+      # cycle files at all, or a newest file in any other state, still fails.
+      local newest newest_status
+      newest=$(find "$root/okrs" -name '*.md' 2> /dev/null | sort | tail -1)
+      newest_status=$(sed -n 's/^status: *//p' "$newest" 2> /dev/null | head -1)
+      case "$newest_status" in
+        scored | abandoned)
+          ok "confidence mirror: $root is between cycles — $(basename "$newest" .md) is $newest_status, nothing live to mirror"
+          continue
+          ;;
+      esac
       bad "confidence mirror: $root has no cycle file with 'status: active'"
       status=1
       continue
